@@ -27,9 +27,5 @@ func (c *Client) Up() error {
 	c.cmd.Stderr = os.Stderr
 
 	// Starts the V2Ray client process.
-	if err := c.cmd.Start(); err != nil {
-		return err
-	}
-
-	return nil
+	return c.cmd.Start()
 }
