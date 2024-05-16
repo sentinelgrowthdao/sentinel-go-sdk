@@ -1,123 +1,114 @@
 package options
 
-import (
-	"time"
-)
-
-// Default values for transaction options
+// Default values for transaction options.
 const (
 	DefaultTxBroadcastMode      = "sync"
+	DefaultTxChainID            = "sentinelhub-2"
+	DefaultGas                  = 200_000
 	DefaultTxGasAdjustment      = 1.0 + (1.0 / 6)
-	DefaultTxMaxRetries         = 60
+	DefaultTxGasPrices          = "0.1udvpn"
 	DefaultTxSimulateAndExecute = true
-	DefaultTxTimeout            = 15 * time.Second
-	DefaultTxWSEndpoint         = "/websocket"
 )
 
-// TxOptions represents options for a transaction
+// TxOptions represents options for transactions.
 type TxOptions struct {
-	BroadcastMode      string        `json:"broadcast_mode,omitempty"`
-	ChainID            string        `json:"chain_id,omitempty"`
-	FeeGranterAddr     string        `json:"fee_granter_addr,omitempty"`
-	Fees               string        `json:"fees,omitempty"`
-	GasAdjustment      float64       `json:"gas_adjustment,omitempty"`
-	Gas                int64         `json:"gas,omitempty"`
-	GasPrices          string        `json:"gas_prices,omitempty"`
-	MaxRetries         int           `json:"max_retries,omitempty"`
-	RPCAddr            string        `json:"rpc_addr,omitempty"`
-	SignMode           string        `json:"sign_mode,omitempty"`
-	SimulateAndExecute bool          `json:"simulate_and_execute,omitempty"`
-	TimeoutHeight      int64         `json:"timeout_height,omitempty"`
-	Timeout            time.Duration `json:"timeout,omitempty"`
-	WSEndpoint         string        `json:"ws_endpoint,omitempty"`
+	*KeyOptions                // Embedding KeyOptions for key-related options.
+	*QueryOptions              // Embedding QueryOptions for query-related options.
+	BroadcastMode      string  `json:"broadcast_mode,omitempty"`       // BroadcastMode is the mode of broadcasting transactions.
+	ChainID            string  `json:"chain_id,omitempty"`             // ChainID is the identifier of the blockchain network.
+	FeeGranterAddr     string  `json:"fee_granter_addr,omitempty"`     // FeeGranterAddr is the address of the entity granting fees.
+	Fees               string  `json:"fees,omitempty"`                 // Fees is the transaction fees.
+	FromName           string  `json:"from_name,omitempty"`            // FromName is the name of the sender.
+	GasAdjustment      float64 `json:"gas_adjustment,omitempty"`       // GasAdjustment is the adjustment factor for gas estimation.
+	Gas                uint64  `json:"gas,omitempty"`                  // Gas is the gas limit for the transaction.
+	GasPrices          string  `json:"gas_prices,omitempty"`           // GasPrices is the gas prices for transaction execution.
+	Memo               string  `json:"memo,omitempty"`                 // Memo is a memo attached to the transaction.
+	SimulateAndExecute bool    `json:"simulate_and_execute,omitempty"` // SimulateAndExecute indicates whether to simulate and execute the transaction.
+	TimeoutHeight      uint64  `json:"timeout_height,omitempty"`       // TimeoutHeight is the block height at which the transaction times out.
 }
 
-// Tx creates a new TxOptions with default values
+// Tx creates a new TxOptions instance with default values.
 func Tx() *TxOptions {
 	return &TxOptions{
+		KeyOptions:         Key(),   // Initialize embedded KeyOptions.
+		QueryOptions:       Query(), // Initialize embedded QueryOptions.
 		BroadcastMode:      DefaultTxBroadcastMode,
+		ChainID:            DefaultTxChainID,
+		Gas:                DefaultGas,
 		GasAdjustment:      DefaultTxGasAdjustment,
-		MaxRetries:         DefaultTxMaxRetries,
+		GasPrices:          DefaultTxGasPrices,
 		SimulateAndExecute: DefaultTxSimulateAndExecute,
-		Timeout:            DefaultTxTimeout,
-		WSEndpoint:         DefaultTxWSEndpoint,
 	}
 }
 
-// WithBroadcastMode sets the broadcast mode for the transaction
+// WithKeyOptions sets the KeyOptions field and returns the modified TxOptions instance.
+func (t *TxOptions) WithKeyOptions(v *KeyOptions) *TxOptions {
+	t.KeyOptions = v
+	return t
+}
+
+// WithQueryOptions sets the QueryOptions field and returns the modified TxOptions instance.
+func (t *TxOptions) WithQueryOptions(v *QueryOptions) *TxOptions {
+	t.QueryOptions = v
+	return t
+}
+
+// WithBroadcastMode sets the BroadcastMode field and returns the modified TxOptions instance.
 func (t *TxOptions) WithBroadcastMode(v string) *TxOptions {
 	t.BroadcastMode = v
 	return t
 }
 
-// WithChainID sets the chain ID for the transaction
+// WithChainID sets the ChainID field and returns the modified TxOptions instance.
 func (t *TxOptions) WithChainID(v string) *TxOptions {
 	t.ChainID = v
 	return t
 }
 
-// WithFeeGranterAddr sets the fee granter address for the transaction
+// WithFeeGranterAddr sets the FeeGranterAddr field and returns the modified TxOptions instance.
 func (t *TxOptions) WithFeeGranterAddr(v string) *TxOptions {
 	t.FeeGranterAddr = v
 	return t
 }
 
-// WithFees sets the fees for the transaction
+// WithFees sets the Fees field and returns the modified TxOptions instance.
 func (t *TxOptions) WithFees(v string) *TxOptions {
 	t.Fees = v
 	return t
 }
 
-// WithGasAdjustment sets the gas adjustment for the transaction
+// WithFromName sets the FromName field and returns the modified TxOptions instance.
+func (t *TxOptions) WithFromName(v string) *TxOptions {
+	t.FromName = v
+	return t
+}
+
+// WithGasAdjustment sets the GasAdjustment field and returns the modified TxOptions instance.
 func (t *TxOptions) WithGasAdjustment(v float64) *TxOptions {
 	t.GasAdjustment = v
 	return t
 }
 
-// WithGas sets the gas limit for the transaction
-func (t *TxOptions) WithGas(v int64) *TxOptions {
+// WithGas sets the Gas field and returns the modified TxOptions instance.
+func (t *TxOptions) WithGas(v uint64) *TxOptions {
 	t.Gas = v
 	return t
 }
 
-// WithGasPrices sets the gas prices for the transaction
+// WithGasPrices sets the GasPrices field and returns the modified TxOptions instance.
 func (t *TxOptions) WithGasPrices(v string) *TxOptions {
 	t.GasPrices = v
 	return t
 }
 
-// WithRPCAddr sets the RPC address for the transaction
-func (t *TxOptions) WithRPCAddr(v string) *TxOptions {
-	t.RPCAddr = v
-	return t
-}
-
-// WithSignMode sets the sign mode for the transaction
-func (t *TxOptions) WithSignMode(v string) *TxOptions {
-	t.SignMode = v
-	return t
-}
-
-// WithSimulateAndExecute sets the simulate and execute flag for the transaction
+// WithSimulateAndExecute sets the SimulateAndExecute field and returns the modified TxOptions instance.
 func (t *TxOptions) WithSimulateAndExecute(v bool) *TxOptions {
 	t.SimulateAndExecute = v
 	return t
 }
 
-// WithTimeoutHeight sets the timeout height for the transaction
-func (t *TxOptions) WithTimeoutHeight(v int64) *TxOptions {
+// WithTimeoutHeight sets the TimeoutHeight field and returns the modified TxOptions instance.
+func (t *TxOptions) WithTimeoutHeight(v uint64) *TxOptions {
 	t.TimeoutHeight = v
-	return t
-}
-
-// WithTimeout sets the timeout duration for the transaction
-func (t *TxOptions) WithTimeout(v time.Duration) *TxOptions {
-	t.Timeout = v
-	return t
-}
-
-// WithWSEndpoint sets the WebSocket endpoint for the transaction
-func (t *TxOptions) WithWSEndpoint(v string) *TxOptions {
-	t.WSEndpoint = v
 	return t
 }
