@@ -1,18 +1,22 @@
 package client
 
 import (
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 )
 
-// Context represents a context related to the Cosmos SDK with a ProtoCodec for encoding and decoding.
+// Context contains necessary components for transaction handling, encoding and decoding.
 type Context struct {
-	*codec.ProtoCodec
+	codec.ProtoCodecMarshaler // Marshaler for protobuf types
+	client.TxConfig           // Configuration for transactions
 }
 
-// NewContext creates a new context with the provided InterfaceRegistry for encoding and decoding messages.
-func NewContext(ir codectypes.InterfaceRegistry) *Context {
+// NewContext creates a new instance of Context.
+// It takes a ProtoCodecMarshaler as input parameter and returns a pointer to Context.
+func NewContext(protoCodec codec.ProtoCodecMarshaler) *Context {
 	return &Context{
-		ProtoCodec: codec.NewProtoCodec(ir),
+		ProtoCodecMarshaler: protoCodec,
+		TxConfig:            authtx.NewTxConfig(protoCodec, authtx.DefaultSignModes),
 	}
 }
