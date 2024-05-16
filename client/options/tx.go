@@ -1,8 +1,11 @@
 package options
 
+import (
+	"github.com/spf13/cobra"
+)
+
 // Default values for transaction options.
 const (
-	DefaultTxBroadcastMode      = "sync"
 	DefaultTxChainID            = "sentinelhub-2"
 	DefaultGas                  = 200_000
 	DefaultTxGasAdjustment      = 1.0 + (1.0 / 6)
@@ -14,7 +17,6 @@ const (
 type TxOptions struct {
 	*KeyOptions                // Embedding KeyOptions for key-related options.
 	*QueryOptions              // Embedding QueryOptions for query-related options.
-	BroadcastMode      string  `json:"broadcast_mode,omitempty"`       // BroadcastMode is the mode of broadcasting transactions.
 	ChainID            string  `json:"chain_id,omitempty"`             // ChainID is the identifier of the blockchain network.
 	FeeGranterAddr     string  `json:"fee_granter_addr,omitempty"`     // FeeGranterAddr is the address of the entity granting fees.
 	Fees               string  `json:"fees,omitempty"`                 // Fees is the transaction fees.
@@ -32,7 +34,6 @@ func Tx() *TxOptions {
 	return &TxOptions{
 		KeyOptions:         Key(),   // Initialize embedded KeyOptions.
 		QueryOptions:       Query(), // Initialize embedded QueryOptions.
-		BroadcastMode:      DefaultTxBroadcastMode,
 		ChainID:            DefaultTxChainID,
 		Gas:                DefaultGas,
 		GasAdjustment:      DefaultTxGasAdjustment,
@@ -50,12 +51,6 @@ func (t *TxOptions) WithKeyOptions(v *KeyOptions) *TxOptions {
 // WithQueryOptions sets the QueryOptions field and returns the modified TxOptions instance.
 func (t *TxOptions) WithQueryOptions(v *QueryOptions) *TxOptions {
 	t.QueryOptions = v
-	return t
-}
-
-// WithBroadcastMode sets the BroadcastMode field and returns the modified TxOptions instance.
-func (t *TxOptions) WithBroadcastMode(v string) *TxOptions {
-	t.BroadcastMode = v
 	return t
 }
 
@@ -111,4 +106,113 @@ func (t *TxOptions) WithSimulateAndExecute(v bool) *TxOptions {
 func (t *TxOptions) WithTimeoutHeight(v uint64) *TxOptions {
 	t.TimeoutHeight = v
 	return t
+}
+
+// AddTxFlagsToCmd adds transaction-related flags to the given cobra command.
+func AddTxFlagsToCmd(cmd *cobra.Command) {
+	// Add key and query related flags to the command.
+	AddKeyFlagsToCmd(cmd)
+	AddQueryFlagsToCmd(cmd)
+
+	cmd.Flags().String("tx.chain-id", DefaultTxChainID, "Blockchain network identifier.")
+	cmd.Flags().String("tx.fee-granter-addr", "", "Address of the entity granting fees for the transaction.")
+	cmd.Flags().String("tx.fees", "", "Transaction fees to be paid.")
+	cmd.Flags().String("tx.from-name", "", "Name of the sender's account in the keyring.")
+	cmd.Flags().Float64("tx.gas-adjustment", DefaultTxGasAdjustment, "Factor to adjust gas estimation (used in simulation).")
+	cmd.Flags().Uint64("tx.gas", DefaultGas, "Gas limit set for the transaction.")
+	cmd.Flags().String("tx.gas-prices", DefaultTxGasPrices, "Gas prices to be applied for transaction execution.")
+	cmd.Flags().String("tx.memo", "", "Memo text attached to the transaction.")
+	cmd.Flags().Bool("tx.simulate-and-execute", DefaultTxSimulateAndExecute, "Flag to simulate the transaction before execution.")
+	cmd.Flags().Uint64("tx.timeout-height", 0, "Block height after which the transaction will not be processed.")
+}
+
+// NewTxOptionsFromCmd creates and returns TxOptions from the given cobra command's flags.
+func NewTxOptionsFromCmd(cmd *cobra.Command) (*TxOptions, error) {
+	// Retrieve and create KeyOptions from the command's flags.
+	keyOpts, err := NewKeyOptionsFromCmd(cmd)
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve and create QueryOptions from the command's flags.
+	queryOpts, err := NewQueryOptionsFromCmd(cmd)
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "tx.chain-id" flag.
+	chainID, err := cmd.Flags().GetString("tx.chain-id")
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "tx.fee-granter-addr" flag.
+	feeGranterAddr, err := cmd.Flags().GetString("tx.fee-granter-addr")
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "tx.fees" flag.
+	fees, err := cmd.Flags().GetString("tx.fees")
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "tx.from-name" flag.
+	fromName, err := cmd.Flags().GetString("tx.from-name")
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "tx.gas-adjustment" flag.
+	gasAdjustment, err := cmd.Flags().GetFloat64("tx.gas-adjustment")
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "tx.gas" flag.
+	gas, err := cmd.Flags().GetUint64("tx.gas")
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "tx.gas-prices" flag.
+	gasPrices, err := cmd.Flags().GetString("tx.gas-prices")
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "tx.memo" flag.
+	memo, err := cmd.Flags().GetString("tx.memo")
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "tx.simulate-and-execute" flag.
+	simulateAndExecute, err := cmd.Flags().GetBool("tx.simulate-and-execute")
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "tx.timeout-height" flag.
+	timeoutHeight, err := cmd.Flags().GetUint64("tx.timeout-height")
+	if err != nil {
+		return nil, err
+	}
+
+	// Return a new TxOptions instance populated with the retrieved flag values, KeyOptions, and QueryOptions.
+	return &TxOptions{
+		KeyOptions:         keyOpts,
+		QueryOptions:       queryOpts,
+		ChainID:            chainID,
+		FeeGranterAddr:     feeGranterAddr,
+		Fees:               fees,
+		FromName:           fromName,
+		GasAdjustment:      gasAdjustment,
+		Gas:                gas,
+		GasPrices:          gasPrices,
+		Memo:               memo,
+		SimulateAndExecute: simulateAndExecute,
+		TimeoutHeight:      timeoutHeight,
+	}, nil
 }
