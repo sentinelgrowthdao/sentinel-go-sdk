@@ -1,30 +1,22 @@
 package types
 
-// Transport represents different transport protocols supported by the system.
+// Transport is a custom type derived from byte, used to represent different transport protocols.
 type Transport byte
 
+// Constants for Transport type with automatic incrementation for each transport method.
 const (
-	// TransportUnspecified represents an unspecified or unknown transport protocol.
-	TransportUnspecified Transport = 0x00 + iota
-	// TransportTCP represents the TCP transport protocol.
-	TransportTCP
-	// TransportMKCP represents the MKCP transport protocol.
-	TransportMKCP
-	// TransportWebSocket represents the WebSocket transport protocol.
-	TransportWebSocket
-	// TransportHTTP represents the HTTP transport protocol.
-	TransportHTTP
-	// TransportDomainSocket represents the Domain Socket transport protocol.
-	TransportDomainSocket
-	// TransportQUIC represents the QUIC transport protocol.
-	TransportQUIC
-	// TransportGUN represents the GUN transport protocol.
-	TransportGUN
-	// TransportGRPC represents the gRPC transport protocol.
-	TransportGRPC
+	TransportUnspecified  Transport = 0x00 + iota // starts iota at 0x00, default value for unspecified transport
+	TransportTCP                                  // TransportTCP represents the TCP transport protocol
+	TransportMKCP                                 // TransportMKCP represents the MKCP (modified KCP) protocol
+	TransportWebSocket                            // TransportWebSocket represents the WebSocket protocol
+	TransportHTTP                                 // TransportHTTP represents the HTTP protocol
+	TransportDomainSocket                         // TransportDomainSocket represents a UNIX domain socket
+	TransportQUIC                                 // TransportQUIC represents the QUIC protocol
+	TransportGUN                                  // TransportGUN represents the GUN protocol, specific usage not standard
+	TransportGRPC                                 // TransportGRPC represents gRPC, a high-performance RPC framework
 )
 
-// String returns a human-readable string representation of the Transport type.
+// String returns a string representation of the Transport type.
 func (t Transport) String() string {
 	switch t {
 	case TransportTCP:
@@ -44,11 +36,12 @@ func (t Transport) String() string {
 	case TransportGRPC:
 		return "grpc"
 	default:
-		return ""
+		return "" // Return empty string for unspecified or unknown transport types
 	}
 }
 
-// NewTransportFromString converts a string representation to the corresponding Transport type.
+// NewTransportFromString converts a string to a Transport type.
+// This is often used for configuration parsing or interfacing with user inputs.
 func NewTransportFromString(v string) Transport {
 	switch v {
 	case "tcp":
@@ -68,6 +61,6 @@ func NewTransportFromString(v string) Transport {
 	case "grpc":
 		return TransportGRPC
 	default:
-		return TransportUnspecified
+		return TransportUnspecified // Returns the default transport type if no match is found
 	}
 }

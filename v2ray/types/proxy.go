@@ -8,39 +8,40 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
-// Proxy represents different types of proxies supported by the system.
+// Proxy is a custom type derived from byte to represent different proxy protocols.
 type Proxy byte
 
+// Constants for Proxy type, automatically incremented for each proxy type.
 const (
-	// ProxyUnspecified represents an unspecified or unknown proxy type.
-	ProxyUnspecified Proxy = 0x00 + iota
-	// ProxyVMess represents the VMess proxy type.
-	ProxyVMess
+	ProxyUnspecified Proxy = 0x00 + iota // ProxyUnspecified represents an unspecified proxy type.
+	ProxyVMess                           // ProxyVMess represents the VMess proxy protocol
 )
 
-// String returns a human-readable string representation of the Proxy type.
+// String converts a Proxy type into its string representation.
 func (p Proxy) String() string {
 	switch p {
 	case ProxyVMess:
 		return "vmess"
 	default:
-		return ""
+		return "" // Return an empty string for unspecified proxy types
 	}
 }
 
-// Tag returns a human-readable string representation of the Proxy type.
+// Tag returns a user-friendly string name of the Proxy, used for display purposes.
 func (p Proxy) Tag() string {
 	return p.String()
 }
 
-// Account generates an Any message containing the proxy account information.
+// Account returns a protocol buffer (Any type) containing the account information based on the proxy type.
+// It serializes account data specific to the proxy protocol used.
 func (p Proxy) Account(uid uuid.UUID) *anypb.Any {
 	switch p {
 	case ProxyVMess:
+		// For VMess protocol, serialize the VMess account data with ID and default security settings.
 		return serial.ToTypedMessage(
 			&vmess.Account{
-				Id:      uid.String(),
 				AlterId: 0,
+				Id:      uid.String(),
 				SecuritySettings: &protocol.SecurityConfig{
 					Type: protocol.SecurityType_AUTO,
 				},
@@ -48,16 +49,16 @@ func (p Proxy) Account(uid uuid.UUID) *anypb.Any {
 			},
 		)
 	default:
-		return nil
+		return nil // Return nil for unspecified or unsupported proxy types
 	}
 }
 
-// ProxyFromString converts a string representation to the corresponding Proxy type.
+// ProxyFromString converts a string representation of a proxy protocol to its corresponding Proxy type.
 func ProxyFromString(s string) Proxy {
 	switch s {
 	case "vmess":
 		return ProxyVMess
 	default:
-		return ProxyUnspecified
+		return ProxyUnspecified // Default to ProxyUnspecified for unrecognized strings
 	}
 }
