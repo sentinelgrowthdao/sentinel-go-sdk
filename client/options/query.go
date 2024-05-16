@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/types/query"
+	"github.com/spf13/cobra"
 	"github.com/tendermint/tendermint/rpc/client"
 	"github.com/tendermint/tendermint/rpc/client/http"
 
@@ -122,4 +123,95 @@ func (q *QueryOptions) PageRequest() *query.PageRequest {
 		CountTotal: q.PageCountTotal,
 		Reverse:    q.PageReverse,
 	}
+}
+
+// AddQueryFlagsToCmd adds query-related flags to the given cobra command.
+func AddQueryFlagsToCmd(cmd *cobra.Command) {
+	cmd.Flags().Int64("query.height", 0, "Block height for the query.")
+	cmd.Flags().Int("query.max-retries", DefaultQueryMaxRetries, "Maximum number of retries for the query.")
+	cmd.Flags().Bool("query.page-count-total", false, "Include total count in paged queries.")
+	cmd.Flags().BytesBase64("query.page-key", nil, "Base64-encoded key for pagination.")
+	cmd.Flags().Uint64("query.page-limit", 0, "Maximum number of results per page.")
+	cmd.Flags().Uint64("query.page-offset", 0, "Offset for pagination.")
+	cmd.Flags().Bool("query.page-reverse", false, "Reverse the order of results in pagination.")
+	cmd.Flags().Bool("query.prove", false, "Include proof in query results.")
+	cmd.Flags().String("query.rpc-addr", DefaultQueryRPCAddr, "Address of the RPC server.")
+	cmd.Flags().Duration("query.timeout", DefaultQueryTimeout, "Maximum duration for the query execution.")
+}
+
+// NewQueryOptionsFromCmd creates and returns QueryOptions from the given cobra command's flags.
+func NewQueryOptionsFromCmd(cmd *cobra.Command) (*QueryOptions, error) {
+	// Retrieve the value of the "query.height" flag.
+	height, err := cmd.Flags().GetInt64("query.height")
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "query.max-retries" flag.
+	maxRetries, err := cmd.Flags().GetInt("query.max-retries")
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "query.page-count-total" flag.
+	pageCountTotal, err := cmd.Flags().GetBool("query.page-count-total")
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "query.page-key" flag.
+	pageKey, err := cmd.Flags().GetBytesBase64("query.page-key")
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "query.page-limit" flag.
+	pageLimit, err := cmd.Flags().GetUint64("query.page-limit")
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "query.page-offset" flag.
+	pageOffset, err := cmd.Flags().GetUint64("query.page-offset")
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "query.page-reverse" flag.
+	pageReverse, err := cmd.Flags().GetBool("query.page-reverse")
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "query.prove" flag.
+	prove, err := cmd.Flags().GetBool("query.prove")
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "query.rpc-addr" flag.
+	rpcAddr, err := cmd.Flags().GetString("query.rpc-addr")
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "query.timeout" flag.
+	timeout, err := cmd.Flags().GetDuration("query.timeout")
+	if err != nil {
+		return nil, err
+	}
+
+	// Return a new QueryOptions instance populated with the retrieved flag values.
+	return &QueryOptions{
+		Height:         height,
+		MaxRetries:     maxRetries,
+		PageCountTotal: pageCountTotal,
+		PageKey:        pageKey,
+		PageLimit:      pageLimit,
+		PageOffset:     pageOffset,
+		PageReverse:    pageReverse,
+		Prove:          prove,
+		RPCAddr:        rpcAddr,
+		Timeout:        timeout,
+	}, nil
 }
