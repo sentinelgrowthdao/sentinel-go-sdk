@@ -6,6 +6,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authvestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	vpntypes "github.com/sentinel-official/hub/x/vpn/types"
 )
@@ -23,6 +24,7 @@ func NewInterfaceRegistry() codectypes.InterfaceRegistry {
 	authtypes.RegisterInterfaces(registry)
 	authvestingtypes.RegisterInterfaces(registry)
 	authz.RegisterInterfaces(registry)
+	banktypes.RegisterInterfaces(registry)
 	feegrant.RegisterInterfaces(registry)
 
 	// Register interfaces for Sentinel Hub modules.
