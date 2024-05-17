@@ -210,3 +210,17 @@ func (c *Context) BroadcastTx(ctx context.Context, msgs []sdk.Msg, opts *options
 	// Broadcast the signed transaction synchronously and return the result.
 	return c.broadcastTxSync(ctx, txb, opts)
 }
+
+// Tx retrieves a transaction from the blockchain using its hash.
+// It takes a context, a transaction hash, and query options as input parameters,
+// and returns the transaction result and an error, if any.
+func (c *Context) Tx(ctx context.Context, hash []byte, opts *options.QueryOptions) (*coretypes.ResultTx, error) {
+	// Get client for querying the blockchain
+	client, err := opts.Client()
+	if err != nil {
+		return nil, err
+	}
+
+	// Perform the blockchain query for the transaction
+	return client.Tx(ctx, hash, opts.Prove)
+}
