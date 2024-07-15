@@ -35,7 +35,7 @@ func (c *Client) pidFilePath() string {
 }
 
 // readPIDFromFile reads the PID from the client's PID file.
-func (c *Client) readPIDFromFile() (int, error) {
+func (c *Client) readPIDFromFile() (int32, error) {
 	// Reads PID from the PID file.
 	data, err := os.ReadFile(c.pidFilePath())
 	if err != nil {
@@ -43,12 +43,12 @@ func (c *Client) readPIDFromFile() (int, error) {
 	}
 
 	// Converts PID data to integer.
-	pid, err := strconv.Atoi(string(data))
+	pid, err := strconv.ParseInt(string(data), 10, 32)
 	if err != nil {
 		return 0, err
 	}
 
-	return pid, nil
+	return int32(pid), nil
 }
 
 // writePIDToFile writes the given PID to the client's PID file.
@@ -73,7 +73,7 @@ func (c *Client) Down() error {
 	}
 
 	// Retrieves process with the given PID.
-	proc, err := process.NewProcess(int32(pid))
+	proc, err := process.NewProcess(pid)
 	if err != nil {
 		return err
 	}
@@ -97,7 +97,7 @@ func (c *Client) IsUp() (bool, error) {
 	}
 
 	// Retrieves process with the given PID.
-	proc, err := process.NewProcess(int32(pid))
+	proc, err := process.NewProcess(pid)
 	if err != nil {
 		return false, err
 	}
