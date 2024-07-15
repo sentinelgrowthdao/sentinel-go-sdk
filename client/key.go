@@ -8,7 +8,7 @@ import (
 )
 
 // Key retrieves key information from the keyring based on the provided name and options.
-func (c *Context) Key(name string, opts *options.KeyOptions) (keyring.Info, error) {
+func (c *Context) Key(name string, opts *options.KeyOptions) (*keyring.Record, error) {
 	// Initialize a keyring based on the provided options.
 	kr, err := opts.Keyring()
 	if err != nil {

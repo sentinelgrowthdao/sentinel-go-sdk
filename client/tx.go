@@ -81,55 +81,62 @@ func (c *Context) broadcastTxSync(ctx context.Context, txb client.TxBuilder, opt
 // signTx signs a transaction with given key and account information.
 // It takes a transaction builder, key information, account information, and transaction options as input parameters,
 // and returns an error, if any.
-func (c *Context) signTx(txb client.TxBuilder, key keyring.Info, account authtypes.AccountI, opts *options.TxOptions) error {
+func (c *Context) signTx(txb client.TxBuilder, key *keyring.Record, account authtypes.AccountI, opts *options.TxOptions) error {
 	// Prepare single signature data
 	singleSignatureData := txsigning.SingleSignatureData{
 		SignMode:  txsigning.SignMode_SIGN_MODE_DIRECT,
 		Signature: nil,
 	}
+
+	// Retrieve the public key from the key record
+	pubKey, err := key.GetPubKey()
+	if err != nil {
+		return err
+	}
+
 	// Prepare signature information
 	signature := txsigning.SignatureV2{
-		PubKey:   key.GetPubKey(),
+		PubKey:   pubKey,
 		Data:     &singleSignatureData,
 		Sequence: account.GetSequence(),
 	}
 
-	// Set signature in transaction builder
+	// Set the initial empty signature in the transaction builder
 	if err := txb.SetSignatures(signature); err != nil {
 		return err
 	}
 
-	// Prepare signer data
+	// Prepare signer data for creating the sign bytes
 	signerData := authsigning.SignerData{
 		ChainID:       opts.ChainID,
 		AccountNumber: account.GetAccountNumber(),
 		Sequence:      account.GetSequence(),
 	}
 
-	// Get sign bytes
+	// Get the bytes to sign from the transaction builder
 	buf, err := c.SignModeHandler().GetSignBytes(singleSignatureData.SignMode, signerData, txb.GetTx())
 	if err != nil {
 		return err
 	}
 
-	// Sign transaction
+	// Sign the transaction bytes
 	buf, _, err = c.Sign(opts.FromName, buf, opts.KeyOptions)
 	if err != nil {
 		return err
 	}
 
-	// Update signature data with signed bytes
+	// Update the signature data with the actual signature bytes
 	singleSignatureData = txsigning.SingleSignatureData{
 		SignMode:  txsigning.SignMode_SIGN_MODE_DIRECT,
 		Signature: buf,
 	}
 	signature = txsigning.SignatureV2{
-		PubKey:   key.GetPubKey(),
+		PubKey:   pubKey,
 		Data:     &singleSignatureData,
 		Sequence: account.GetSequence(),
 	}
 
-	// Set updated signature in transaction builder
+	// Set the updated signature in the transaction builder
 	if err := txb.SetSignatures(signature); err != nil {
 		return err
 	}
@@ -140,8 +147,8 @@ func (c *Context) signTx(txb client.TxBuilder, key keyring.Info, account authtyp
 // prepareTx prepares a transaction for broadcasting.
 // It takes a context, key information, account information, message(s), and transaction options as input parameters,
 // and returns a transaction builder and an error, if any.
-func (c *Context) prepareTx(ctx context.Context, key keyring.Info, account authtypes.AccountI, msgs []sdk.Msg, opts *options.TxOptions) (client.TxBuilder, error) {
-	// Create new transaction builder
+func (c *Context) prepareTx(ctx context.Context, key *keyring.Record, account authtypes.AccountI, msgs []sdk.Msg, opts *options.TxOptions) (client.TxBuilder, error) {
+	// Create a new transaction builder instance
 	txb := c.NewTxBuilder()
 	if err := txb.SetMsgs(msgs...); err != nil {
 		return nil, err
@@ -154,15 +161,22 @@ func (c *Context) prepareTx(ctx context.Context, key keyring.Info, account autht
 	txb.SetMemo(opts.Memo)
 	txb.SetTimeoutHeight(opts.TimeoutHeight)
 
-	// Prepare signature
+	// Retrieve the public key from the key record
+	pubKey, err := key.GetPubKey()
+	if err != nil {
+		return nil, err
+	}
+
+	// Prepare the signature data
 	signature := txsigning.SignatureV2{
-		PubKey: key.GetPubKey(),
+		PubKey: pubKey,
 		Data: &txsigning.SingleSignatureData{
 			SignMode: txsigning.SignMode_SIGN_MODE_DIRECT,
 		},
 		Sequence: account.GetSequence(),
 	}
-	// Set signature in transaction builder
+
+	// Set the initial empty signature in the transaction builder
 	if err := txb.SetSignatures(signature); err != nil {
 		return nil, err
 	}
@@ -190,19 +204,25 @@ func (c *Context) BroadcastTx(ctx context.Context, msgs []sdk.Msg, opts *options
 		return nil, err
 	}
 
-	// Get account information
-	account, err := c.Account(ctx, key.GetAddress(), opts.QueryOptions)
+	// Retrieve the address from the key record
+	accAddr, err := key.GetAddress()
 	if err != nil {
 		return nil, err
 	}
 
-	// Prepare transaction for broadcasting
+	// Get account information for the address
+	account, err := c.Account(ctx, accAddr, opts.QueryOptions)
+	if err != nil {
+		return nil, err
+	}
+
+	// Prepare the transaction for broadcasting
 	txb, err := c.prepareTx(ctx, key, account, msgs, opts)
 	if err != nil {
 		return nil, err
 	}
 
-	// Sign transaction
+	// Sign the transaction
 	if err := c.signTx(txb, key, account, opts); err != nil {
 		return nil, err
 	}

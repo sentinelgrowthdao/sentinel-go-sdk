@@ -4,8 +4,8 @@ import (
 	"context"
 
 	cosmossdk "github.com/cosmos/cosmos-sdk/types"
-	sentinelhub "github.com/sentinel-official/hub/v12/types"
-	subscriptiontypes "github.com/sentinel-official/hub/v12/x/subscription/types"
+	base "github.com/sentinel-official/hub/v12/types"
+	subscriptiontypes "github.com/sentinel-official/hub/v12/x/subscription/types/v2"
 
 	"github.com/sentinel-official/sentinel-go-sdk/v1/client/options"
 )
@@ -99,8 +99,8 @@ func (c *Context) SubscriptionsForAccount(ctx context.Context, accAddr cosmossdk
 // SubscriptionsForNode queries and returns a list of subscriptions associated with a specific node.
 // It uses gRPC to send a request to the "/sentinel.subscription.v2.QueryService/QuerySubscriptionsForNode" endpoint.
 // The result is a slice of subscriptiontypes.Subscription and an error if the query fails.
-// The node is identified by the provided sentinelhub.NodeAddress.
-func (c *Context) SubscriptionsForNode(ctx context.Context, nodeAddr sentinelhub.NodeAddress, opts *options.QueryOptions) (res []subscriptiontypes.Subscription, err error) {
+// The node is identified by the provided base.NodeAddress.
+func (c *Context) SubscriptionsForNode(ctx context.Context, nodeAddr base.NodeAddress, opts *options.QueryOptions) (res []subscriptiontypes.Subscription, err error) {
 	// Initialize variables for the query.
 	var (
 		resp   subscriptiontypes.QuerySubscriptionsForNodeResponse
@@ -275,8 +275,8 @@ func (c *Context) SubscriptionPayoutsForAccount(ctx context.Context, accAddr cos
 // SubscriptionPayoutsForNode queries and returns a list of payouts associated with a specific node.
 // It uses gRPC to send a request to the "/sentinel.subscription.v2.QueryService/QueryPayoutsForNode" endpoint.
 // The result is a slice of subscriptiontypes.Payout and an error if the query fails.
-// The node is identified by the provided sentinelhub.NodeAddress.
-func (c *Context) SubscriptionPayoutsForNode(ctx context.Context, nodeAddr sentinelhub.NodeAddress, opts *options.QueryOptions) (res []subscriptiontypes.Payout, err error) {
+// The node is identified by the provided base.NodeAddress.
+func (c *Context) SubscriptionPayoutsForNode(ctx context.Context, nodeAddr base.NodeAddress, opts *options.QueryOptions) (res []subscriptiontypes.Payout, err error) {
 	// Initialize variables for the query.
 	var (
 		resp   subscriptiontypes.QueryPayoutsForNodeResponse

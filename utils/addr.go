@@ -2,7 +2,7 @@ package utils
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sentinelhub "github.com/sentinel-official/hub/v12/types"
+	base "github.com/sentinel-official/hub/v12/types"
 )
 
 // MustAccAddrFromBech32 converts a Bech32-encoded string to a sdk.AccAddress,
@@ -25,16 +25,16 @@ func MustAccAddrFromBech32(v string) sdk.AccAddress {
 	return addr
 }
 
-// MustNodeAddrFromBech32 converts a Bech32-encoded string to a sentinelhub.NodeAddress,
+// MustNodeAddrFromBech32 converts a Bech32-encoded string to a base.NodeAddress,
 // panicking if there is an error during the conversion.
-func MustNodeAddrFromBech32(v string) sentinelhub.NodeAddress {
+func MustNodeAddrFromBech32(v string) base.NodeAddress {
 	// If the input string is empty, return nil
 	if v == "" {
 		return nil
 	}
 
-	// Attempt to convert the Bech32 string to a sentinelhub.NodeAddress
-	addr, err := sentinelhub.NodeAddressFromBech32(v)
+	// Attempt to convert the Bech32 string to a base.NodeAddress
+	addr, err := base.NodeAddressFromBech32(v)
 
 	// If there is an error during the conversion, panic
 	if err != nil {

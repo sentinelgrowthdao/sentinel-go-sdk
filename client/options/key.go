@@ -50,7 +50,7 @@ func (k *KeyringOptions) WithInput(v io.Reader) *KeyringOptions {
 
 // Keyring returns a new keyring based on the provided options.
 func (k *KeyringOptions) Keyring() (keyring.Keyring, error) {
-	return keyring.New(k.AppName, k.Backend, k.HomeDir, k.Input)
+	return keyring.New(k.AppName, k.Backend, k.HomeDir, k.Input, nil)
 }
 
 // AddKeyringFlagsToCmd adds keyring related flags to the given cobra command.
