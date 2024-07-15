@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 
+	coretypes "github.com/cometbft/cometbft/rpc/core/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,7 +11,6 @@ import (
 	txsigning "github.com/cosmos/cosmos-sdk/types/tx/signing"
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	coretypes "github.com/tendermint/tendermint/rpc/core/types"
 
 	"github.com/sentinel-official/sentinel-go-sdk/v1/client/options"
 	"github.com/sentinel-official/sentinel-go-sdk/v1/utils"

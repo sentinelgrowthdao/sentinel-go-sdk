@@ -4,8 +4,8 @@ import (
 	"context"
 
 	cosmossdk "github.com/cosmos/cosmos-sdk/types"
-	sentinelhub "github.com/sentinel-official/hub/types"
-	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
+	sentinelhub "github.com/sentinel-official/hub/v12/types"
+	subscriptiontypes "github.com/sentinel-official/hub/v12/x/subscription/types"
 
 	"github.com/sentinel-official/sentinel-go-sdk/v1/client/options"
 )

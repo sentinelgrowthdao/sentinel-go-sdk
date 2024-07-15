@@ -3,8 +3,8 @@ package client
 import (
 	"context"
 
-	sentinelhub "github.com/sentinel-official/hub/types"
-	nodetypes "github.com/sentinel-official/hub/x/node/types"
+	sentinelhub "github.com/sentinel-official/hub/v12/types"
+	nodetypes "github.com/sentinel-official/hub/v12/x/node/types"
 
 	"github.com/sentinel-official/sentinel-go-sdk/v1/client/options"
 )

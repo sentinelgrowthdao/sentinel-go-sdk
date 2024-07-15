@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"strings"
 
+	abcitypes "github.com/cometbft/cometbft/abci/types"
+	"github.com/cometbft/cometbft/libs/bytes"
 	"github.com/cosmos/cosmos-sdk/codec"
-	abcitypes "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/bytes"
 
 	"github.com/sentinel-official/sentinel-go-sdk/v1/client/options"
 )
