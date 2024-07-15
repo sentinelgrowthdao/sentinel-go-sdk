@@ -4,6 +4,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
+
+	"github.com/sentinel-official/sentinel-go-sdk/v1/types"
 )
 
 // Context contains necessary components for transaction handling, encoding and decoding.
@@ -19,4 +21,8 @@ func NewContext(protoCodec codec.ProtoCodecMarshaler) *Context {
 		ProtoCodecMarshaler: protoCodec,
 		TxConfig:            authtx.NewTxConfig(protoCodec, authtx.DefaultSignModes),
 	}
+}
+
+func NewDefaultContext() *Context {
+	return NewContext(codec.NewProtoCodec(types.NewInterfaceRegistry()))
 }
