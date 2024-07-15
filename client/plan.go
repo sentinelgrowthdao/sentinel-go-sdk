@@ -10,21 +10,27 @@ import (
 	"github.com/sentinel-official/sentinel-go-sdk/v1/client/options"
 )
 
+const (
+	// gRPC methods for querying plan information
+	methodQueryPlan             = "/sentinel.plan.v2.QueryService/QueryPlan"
+	methodQueryPlans            = "/sentinel.plan.v2.QueryService/QueryPlans"
+	methodQueryPlansForProvider = "/sentinel.plan.v2.QueryService/QueryPlansForProvider"
+)
+
 // Plan queries and returns information about a specific plan based on the provided plan ID.
 // It uses gRPC to send a request to the "/sentinel.plan.v2.QueryService/QueryPlan" endpoint.
 // The result is a pointer to plantypes.Plan and an error if the query fails.
 func (c *Context) Plan(ctx context.Context, id uint64, opts *options.QueryOptions) (res *plantypes.Plan, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   plantypes.QueryPlanResponse
-		method = "/sentinel.plan.v2.QueryService/QueryPlan"
-		req    = &plantypes.QueryPlanRequest{
+		resp plantypes.QueryPlanResponse
+		req  = &plantypes.QueryPlanRequest{
 			Id: id,
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQueryPlan, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
@@ -38,16 +44,15 @@ func (c *Context) Plan(ctx context.Context, id uint64, opts *options.QueryOption
 func (c *Context) Plans(ctx context.Context, status v1base.Status, opts *options.QueryOptions) (res []plantypes.Plan, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   plantypes.QueryPlansResponse
-		method = "/sentinel.plan.v2.QueryService/QueryPlans"
-		req    = &plantypes.QueryPlansRequest{
+		resp plantypes.QueryPlansResponse
+		req  = &plantypes.QueryPlansRequest{
 			Status:     status,
 			Pagination: opts.PageRequest(),
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQueryPlans, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
@@ -62,9 +67,8 @@ func (c *Context) Plans(ctx context.Context, status v1base.Status, opts *options
 func (c *Context) PlansForProvider(ctx context.Context, provAddr base.ProvAddress, status v1base.Status, opts *options.QueryOptions) (res []plantypes.Plan, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   plantypes.QueryPlansForProviderResponse
-		method = "/sentinel.plan.v2.QueryService/QueryPlansForProvider"
-		req    = &plantypes.QueryPlansForProviderRequest{
+		resp plantypes.QueryPlansForProviderResponse
+		req  = &plantypes.QueryPlansForProviderRequest{
 			Address:    provAddr.String(),
 			Status:     status,
 			Pagination: opts.PageRequest(),
@@ -72,7 +76,7 @@ func (c *Context) PlansForProvider(ctx context.Context, provAddr base.ProvAddres
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQueryPlansForProvider, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
