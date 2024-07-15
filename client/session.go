@@ -4,8 +4,8 @@ import (
 	"context"
 
 	cosmossdk "github.com/cosmos/cosmos-sdk/types"
-	sentinelhub "github.com/sentinel-official/hub/v12/types"
-	sessiontypes "github.com/sentinel-official/hub/v12/x/session/types"
+	base "github.com/sentinel-official/hub/v12/types"
+	sessiontypes "github.com/sentinel-official/hub/v12/x/session/types/v2"
 
 	"github.com/sentinel-official/sentinel-go-sdk/v1/client/options"
 )
@@ -82,7 +82,7 @@ func (c *Context) SessionsForAccount(ctx context.Context, accAddr cosmossdk.AccA
 // based on the provided node address and options.
 // It uses gRPC to send a request to the "/sentinel.session.v2.QueryService/QuerySessionsForNode" endpoint.
 // The result is a slice of sessiontypes.Session and an error if the query fails.
-func (c *Context) SessionsForNode(ctx context.Context, nodeAddr sentinelhub.NodeAddress, opts *options.QueryOptions) (res []sessiontypes.Session, err error) {
+func (c *Context) SessionsForNode(ctx context.Context, nodeAddr base.NodeAddress, opts *options.QueryOptions) (res []sessiontypes.Session, err error) {
 	// Initialize variables for the query.
 	var (
 		resp   sessiontypes.QuerySessionsForNodeResponse

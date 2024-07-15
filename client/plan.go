@@ -3,8 +3,9 @@ package client
 import (
 	"context"
 
-	sentinelhub "github.com/sentinel-official/hub/v12/types"
-	plantypes "github.com/sentinel-official/hub/v12/x/plan/types"
+	base "github.com/sentinel-official/hub/v12/types"
+	v1base "github.com/sentinel-official/hub/v12/types/v1"
+	plantypes "github.com/sentinel-official/hub/v12/x/plan/types/v2"
 
 	"github.com/sentinel-official/sentinel-go-sdk/v1/client/options"
 )
@@ -34,7 +35,7 @@ func (c *Context) Plan(ctx context.Context, id uint64, opts *options.QueryOption
 // Plans queries and returns a list of plans based on the provided status and options.
 // It uses gRPC to send a request to the "/sentinel.plan.v2.QueryService/QueryPlans" endpoint.
 // The result is a slice of plantypes.Plan and an error if the query fails.
-func (c *Context) Plans(ctx context.Context, status sentinelhub.Status, opts *options.QueryOptions) (res []plantypes.Plan, err error) {
+func (c *Context) Plans(ctx context.Context, status v1base.Status, opts *options.QueryOptions) (res []plantypes.Plan, err error) {
 	// Initialize variables for the query.
 	var (
 		resp   plantypes.QueryPlansResponse
@@ -58,7 +59,7 @@ func (c *Context) Plans(ctx context.Context, status sentinelhub.Status, opts *op
 // based on the provided provider address, status, and options.
 // It uses gRPC to send a request to the "/sentinel.plan.v2.QueryService/QueryPlansForProvider" endpoint.
 // The result is a slice of plantypes.Plan and an error if the query fails.
-func (c *Context) PlansForProvider(ctx context.Context, provAddr sentinelhub.ProvAddress, status sentinelhub.Status, opts *options.QueryOptions) (res []plantypes.Plan, err error) {
+func (c *Context) PlansForProvider(ctx context.Context, provAddr base.ProvAddress, status v1base.Status, opts *options.QueryOptions) (res []plantypes.Plan, err error) {
 	// Initialize variables for the query.
 	var (
 		resp   plantypes.QueryPlansForProviderResponse
