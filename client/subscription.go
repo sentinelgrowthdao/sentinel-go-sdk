@@ -10,21 +10,39 @@ import (
 	"github.com/sentinel-official/sentinel-go-sdk/v1/client/options"
 )
 
+const (
+	// gRPC methods for querying subscription information
+	methodQuerySubscription            = "/sentinel.subscription.v2.QueryService/QuerySubscription"
+	methodQuerySubscriptions           = "/sentinel.subscription.v2.QueryService/QuerySubscriptions"
+	methodQuerySubscriptionsForAccount = "/sentinel.subscription.v2.QueryService/QuerySubscriptionsForAccount"
+	methodQuerySubscriptionsForNode    = "/sentinel.subscription.v2.QueryService/QuerySubscriptionsForNode"
+	methodQuerySubscriptionsForPlan    = "/sentinel.subscription.v2.QueryService/QuerySubscriptionsForPlan"
+
+	// gRPC methods for querying subscription allocation information
+	methodQuerySubscriptionAllocation  = "/sentinel.subscription.v2.QueryService/QueryAllocation"
+	methodQuerySubscriptionAllocations = "/sentinel.subscription.v2.QueryService/QueryAllocations"
+
+	// gRPC methods for querying subscription payout information
+	methodQuerySubscriptionPayout            = "/sentinel.subscription.v2.QueryService/QueryPayout"
+	methodQuerySubscriptionPayouts           = "/sentinel.subscription.v2.QueryService/QueryPayouts"
+	methodQuerySubscriptionPayoutsForAccount = "/sentinel.subscription.v2.QueryService/QueryPayoutsForAccount"
+	methodQuerySubscriptionPayoutsForNode    = "/sentinel.subscription.v2.QueryService/QueryPayoutsForNode"
+)
+
 // Subscription queries and returns information about a specific subscription based on the provided subscription ID.
 // It uses gRPC to send a request to the "/sentinel.subscription.v2.QueryService/QuerySubscription" endpoint.
 // The result is a subscriptiontypes.Subscription and an error if the query fails.
 func (c *Context) Subscription(ctx context.Context, id uint64, opts *options.QueryOptions) (res subscriptiontypes.Subscription, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   subscriptiontypes.QuerySubscriptionResponse
-		method = "/sentinel.subscription.v2.QueryService/QuerySubscription"
-		req    = &subscriptiontypes.QuerySubscriptionRequest{
+		resp subscriptiontypes.QuerySubscriptionResponse
+		req  = &subscriptiontypes.QuerySubscriptionRequest{
 			Id: id,
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQuerySubscription, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
@@ -42,15 +60,14 @@ func (c *Context) Subscription(ctx context.Context, id uint64, opts *options.Que
 func (c *Context) Subscriptions(ctx context.Context, opts *options.QueryOptions) (res []subscriptiontypes.Subscription, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   subscriptiontypes.QuerySubscriptionsResponse
-		method = "/sentinel.subscription.v2.QueryService/QuerySubscriptions"
-		req    = &subscriptiontypes.QuerySubscriptionsRequest{
+		resp subscriptiontypes.QuerySubscriptionsResponse
+		req  = &subscriptiontypes.QuerySubscriptionsRequest{
 			Pagination: opts.PageRequest(),
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQuerySubscriptions, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
@@ -72,16 +89,15 @@ func (c *Context) Subscriptions(ctx context.Context, opts *options.QueryOptions)
 func (c *Context) SubscriptionsForAccount(ctx context.Context, accAddr cosmossdk.AccAddress, opts *options.QueryOptions) (res []subscriptiontypes.Subscription, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   subscriptiontypes.QuerySubscriptionsForAccountResponse
-		method = "/sentinel.subscription.v2.QueryService/QuerySubscriptionsForAccount"
-		req    = &subscriptiontypes.QuerySubscriptionsForAccountRequest{
+		resp subscriptiontypes.QuerySubscriptionsForAccountResponse
+		req  = &subscriptiontypes.QuerySubscriptionsForAccountRequest{
 			Address:    accAddr.String(),
 			Pagination: opts.PageRequest(),
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQuerySubscriptionsForAccount, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
@@ -103,16 +119,15 @@ func (c *Context) SubscriptionsForAccount(ctx context.Context, accAddr cosmossdk
 func (c *Context) SubscriptionsForNode(ctx context.Context, nodeAddr base.NodeAddress, opts *options.QueryOptions) (res []subscriptiontypes.Subscription, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   subscriptiontypes.QuerySubscriptionsForNodeResponse
-		method = "/sentinel.subscription.v2.QueryService/QuerySubscriptionsForNode"
-		req    = &subscriptiontypes.QuerySubscriptionsForNodeRequest{
+		resp subscriptiontypes.QuerySubscriptionsForNodeResponse
+		req  = &subscriptiontypes.QuerySubscriptionsForNodeRequest{
 			Address:    nodeAddr.String(),
 			Pagination: opts.PageRequest(),
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQuerySubscriptionsForNode, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
@@ -134,16 +149,15 @@ func (c *Context) SubscriptionsForNode(ctx context.Context, nodeAddr base.NodeAd
 func (c *Context) SubscriptionsForPlan(ctx context.Context, id uint64, opts *options.QueryOptions) (res []subscriptiontypes.Subscription, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   subscriptiontypes.QuerySubscriptionsForPlanResponse
-		method = "/sentinel.subscription.v2.QueryService/QuerySubscriptionsForPlan"
-		req    = &subscriptiontypes.QuerySubscriptionsForPlanRequest{
+		resp subscriptiontypes.QuerySubscriptionsForPlanResponse
+		req  = &subscriptiontypes.QuerySubscriptionsForPlanRequest{
 			Id:         id,
 			Pagination: opts.PageRequest(),
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQuerySubscriptionsForPlan, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
@@ -164,16 +178,15 @@ func (c *Context) SubscriptionsForPlan(ctx context.Context, id uint64, opts *opt
 func (c *Context) SubscriptionAllocation(ctx context.Context, id uint64, accAddr cosmossdk.AccAddress, opts *options.QueryOptions) (res *subscriptiontypes.Allocation, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   subscriptiontypes.QueryAllocationResponse
-		method = "/sentinel.subscription.v2.QueryService/QueryAllocation"
-		req    = &subscriptiontypes.QueryAllocationRequest{
+		resp subscriptiontypes.QueryAllocationResponse
+		req  = &subscriptiontypes.QueryAllocationRequest{
 			Id:      id,
 			Address: accAddr.String(),
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQuerySubscriptionAllocation, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
@@ -187,16 +200,15 @@ func (c *Context) SubscriptionAllocation(ctx context.Context, id uint64, accAddr
 func (c *Context) SubscriptionAllocations(ctx context.Context, id uint64, opts *options.QueryOptions) (res []subscriptiontypes.Allocation, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   subscriptiontypes.QueryAllocationsResponse
-		method = "/sentinel.subscription.v2.QueryService/QueryAllocations"
-		req    = &subscriptiontypes.QueryAllocationsRequest{
+		resp subscriptiontypes.QueryAllocationsResponse
+		req  = &subscriptiontypes.QueryAllocationsRequest{
 			Id:         id,
 			Pagination: opts.PageRequest(),
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQuerySubscriptionAllocations, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
@@ -210,15 +222,14 @@ func (c *Context) SubscriptionAllocations(ctx context.Context, id uint64, opts *
 func (c *Context) SubscriptionPayout(ctx context.Context, id uint64, opts *options.QueryOptions) (res *subscriptiontypes.Payout, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   subscriptiontypes.QueryPayoutResponse
-		method = "/sentinel.subscription.v2.QueryService/QueryPayout"
-		req    = &subscriptiontypes.QueryPayoutRequest{
+		resp subscriptiontypes.QueryPayoutResponse
+		req  = &subscriptiontypes.QueryPayoutRequest{
 			Id: id,
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQuerySubscriptionPayout, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
@@ -232,15 +243,14 @@ func (c *Context) SubscriptionPayout(ctx context.Context, id uint64, opts *optio
 func (c *Context) SubscriptionPayouts(ctx context.Context, opts *options.QueryOptions) (res []subscriptiontypes.Payout, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   subscriptiontypes.QueryPayoutsResponse
-		method = "/sentinel.subscription.v2.QueryService/QueryPayouts"
-		req    = &subscriptiontypes.QueryPayoutsRequest{
+		resp subscriptiontypes.QueryPayoutsResponse
+		req  = &subscriptiontypes.QueryPayoutsRequest{
 			Pagination: opts.PageRequest(),
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQuerySubscriptionPayouts, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
@@ -255,16 +265,15 @@ func (c *Context) SubscriptionPayouts(ctx context.Context, opts *options.QueryOp
 func (c *Context) SubscriptionPayoutsForAccount(ctx context.Context, accAddr cosmossdk.AccAddress, opts *options.QueryOptions) (res []subscriptiontypes.Payout, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   subscriptiontypes.QueryPayoutsForAccountResponse
-		method = "/sentinel.subscription.v2.QueryService/QueryPayoutsForAccount"
-		req    = &subscriptiontypes.QueryPayoutsForAccountRequest{
+		resp subscriptiontypes.QueryPayoutsForAccountResponse
+		req  = &subscriptiontypes.QueryPayoutsForAccountRequest{
 			Address:    accAddr.String(),
 			Pagination: opts.PageRequest(),
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQuerySubscriptionPayoutsForAccount, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
@@ -279,16 +288,15 @@ func (c *Context) SubscriptionPayoutsForAccount(ctx context.Context, accAddr cos
 func (c *Context) SubscriptionPayoutsForNode(ctx context.Context, nodeAddr base.NodeAddress, opts *options.QueryOptions) (res []subscriptiontypes.Payout, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   subscriptiontypes.QueryPayoutsForNodeResponse
-		method = "/sentinel.subscription.v2.QueryService/QueryPayoutsForNode"
-		req    = &subscriptiontypes.QueryPayoutsForNodeRequest{
+		resp subscriptiontypes.QueryPayoutsForNodeResponse
+		req  = &subscriptiontypes.QueryPayoutsForNodeRequest{
 			Address:    nodeAddr.String(),
 			Pagination: opts.PageRequest(),
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQuerySubscriptionPayoutsForNode, req, &resp, opts); err != nil {
 		return nil, err
 	}
 

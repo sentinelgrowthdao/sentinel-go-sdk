@@ -10,21 +10,30 @@ import (
 	"github.com/sentinel-official/sentinel-go-sdk/v1/client/options"
 )
 
+const (
+	// gRPC methods for querying session information
+	methodQuerySession                           = "/sentinel.session.v2.QueryService/QuerySession"
+	methodQuerySessions                          = "/sentinel.session.v2.QueryService/QuerySessions"
+	methodQuerySessionsForAccount                = "/sentinel.session.v2.QueryService/QuerySessionsForAccount"
+	methodQuerySessionsForNode                   = "/sentinel.session.v2.QueryService/QuerySessionsForNode"
+	methodQuerySessionsForSubscription           = "/sentinel.session.v2.QueryService/QuerySessionsForSubscription"
+	methodQuerySessionsForSubscriptionAllocation = "/sentinel.session.v2.QueryService/QuerySessionsForAllocation"
+)
+
 // Session queries and returns information about a specific session based on the provided session ID.
 // It uses gRPC to send a request to the "/sentinel.session.v2.QueryService/QuerySession" endpoint.
 // The result is a pointer to sessiontypes.Session and an error if the query fails.
 func (c *Context) Session(ctx context.Context, id uint64, opts *options.QueryOptions) (res *sessiontypes.Session, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   sessiontypes.QuerySessionResponse
-		method = "/sentinel.session.v2.QueryService/QuerySession"
-		req    = &sessiontypes.QuerySessionRequest{
+		resp sessiontypes.QuerySessionResponse
+		req  = &sessiontypes.QuerySessionRequest{
 			Id: id,
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQuerySession, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
@@ -38,15 +47,14 @@ func (c *Context) Session(ctx context.Context, id uint64, opts *options.QueryOpt
 func (c *Context) Sessions(ctx context.Context, opts *options.QueryOptions) (res []sessiontypes.Session, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   sessiontypes.QuerySessionsResponse
-		method = "/sentinel.session.v2.QueryService/QuerySessions"
-		req    = &sessiontypes.QuerySessionsRequest{
+		resp sessiontypes.QuerySessionsResponse
+		req  = &sessiontypes.QuerySessionsRequest{
 			Pagination: opts.PageRequest(),
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQuerySessions, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
@@ -61,16 +69,15 @@ func (c *Context) Sessions(ctx context.Context, opts *options.QueryOptions) (res
 func (c *Context) SessionsForAccount(ctx context.Context, accAddr cosmossdk.AccAddress, opts *options.QueryOptions) (res []sessiontypes.Session, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   sessiontypes.QuerySessionsForAccountResponse
-		method = "/sentinel.session.v2.QueryService/QuerySessionsForAccount"
-		req    = &sessiontypes.QuerySessionsForAccountRequest{
+		resp sessiontypes.QuerySessionsForAccountResponse
+		req  = &sessiontypes.QuerySessionsForAccountRequest{
 			Address:    accAddr.String(),
 			Pagination: opts.PageRequest(),
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQuerySessionsForAccount, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
@@ -85,16 +92,15 @@ func (c *Context) SessionsForAccount(ctx context.Context, accAddr cosmossdk.AccA
 func (c *Context) SessionsForNode(ctx context.Context, nodeAddr base.NodeAddress, opts *options.QueryOptions) (res []sessiontypes.Session, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   sessiontypes.QuerySessionsForNodeResponse
-		method = "/sentinel.session.v2.QueryService/QuerySessionsForNode"
-		req    = &sessiontypes.QuerySessionsForNodeRequest{
+		resp sessiontypes.QuerySessionsForNodeResponse
+		req  = &sessiontypes.QuerySessionsForNodeRequest{
 			Address:    nodeAddr.String(),
 			Pagination: opts.PageRequest(),
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQuerySessionsForNode, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
@@ -109,16 +115,15 @@ func (c *Context) SessionsForNode(ctx context.Context, nodeAddr base.NodeAddress
 func (c *Context) SessionsForSubscription(ctx context.Context, id uint64, opts *options.QueryOptions) (res []sessiontypes.Session, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   sessiontypes.QuerySessionsForSubscriptionResponse
-		method = "/sentinel.session.v2.QueryService/QuerySessionsForSubscription"
-		req    = &sessiontypes.QuerySessionsForSubscriptionRequest{
+		resp sessiontypes.QuerySessionsForSubscriptionResponse
+		req  = &sessiontypes.QuerySessionsForSubscriptionRequest{
 			Id:         id,
 			Pagination: opts.PageRequest(),
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQuerySessionsForSubscription, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
@@ -133,9 +138,8 @@ func (c *Context) SessionsForSubscription(ctx context.Context, id uint64, opts *
 func (c *Context) SessionsForSubscriptionAllocation(ctx context.Context, id uint64, accAddr cosmossdk.AccAddress, opts *options.QueryOptions) (res []sessiontypes.Session, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   sessiontypes.QuerySessionsForAllocationResponse
-		method = "/sentinel.session.v2.QueryService/QuerySessionsForAllocation"
-		req    = &sessiontypes.QuerySessionsForAllocationRequest{
+		resp sessiontypes.QuerySessionsForAllocationResponse
+		req  = &sessiontypes.QuerySessionsForAllocationRequest{
 			Id:         id,
 			Address:    accAddr.String(),
 			Pagination: opts.PageRequest(),
@@ -143,7 +147,7 @@ func (c *Context) SessionsForSubscriptionAllocation(ctx context.Context, id uint
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQuerySessionsForSubscriptionAllocation, req, &resp, opts); err != nil {
 		return nil, err
 	}
 

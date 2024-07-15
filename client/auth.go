@@ -9,21 +9,26 @@ import (
 	"github.com/sentinel-official/sentinel-go-sdk/v1/client/options"
 )
 
+const (
+	// gRPC methods for querying account information
+	methodQueryAccount  = "/cosmos.auth.v1beta1.Query/Account"
+	methodQueryAccounts = "/cosmos.auth.v1beta1.Query/Accounts"
+)
+
 // Account queries and returns an account using the given address and options.
 // It uses gRPC to send a request to the "/cosmos.auth.v1beta1.Query/Account" endpoint.
 // The result is an authtypes.AccountI interface and an error if the query fails.
 func (c *Context) Account(ctx context.Context, accAddr cosmossdk.AccAddress, opts *options.QueryOptions) (res authtypes.AccountI, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   authtypes.QueryAccountResponse
-		method = "/cosmos.auth.v1beta1.Query/Account"
-		req    = &authtypes.QueryAccountRequest{
+		resp authtypes.QueryAccountResponse
+		req  = &authtypes.QueryAccountRequest{
 			Address: accAddr.String(),
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQueryAccount, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
@@ -42,15 +47,14 @@ func (c *Context) Account(ctx context.Context, accAddr cosmossdk.AccAddress, opt
 func (c *Context) Accounts(ctx context.Context, opts *options.QueryOptions) (res []authtypes.AccountI, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   authtypes.QueryAccountsResponse
-		method = "/cosmos.auth.v1beta1.Query/Accounts"
-		req    = &authtypes.QueryAccountsRequest{
+		resp authtypes.QueryAccountsResponse
+		req  = &authtypes.QueryAccountsRequest{
 			Pagination: opts.PageRequest(),
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQueryAccounts, req, &resp, opts); err != nil {
 		return nil, err
 	}
 

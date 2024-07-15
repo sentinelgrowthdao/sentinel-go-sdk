@@ -10,21 +10,27 @@ import (
 	"github.com/sentinel-official/sentinel-go-sdk/v1/client/options"
 )
 
+const (
+	// gRPC methods for querying node information
+	methodQueryNode         = "/sentinel.node.v2.QueryService/QueryNode"
+	methodQueryNodes        = "/sentinel.node.v2.QueryService/QueryNodes"
+	methodQueryNodesForPlan = "/sentinel.node.v2.QueryService/QueryNodesForPlan"
+)
+
 // Node queries and returns information about a specific node based on the provided node address.
 // It uses gRPC to send a request to the "/sentinel.node.v2.QueryService/QueryNode" endpoint.
 // The result is a pointer to nodetypes.Node and an error if the query fails.
 func (c *Context) Node(ctx context.Context, nodeAddr base.NodeAddress, opts *options.QueryOptions) (res *nodetypes.Node, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   nodetypes.QueryNodeResponse
-		method = "/sentinel.node.v2.QueryService/QueryNode"
-		req    = &nodetypes.QueryNodeRequest{
+		resp nodetypes.QueryNodeResponse
+		req  = &nodetypes.QueryNodeRequest{
 			Address: nodeAddr.String(),
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQueryNode, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
@@ -38,16 +44,15 @@ func (c *Context) Node(ctx context.Context, nodeAddr base.NodeAddress, opts *opt
 func (c *Context) Nodes(ctx context.Context, status v1base.Status, opts *options.QueryOptions) (res []nodetypes.Node, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   nodetypes.QueryNodesResponse
-		method = "/sentinel.node.v2.QueryService/QueryNodes"
-		req    = &nodetypes.QueryNodesRequest{
+		resp nodetypes.QueryNodesResponse
+		req  = &nodetypes.QueryNodesRequest{
 			Status:     status,
 			Pagination: opts.PageRequest(),
 		}
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQueryNodes, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
@@ -62,9 +67,8 @@ func (c *Context) Nodes(ctx context.Context, status v1base.Status, opts *options
 func (c *Context) NodesForPlan(ctx context.Context, id uint64, status v1base.Status, opts *options.QueryOptions) (res []nodetypes.Node, err error) {
 	// Initialize variables for the query.
 	var (
-		resp   nodetypes.QueryNodesForPlanResponse
-		method = "/sentinel.node.v2.QueryService/QueryNodesForPlan"
-		req    = &nodetypes.QueryNodesForPlanRequest{
+		resp nodetypes.QueryNodesForPlanResponse
+		req  = &nodetypes.QueryNodesForPlanRequest{
 			Id:         id,
 			Status:     status,
 			Pagination: opts.PageRequest(),
@@ -72,7 +76,7 @@ func (c *Context) NodesForPlan(ctx context.Context, id uint64, status v1base.Sta
 	)
 
 	// Send a gRPC query using the provided context, method, request, response, and options.
-	if err := c.QueryGRPC(ctx, method, req, &resp, opts); err != nil {
+	if err := c.QueryGRPC(ctx, methodQueryNodesForPlan, req, &resp, opts); err != nil {
 		return nil, err
 	}
 
