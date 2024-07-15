@@ -55,7 +55,7 @@ func (c *Context) simulateTx(ctx context.Context, txb client.TxBuilder, opts *op
 	}
 
 	// Calculate gas usage
-	return uint64(float64(res.GasInfo.GasUsed) * opts.GasAdjustment), nil
+	return uint64(opts.GasAdjustment * float64(res.GasInfo.GasUsed)), nil
 }
 
 // broadcastTxSync broadcasts a transaction synchronously.
