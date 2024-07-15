@@ -5,7 +5,7 @@ import (
 
 	base "github.com/sentinel-official/hub/v12/types"
 	v1base "github.com/sentinel-official/hub/v12/types/v1"
-	plantypes "github.com/sentinel-official/hub/v12/x/plan/types/v2"
+	"github.com/sentinel-official/hub/v12/x/plan/types/v2"
 
 	"github.com/sentinel-official/sentinel-go-sdk/v1/client/options"
 )
@@ -19,12 +19,12 @@ const (
 
 // Plan queries and returns information about a specific plan based on the provided plan ID.
 // It uses gRPC to send a request to the "/sentinel.plan.v2.QueryService/QueryPlan" endpoint.
-// The result is a pointer to plantypes.Plan and an error if the query fails.
-func (c *Context) Plan(ctx context.Context, id uint64, opts *options.QueryOptions) (res *plantypes.Plan, err error) {
+// The result is a pointer to v2.Plan and an error if the query fails.
+func (c *Context) Plan(ctx context.Context, id uint64, opts *options.QueryOptions) (res *v2.Plan, err error) {
 	// Initialize variables for the query.
 	var (
-		resp plantypes.QueryPlanResponse
-		req  = &plantypes.QueryPlanRequest{
+		resp v2.QueryPlanResponse
+		req  = &v2.QueryPlanRequest{
 			Id: id,
 		}
 	)
@@ -40,12 +40,12 @@ func (c *Context) Plan(ctx context.Context, id uint64, opts *options.QueryOption
 
 // Plans queries and returns a list of plans based on the provided status and options.
 // It uses gRPC to send a request to the "/sentinel.plan.v2.QueryService/QueryPlans" endpoint.
-// The result is a slice of plantypes.Plan and an error if the query fails.
-func (c *Context) Plans(ctx context.Context, status v1base.Status, opts *options.QueryOptions) (res []plantypes.Plan, err error) {
+// The result is a slice of v2.Plan and an error if the query fails.
+func (c *Context) Plans(ctx context.Context, status v1base.Status, opts *options.QueryOptions) (res []v2.Plan, err error) {
 	// Initialize variables for the query.
 	var (
-		resp plantypes.QueryPlansResponse
-		req  = &plantypes.QueryPlansRequest{
+		resp v2.QueryPlansResponse
+		req  = &v2.QueryPlansRequest{
 			Status:     status,
 			Pagination: opts.PageRequest(),
 		}
@@ -63,12 +63,12 @@ func (c *Context) Plans(ctx context.Context, status v1base.Status, opts *options
 // PlansForProvider queries and returns a list of plans associated with a specific provider
 // based on the provided provider address, status, and options.
 // It uses gRPC to send a request to the "/sentinel.plan.v2.QueryService/QueryPlansForProvider" endpoint.
-// The result is a slice of plantypes.Plan and an error if the query fails.
-func (c *Context) PlansForProvider(ctx context.Context, provAddr base.ProvAddress, status v1base.Status, opts *options.QueryOptions) (res []plantypes.Plan, err error) {
+// The result is a slice of v2.Plan and an error if the query fails.
+func (c *Context) PlansForProvider(ctx context.Context, provAddr base.ProvAddress, status v1base.Status, opts *options.QueryOptions) (res []v2.Plan, err error) {
 	// Initialize variables for the query.
 	var (
-		resp plantypes.QueryPlansForProviderResponse
-		req  = &plantypes.QueryPlansForProviderRequest{
+		resp v2.QueryPlansForProviderResponse
+		req  = &v2.QueryPlansForProviderRequest{
 			Address:    provAddr.String(),
 			Status:     status,
 			Pagination: opts.PageRequest(),

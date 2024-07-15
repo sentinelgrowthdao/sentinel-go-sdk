@@ -5,7 +5,7 @@ import (
 
 	base "github.com/sentinel-official/hub/v12/types"
 	v1base "github.com/sentinel-official/hub/v12/types/v1"
-	nodetypes "github.com/sentinel-official/hub/v12/x/node/types/v2"
+	"github.com/sentinel-official/hub/v12/x/node/types/v2"
 
 	"github.com/sentinel-official/sentinel-go-sdk/v1/client/options"
 )
@@ -19,12 +19,12 @@ const (
 
 // Node queries and returns information about a specific node based on the provided node address.
 // It uses gRPC to send a request to the "/sentinel.node.v2.QueryService/QueryNode" endpoint.
-// The result is a pointer to nodetypes.Node and an error if the query fails.
-func (c *Context) Node(ctx context.Context, nodeAddr base.NodeAddress, opts *options.QueryOptions) (res *nodetypes.Node, err error) {
+// The result is a pointer to v2.Node and an error if the query fails.
+func (c *Context) Node(ctx context.Context, nodeAddr base.NodeAddress, opts *options.QueryOptions) (res *v2.Node, err error) {
 	// Initialize variables for the query.
 	var (
-		resp nodetypes.QueryNodeResponse
-		req  = &nodetypes.QueryNodeRequest{
+		resp v2.QueryNodeResponse
+		req  = &v2.QueryNodeRequest{
 			Address: nodeAddr.String(),
 		}
 	)
@@ -40,12 +40,12 @@ func (c *Context) Node(ctx context.Context, nodeAddr base.NodeAddress, opts *opt
 
 // Nodes queries and returns a list of nodes based on the provided status and options.
 // It uses gRPC to send a request to the "/sentinel.node.v2.QueryService/QueryNodes" endpoint.
-// The result is a slice of nodetypes.Node and an error if the query fails.
-func (c *Context) Nodes(ctx context.Context, status v1base.Status, opts *options.QueryOptions) (res []nodetypes.Node, err error) {
+// The result is a slice of v2.Node and an error if the query fails.
+func (c *Context) Nodes(ctx context.Context, status v1base.Status, opts *options.QueryOptions) (res []v2.Node, err error) {
 	// Initialize variables for the query.
 	var (
-		resp nodetypes.QueryNodesResponse
-		req  = &nodetypes.QueryNodesRequest{
+		resp v2.QueryNodesResponse
+		req  = &v2.QueryNodesRequest{
 			Status:     status,
 			Pagination: opts.PageRequest(),
 		}
@@ -63,12 +63,12 @@ func (c *Context) Nodes(ctx context.Context, status v1base.Status, opts *options
 // NodesForPlan queries and returns a list of nodes associated with a specific plan
 // based on the provided plan ID, status, and options.
 // It uses gRPC to send a request to the "/sentinel.node.v2.QueryService/QueryNodesForPlan" endpoint.
-// The result is a slice of nodetypes.Node and an error if the query fails.
-func (c *Context) NodesForPlan(ctx context.Context, id uint64, status v1base.Status, opts *options.QueryOptions) (res []nodetypes.Node, err error) {
+// The result is a slice of v2.Node and an error if the query fails.
+func (c *Context) NodesForPlan(ctx context.Context, id uint64, status v1base.Status, opts *options.QueryOptions) (res []v2.Node, err error) {
 	// Initialize variables for the query.
 	var (
-		resp nodetypes.QueryNodesForPlanResponse
-		req  = &nodetypes.QueryNodesForPlanRequest{
+		resp v2.QueryNodesForPlanResponse
+		req  = &v2.QueryNodesForPlanRequest{
 			Id:         id,
 			Status:     status,
 			Pagination: opts.PageRequest(),
