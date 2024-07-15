@@ -3,10 +3,10 @@ package options
 import (
 	"time"
 
+	"github.com/cometbft/cometbft/rpc/client"
+	"github.com/cometbft/cometbft/rpc/client/http"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/spf13/cobra"
-	"github.com/tendermint/tendermint/rpc/client"
-	"github.com/tendermint/tendermint/rpc/client/http"
 
 	"github.com/sentinel-official/sentinel-go-sdk/v1/utils"
 )

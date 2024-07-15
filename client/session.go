@@ -4,8 +4,8 @@ import (
 	"context"
 
 	cosmossdk "github.com/cosmos/cosmos-sdk/types"
-	sentinelhub "github.com/sentinel-official/hub/types"
-	sessiontypes "github.com/sentinel-official/hub/x/session/types"
+	sentinelhub "github.com/sentinel-official/hub/v12/types"
+	sessiontypes "github.com/sentinel-official/hub/v12/x/session/types"
 
 	"github.com/sentinel-official/sentinel-go-sdk/v1/client/options"
 )
