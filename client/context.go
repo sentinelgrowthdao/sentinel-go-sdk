@@ -23,6 +23,8 @@ func NewContext(protoCodec codec.ProtoCodecMarshaler) *Context {
 	}
 }
 
+// NewDefaultContext creates a new instance of Context with a default ProtoCodecMarshaler.
+// It returns a pointer to Context.
 func NewDefaultContext() *Context {
 	return NewContext(codec.NewProtoCodec(types.NewInterfaceRegistry()))
 }

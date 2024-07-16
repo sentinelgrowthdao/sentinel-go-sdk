@@ -10,7 +10,7 @@ import (
 // Key retrieves key information from the keyring based on the provided name and options.
 func (c *Context) Key(name string, opts *options.KeyOptions) (*keyring.Record, error) {
 	// Initialize a keyring based on the provided options.
-	kr, err := opts.Keyring()
+	kr, err := opts.Keyring(c)
 	if err != nil {
 		return nil, err
 	}
@@ -22,7 +22,7 @@ func (c *Context) Key(name string, opts *options.KeyOptions) (*keyring.Record, e
 // Sign signs the provided data using the key from the keyring specified by the name and options.
 func (c *Context) Sign(name string, buf []byte, opts *options.KeyOptions) ([]byte, cryptotypes.PubKey, error) {
 	// Initialize a keyring based on the provided options.
-	kr, err := opts.Keyring()
+	kr, err := opts.Keyring(c)
 	if err != nil {
 		return nil, nil, err
 	}

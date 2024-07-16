@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/spf13/cobra"
 )
@@ -49,8 +50,8 @@ func (k *KeyringOptions) WithInput(v io.Reader) *KeyringOptions {
 }
 
 // Keyring returns a new keyring based on the provided options.
-func (k *KeyringOptions) Keyring() (keyring.Keyring, error) {
-	return keyring.New(k.AppName, k.Backend, k.HomeDir, k.Input, nil)
+func (k *KeyringOptions) Keyring(cdc codec.Codec) (keyring.Keyring, error) {
+	return keyring.New(k.AppName, k.Backend, k.HomeDir, k.Input, cdc)
 }
 
 // AddKeyringFlagsToCmd adds keyring related flags to the given cobra command.
