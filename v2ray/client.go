@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/shirou/gopsutil/v3/process"
+	"github.com/shirou/gopsutil/v4/process"
 
 	sentinelsdk "github.com/sentinel-official/sentinel-go-sdk/v1/types"
 	"github.com/sentinel-official/sentinel-go-sdk/v1/utils"
@@ -116,7 +116,7 @@ func (c *Client) PreUp(v interface{}) error {
 	}
 
 	// Writes configuration to file.
-	return os.WriteFile(c.configFilePath(), utils.MustMarshalJSON(cfg), 0644)
+	return cfg.WriteFile(c.configFilePath())
 }
 
 // PostUp performs operations after the client process is started.

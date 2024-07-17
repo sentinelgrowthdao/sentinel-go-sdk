@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/shirou/gopsutil/v3/process"
+	"github.com/shirou/gopsutil/v4/process"
 	proxymancommand "github.com/v2fly/v2ray-core/v5/app/proxyman/command"
 	statscommand "github.com/v2fly/v2ray-core/v5/app/stats/command"
 	"github.com/v2fly/v2ray-core/v5/common/protocol"
@@ -195,7 +195,7 @@ func (s *Server) PreUp(v interface{}) error {
 	}
 
 	// Write configuration to file.
-	return os.WriteFile(s.configFilePath(), utils.MustMarshalJSON(cfg), 0644)
+	return cfg.WriteFile(s.configFilePath())
 }
 
 // PostUp performs operations after the server process is started.
