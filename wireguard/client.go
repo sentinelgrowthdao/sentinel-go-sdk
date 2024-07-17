@@ -3,16 +3,14 @@ package wireguard
 import (
 	"context"
 	"fmt"
-	"os"
 	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
 
-	"golang.zx2c4.com/wireguard/windows/conf"
-
 	sentinelsdk "github.com/sentinel-official/sentinel-go-sdk/v1/types"
 	"github.com/sentinel-official/sentinel-go-sdk/v1/utils"
+	"github.com/sentinel-official/sentinel-go-sdk/v1/wireguard/types"
 )
 
 // Ensure Client implements the sentinelsdk.ClientService interface.
@@ -66,13 +64,13 @@ func (c *Client) IsUp(ctx context.Context) (bool, error) {
 // PreUp writes the configuration to the config file before starting the client process.
 func (c *Client) PreUp(v interface{}) error {
 	// Checks for valid parameter type.
-	cfg, ok := v.(*conf.Config)
+	cfg, ok := v.(*types.ClientConfig)
 	if !ok {
 		return fmt.Errorf("invalid parameter type %T", v)
 	}
 
 	// Writes configuration to file.
-	return os.WriteFile(c.configFilePath(), []byte(cfg.ToWgQuick()), 0600)
+	return cfg.WriteFile(c.configFilePath())
 }
 
 // PostUp performs operations after the client process is started.
