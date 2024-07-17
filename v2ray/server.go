@@ -150,7 +150,7 @@ func (s *Server) Type() sentinelsdk.ServiceType {
 }
 
 // IsUp checks if the V2Ray server process is running.
-func (s *Server) IsUp() (bool, error) {
+func (s *Server) IsUp(ctx context.Context) (bool, error) {
 	// Read PID from file.
 	pid, err := s.readPIDFromFile()
 	if err != nil {
@@ -158,13 +158,13 @@ func (s *Server) IsUp() (bool, error) {
 	}
 
 	// Retrieve process with the given PID.
-	proc, err := process.NewProcess(pid)
+	proc, err := process.NewProcessWithContext(ctx, pid)
 	if err != nil {
 		return false, err
 	}
 
 	// Check if the process is running.
-	ok, err := proc.IsRunning()
+	ok, err := proc.IsRunningWithContext(ctx)
 	if err != nil {
 		return false, err
 	}
@@ -173,7 +173,7 @@ func (s *Server) IsUp() (bool, error) {
 	}
 
 	// Retrieve the name of the process.
-	name, err := proc.Name()
+	name, err := proc.NameWithContext(ctx)
 	if err != nil {
 		return false, err
 	}
@@ -219,7 +219,7 @@ func (s *Server) PreDown() error {
 }
 
 // Down terminates the V2Ray server process.
-func (s *Server) Down() error {
+func (s *Server) Down(ctx context.Context) error {
 	// Read PID from file.
 	pid, err := s.readPIDFromFile()
 	if err != nil {
@@ -227,13 +227,13 @@ func (s *Server) Down() error {
 	}
 
 	// Retrieve process with the given PID.
-	proc, err := process.NewProcess(pid)
+	proc, err := process.NewProcessWithContext(ctx, pid)
 	if err != nil {
 		return err
 	}
 
 	// Terminate the process.
-	if err := proc.Terminate(); err != nil {
+	if err := proc.TerminateWithContext(ctx); err != nil {
 		return err
 	}
 
@@ -447,8 +447,8 @@ func (s *Server) PeerStatistics(ctx context.Context) (items []*sentinelsdk.PeerS
 			items,
 			&sentinelsdk.PeerStatistic{
 				Key:      key,
-				Upload:   upLink.GetValue(),
 				Download: downLink.GetValue(),
+				Upload:   upLink.GetValue(),
 			},
 		)
 

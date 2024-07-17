@@ -1,6 +1,7 @@
 package wireguard
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
@@ -42,7 +43,7 @@ func (c *Client) Type() sentinelsdk.ServiceType {
 }
 
 // IsUp checks if the WireGuard interface is up.
-func (c *Client) IsUp() (bool, error) {
+func (c *Client) IsUp(ctx context.Context) (bool, error) {
 	// Retrieves the interface name.
 	iface, err := c.interfaceName()
 	if err != nil {
@@ -50,7 +51,8 @@ func (c *Client) IsUp() (bool, error) {
 	}
 
 	// Executes the 'wg show' command to check the interface status.
-	cmd := exec.Command(
+	cmd := exec.CommandContext(
+		ctx,
 		c.execFile("wg"),
 		strings.Fields(fmt.Sprintf("show %s", iface))...,
 	)
@@ -94,7 +96,7 @@ func (c *Client) PostDown() error {
 }
 
 // Statistics returns the download and upload statistics for the WireGuard interface.
-func (c *Client) Statistics() (int64, int64, error) {
+func (c *Client) Statistics(ctx context.Context) (int64, int64, error) {
 	// Retrieves the interface name.
 	iface, err := c.interfaceName()
 	if err != nil {
@@ -102,7 +104,8 @@ func (c *Client) Statistics() (int64, int64, error) {
 	}
 
 	// Executes the 'wg show [interface] transfer' command to get transfer statistics.
-	cmd := exec.Command(
+	cmd := exec.CommandContext(
+		ctx,
 		c.execFile("wg"),
 		strings.Fields(fmt.Sprintf("show %s transfer", iface))...,
 	)

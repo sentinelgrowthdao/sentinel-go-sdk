@@ -1,6 +1,7 @@
 package v2ray
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
@@ -13,9 +14,10 @@ func (s *Server) execFile(name string) string {
 }
 
 // Up starts the V2Ray server process.
-func (s *Server) Up() error {
+func (s *Server) Up(ctx context.Context) error {
 	// Constructs the command to start the V2Ray server.
-	s.cmd = exec.Command(
+	s.cmd = exec.CommandContext(
+		ctx,
 		s.execFile(v2ray),
 		strings.Fields(fmt.Sprintf("run --config %s", s.configFilePath()))...,
 	)

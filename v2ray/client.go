@@ -1,6 +1,7 @@
 package v2ray
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
@@ -70,7 +71,7 @@ func (c *Client) Type() sentinelsdk.ServiceType {
 }
 
 // IsUp checks if the V2Ray client process is running.
-func (c *Client) IsUp() (bool, error) {
+func (c *Client) IsUp(ctx context.Context) (bool, error) {
 	// Reads PID from file.
 	pid, err := c.readPIDFromFile()
 	if err != nil {
@@ -78,13 +79,13 @@ func (c *Client) IsUp() (bool, error) {
 	}
 
 	// Retrieves process with the given PID.
-	proc, err := process.NewProcess(pid)
+	proc, err := process.NewProcessWithContext(ctx, pid)
 	if err != nil {
 		return false, err
 	}
 
 	// Checks if the process is running.
-	ok, err := proc.IsRunning()
+	ok, err := proc.IsRunningWithContext(ctx)
 	if err != nil {
 		return false, err
 	}
@@ -93,7 +94,7 @@ func (c *Client) IsUp() (bool, error) {
 	}
 
 	// Retrieves the name of the process.
-	name, err := proc.Name()
+	name, err := proc.NameWithContext(ctx)
 	if err != nil {
 		return false, err
 	}
@@ -139,7 +140,7 @@ func (c *Client) PreDown() error {
 }
 
 // Down terminates the V2Ray client process.
-func (c *Client) Down() error {
+func (c *Client) Down(ctx context.Context) error {
 	// Reads PID from file.
 	pid, err := c.readPIDFromFile()
 	if err != nil {
@@ -147,13 +148,13 @@ func (c *Client) Down() error {
 	}
 
 	// Retrieves process with the given PID.
-	proc, err := process.NewProcess(pid)
+	proc, err := process.NewProcessWithContext(ctx, pid)
 	if err != nil {
 		return err
 	}
 
 	// Terminates the process.
-	if err := proc.Terminate(); err != nil {
+	if err := proc.TerminateWithContext(ctx); err != nil {
 		return err
 	}
 
@@ -178,6 +179,6 @@ func (c *Client) PostDown() error {
 }
 
 // Statistics returns dummy statistics for now (to be implemented).
-func (c *Client) Statistics() (int64, int64, error) {
+func (c *Client) Statistics(_ context.Context) (int64, int64, error) {
 	return 0, 0, nil
 }

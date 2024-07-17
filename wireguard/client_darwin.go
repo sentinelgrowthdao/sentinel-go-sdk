@@ -2,6 +2,7 @@ package wireguard
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
@@ -33,9 +34,10 @@ func (c *Client) interfaceName() (string, error) {
 }
 
 // Down shuts down the WireGuard interface.
-func (c *Client) Down() error {
+func (c *Client) Down(ctx context.Context) error {
 	// Executes the 'wg-quick down' command to bring down the interface.
-	cmd := exec.Command(
+	cmd := exec.CommandContext(
+		ctx,
 		c.execFile("wg-quick"),
 		strings.Fields(fmt.Sprintf("down %s", c.configFilePath()))...,
 	)
@@ -46,9 +48,10 @@ func (c *Client) Down() error {
 }
 
 // Up starts the WireGuard interface.
-func (c *Client) Up() error {
+func (c *Client) Up(ctx context.Context) error {
 	// Executes the 'wg-quick up' command to bring up the interface.
-	cmd := exec.Command(
+	cmd := exec.CommandContext(
+		ctx,
 		c.execFile("wg-quick"),
 		strings.Fields(fmt.Sprintf("up %s", c.configFilePath()))...,
 	)

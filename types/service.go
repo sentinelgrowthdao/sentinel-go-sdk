@@ -39,8 +39,8 @@ func ServiceTypeFromString(s string) ServiceType {
 
 // PeerStatistic represents the download and upload statistics for a peer.
 type PeerStatistic struct {
-	Download int64  `json:"download"` // Download is the total download in bytes.
 	Key      string `json:"key"`      // Key is the identifier for the peer.
+	Download int64  `json:"download"` // Download is the total download in bytes.
 	Upload   int64  `json:"upload"`   // Upload is the total upload in bytes.
 }
 
@@ -48,16 +48,16 @@ type PeerStatistic struct {
 type ClientService interface {
 	Type() ServiceType // Type returns the type of the client service.
 
-	IsUp() (bool, error)     // IsUp checks if the client service is up.
-	PreUp(interface{}) error // PreUp performs operations before the service is brought up.
-	Up() error               // Up brings up the client service.
-	PostUp() error           // PostUp performs operations after the service is brought up.
+	IsUp(context.Context) (bool, error) // IsUp checks if the client service is up.
+	PreUp(interface{}) error            // PreUp performs operations before the service is brought up.
+	Up(context.Context) error           // Up brings up the client service.
+	PostUp() error                      // PostUp performs operations after the service is brought up.
 
-	PreDown() error  // PreDown performs operations before the service is brought down.
-	Down() error     // Down brings down the client service.
-	PostDown() error // PostDown performs operations after the service is brought down.
+	PreDown() error             // PreDown performs operations before the service is brought down.
+	Down(context.Context) error // Down brings down the client service.
+	PostDown() error            // PostDown performs operations after the service is brought down.
 
-	Statistics() (int64, int64, error) // Statistics returns the download and upload statistics.
+	Statistics(context.Context) (int64, int64, error) // Statistics returns the download and upload statistics.
 }
 
 // ServerService defines the interface for server-side service operations.
@@ -65,14 +65,14 @@ type ServerService interface {
 	Info() []byte      // Info returns the information of the server service.
 	Type() ServiceType // Type returns the type of the server service.
 
-	IsUp() (bool, error)     // IsUp checks if the server service is up.
-	PreUp(interface{}) error // PreUp performs operations before the service is brought up.
-	Up() error               // Up brings up the server service.
-	PostUp() error           // PostUp performs operations after the service is brought up.
+	IsUp(context.Context) (bool, error) // IsUp checks if the server service is up.
+	PreUp(interface{}) error            // PreUp performs operations before the service is brought up.
+	Up(context.Context) error           // Up brings up the server service.
+	PostUp() error                      // PostUp performs operations after the service is brought up.
 
-	PreDown() error  // PreDown performs operations before the service is brought down.
-	Down() error     // Down brings down the server service.
-	PostDown() error // PostDown performs operations after the service is brought down.
+	PreDown() error             // PreDown performs operations before the service is brought down.
+	Down(context.Context) error // Down brings down the server service.
+	PostDown() error            // PostDown performs operations after the service is brought down.
 
 	AddPeer(context.Context, []byte) ([]byte, error)          // AddPeer adds a peer to the server service.
 	HasPeer(context.Context, []byte) (bool, error)            // HasPeer checks if a peer exists in the server service.
