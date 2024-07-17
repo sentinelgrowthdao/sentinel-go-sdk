@@ -1,4 +1,7 @@
 package types
 
-type Config struct {
+type ClientConfig struct {
+}
+
+type ServerConfig struct {
 }

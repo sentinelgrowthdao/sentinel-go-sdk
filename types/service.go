@@ -46,26 +46,37 @@ type PeerStatistic struct {
 
 // ClientService defines the interface for client-side service operations.
 type ClientService interface {
-	Down() error                       // Down brings down the client service.
-	IsUp() (bool, error)               // IsUp checks if the client service is up.
-	PostDown() error                   // PostDown performs operations after the service is brought down.
-	PostUp() error                     // PostUp performs operations after the service is brought up.
-	PreDown() error                    // PreDown performs operations before the service is brought down.
-	PreUp(interface{}) error           // PreUp performs operations before the service is brought up.
+	Type() ServiceType // Type returns the type of the client service.
+
+	IsUp() (bool, error)     // IsUp checks if the client service is up.
+	PreUp(interface{}) error // PreUp performs operations before the service is brought up.
+	Up() error               // Up brings up the client service.
+	PostUp() error           // PostUp performs operations after the service is brought up.
+
+	PreDown() error  // PreDown performs operations before the service is brought down.
+	Down() error     // Down brings down the client service.
+	PostDown() error // PostDown performs operations after the service is brought down.
+
 	Statistics() (int64, int64, error) // Statistics returns the download and upload statistics.
-	Up() error                         // Up brings up the client service.
 }
 
 // ServerService defines the interface for server-side service operations.
 type ServerService interface {
+	Info() []byte      // Info returns the information of the server service.
+	Type() ServiceType // Type returns the type of the server service.
+
+	IsUp() (bool, error)     // IsUp checks if the server service is up.
+	PreUp(interface{}) error // PreUp performs operations before the service is brought up.
+	Up() error               // Up brings up the server service.
+	PostUp() error           // PostUp performs operations after the service is brought up.
+
+	PreDown() error  // PreDown performs operations before the service is brought down.
+	Down() error     // Down brings down the server service.
+	PostDown() error // PostDown performs operations after the service is brought down.
+
 	AddPeer(context.Context, []byte) ([]byte, error)          // AddPeer adds a peer to the server service.
 	HasPeer(context.Context, []byte) (bool, error)            // HasPeer checks if a peer exists in the server service.
-	Info() []byte                                             // Info returns the information of the server service.
-	Init() error                                              // Init initializes the server service.
+	RemovePeer(context.Context, []byte) error                 // RemovePeer removes a peer from the server service.
 	PeerCount() int                                           // PeerCount returns the count of peers.
 	PeerStatistics(context.Context) ([]*PeerStatistic, error) // PeerStatistics returns the statistics for all peers.
-	RemovePeer(context.Context, []byte) error                 // RemovePeer removes a peer from the server service.
-	Start() error                                             // Start starts the server service.
-	Stop() error                                              // Stop stops the server service.
-	Type() ServiceType                                        // Type returns the type of the server service.
 }

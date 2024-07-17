@@ -36,6 +36,11 @@ func (c *Client) configFilePath() string {
 	return filepath.Join(c.homeDir, fmt.Sprintf("%s.conf", c.name))
 }
 
+// Type returns the service type of the client.
+func (c *Client) Type() sentinelsdk.ServiceType {
+	return sentinelsdk.ServiceTypeWireGuard
+}
+
 // IsUp checks if the WireGuard interface is up.
 func (c *Client) IsUp() (bool, error) {
 	// Retrieves the interface name.
@@ -56,14 +61,16 @@ func (c *Client) IsUp() (bool, error) {
 	return true, nil
 }
 
-// PostDown performs cleanup operations after the client process is terminated.
-func (c *Client) PostDown() error {
-	// Removes configuration file.
-	if err := utils.RemoveFile(c.configFilePath()); err != nil {
-		return err
+// PreUp writes the configuration to the config file before starting the client process.
+func (c *Client) PreUp(v interface{}) error {
+	// Checks for valid parameter type.
+	cfg, ok := v.(*conf.Config)
+	if !ok {
+		return fmt.Errorf("invalid parameter type %T", v)
 	}
 
-	return nil
+	// Writes configuration to file.
+	return os.WriteFile(c.configFilePath(), []byte(cfg.ToWgQuick()), 0600)
 }
 
 // PostUp performs operations after the client process is started.
@@ -76,16 +83,14 @@ func (c *Client) PreDown() error {
 	return nil
 }
 
-// PreUp writes the configuration to the config file before starting the client process.
-func (c *Client) PreUp(v interface{}) error {
-	// Checks for valid parameter type.
-	cfg, ok := v.(*conf.Config)
-	if !ok {
-		return fmt.Errorf("invalid parameter type %T", v)
+// PostDown performs cleanup operations after the client process is terminated.
+func (c *Client) PostDown() error {
+	// Removes configuration file.
+	if err := utils.RemoveFile(c.configFilePath()); err != nil {
+		return err
 	}
 
-	// Writes configuration to file.
-	return os.WriteFile(c.configFilePath(), []byte(cfg.ToWgQuick()), 0600)
+	return nil
 }
 
 // Statistics returns the download and upload statistics for the WireGuard interface.

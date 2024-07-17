@@ -14,15 +14,15 @@ import (
 	"github.com/sentinel-official/sentinel-go-sdk/v1/v2ray/types"
 )
 
+// Ensure Client implements the sentinelsdk.ClientService interface.
+var _ sentinelsdk.ClientService = (*Client)(nil)
+
 // Client represents a V2Ray client with associated command, home directory, and name.
 type Client struct {
 	cmd     *exec.Cmd // Command for running the V2Ray client.
 	homeDir string    // Home directory for client files.
 	name    string    // Name of the interface.
 }
-
-// Ensure Client implements the sentinelsdk.ClientService interface.
-var _ sentinelsdk.ClientService = (*Client)(nil)
 
 // configFilePath returns the file path of the client's configuration file.
 func (c *Client) configFilePath() string {
@@ -64,28 +64,9 @@ func (c *Client) writePIDToFile(pid int) error {
 	return nil
 }
 
-// Down terminates the V2Ray client process.
-func (c *Client) Down() error {
-	// Reads PID from file.
-	pid, err := c.readPIDFromFile()
-	if err != nil {
-		return err
-	}
-
-	// Retrieves process with the given PID.
-	proc, err := process.NewProcess(pid)
-	if err != nil {
-		return err
-	}
-
-	// Terminates the process.
-	if err := proc.Terminate(); err != nil {
-		return err
-	}
-
-	// Resets the command.
-	c.cmd = nil
-	return nil
+// Type returns the service type of the client.
+func (c *Client) Type() sentinelsdk.ServiceType {
+	return sentinelsdk.ServiceTypeV2Ray
 }
 
 // IsUp checks if the V2Ray client process is running.
@@ -125,19 +106,16 @@ func (c *Client) IsUp() (bool, error) {
 	return true, nil
 }
 
-// PostDown performs cleanup operations after the client process is terminated.
-func (c *Client) PostDown() error {
-	// Removes configuration file.
-	if err := utils.RemoveFile(c.configFilePath()); err != nil {
-		return err
+// PreUp writes the configuration to the config file before starting the client process.
+func (c *Client) PreUp(v interface{}) error {
+	// Checks for valid parameter type.
+	cfg, ok := v.(*types.ClientConfig)
+	if !ok {
+		return fmt.Errorf("invalid parameter type %T", v)
 	}
 
-	// Removes PID file.
-	if err := utils.RemoveFile(c.pidFilePath()); err != nil {
-		return err
-	}
-
-	return nil
+	// Writes configuration to file.
+	return os.WriteFile(c.configFilePath(), utils.MustMarshalJSON(cfg), 0644)
 }
 
 // PostUp performs operations after the client process is started.
@@ -160,16 +138,43 @@ func (c *Client) PreDown() error {
 	return nil
 }
 
-// PreUp writes the configuration to the config file before starting the client process.
-func (c *Client) PreUp(v interface{}) error {
-	// Checks for valid parameter type.
-	cfg, ok := v.(*types.Config)
-	if !ok {
-		return fmt.Errorf("invalid parameter type %T", v)
+// Down terminates the V2Ray client process.
+func (c *Client) Down() error {
+	// Reads PID from file.
+	pid, err := c.readPIDFromFile()
+	if err != nil {
+		return err
 	}
 
-	// Writes configuration to file.
-	return os.WriteFile(c.configFilePath(), utils.MustMarshalJSON(cfg), 0644)
+	// Retrieves process with the given PID.
+	proc, err := process.NewProcess(pid)
+	if err != nil {
+		return err
+	}
+
+	// Terminates the process.
+	if err := proc.Terminate(); err != nil {
+		return err
+	}
+
+	// Resets the command.
+	c.cmd = nil
+	return nil
+}
+
+// PostDown performs cleanup operations after the client process is terminated.
+func (c *Client) PostDown() error {
+	// Removes configuration file.
+	if err := utils.RemoveFile(c.configFilePath()); err != nil {
+		return err
+	}
+
+	// Removes PID file.
+	if err := utils.RemoveFile(c.pidFilePath()); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Statistics returns dummy statistics for now (to be implemented).
