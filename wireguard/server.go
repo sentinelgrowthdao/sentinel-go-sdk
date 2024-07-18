@@ -12,7 +12,6 @@ import (
 
 	sentinelsdk "github.com/sentinel-official/sentinel-go-sdk/v1/types"
 	"github.com/sentinel-official/sentinel-go-sdk/v1/utils"
-	"github.com/sentinel-official/sentinel-go-sdk/v1/wireguard/types"
 )
 
 const (
@@ -25,10 +24,10 @@ var _ sentinelsdk.ServerService = (*Server)(nil)
 
 // Server represents the WireGuard server instance.
 type Server struct {
-	homeDir string             // Home directory of the WireGuard server.
-	name    string             // Name of the server instance.
-	info    []byte             // Information about the server instance.
-	pm      *types.PeerManager // Peer manager for handling peer information.
+	homeDir string       // Home directory of the WireGuard server.
+	name    string       // Name of the server instance.
+	info    []byte       // Information about the server instance.
+	pm      *PeerManager // Peer manager for handling peer information.
 }
 
 // Info returns the server's information.
@@ -70,7 +69,7 @@ func (s *Server) IsUp(ctx context.Context) (bool, error) {
 // PreUp writes the configuration to the config file before starting the server process.
 func (s *Server) PreUp(v interface{}) error {
 	// Checks for valid parameter type.
-	cfg, ok := v.(*types.ServerConfig)
+	cfg, ok := v.(*ServerConfig)
 	if !ok {
 		return fmt.Errorf("invalid parameter type %T", v)
 	}

@@ -10,7 +10,6 @@ import (
 
 	sentinelsdk "github.com/sentinel-official/sentinel-go-sdk/v1/types"
 	"github.com/sentinel-official/sentinel-go-sdk/v1/utils"
-	"github.com/sentinel-official/sentinel-go-sdk/v1/wireguard/types"
 )
 
 // Ensure Client implements the sentinelsdk.ClientService interface.
@@ -64,7 +63,7 @@ func (c *Client) IsUp(ctx context.Context) (bool, error) {
 // PreUp writes the configuration to the config file before starting the client process.
 func (c *Client) PreUp(v interface{}) error {
 	// Checks for valid parameter type.
-	cfg, ok := v.(*types.ClientConfig)
+	cfg, ok := v.(*ClientConfig)
 	if !ok {
 		return fmt.Errorf("invalid parameter type %T", v)
 	}

@@ -1,4 +1,4 @@
-package types
+package v2ray
 
 // Transport is a custom type derived from byte, used to represent different transport protocols.
 type Transport byte

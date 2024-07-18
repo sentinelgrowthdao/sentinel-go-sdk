@@ -21,7 +21,6 @@ import (
 
 	sentinelsdk "github.com/sentinel-official/sentinel-go-sdk/v1/types"
 	"github.com/sentinel-official/sentinel-go-sdk/v1/utils"
-	"github.com/sentinel-official/sentinel-go-sdk/v1/v2ray/types"
 )
 
 const (
@@ -37,11 +36,11 @@ var _ sentinelsdk.ServerService = (*Server)(nil)
 
 // Server represents the V2Ray server instance.
 type Server struct {
-	homeDir string             // Home directory of the V2Ray server.
-	name    string             // Name of the server instance.
-	info    []byte             // Information about the server instance.
-	cmd     *exec.Cmd          // Command to run the V2Ray server.
-	pm      *types.PeerManager // Peer manager for handling peer information.
+	homeDir string       // Home directory of the V2Ray server.
+	name    string       // Name of the server instance.
+	info    []byte       // Information about the server instance.
+	cmd     *exec.Cmd    // Command to run the V2Ray server.
+	pm      *PeerManager // Peer manager for handling peer information.
 }
 
 // NewServer creates a new instance of the V2Ray server with the specified home directory.
@@ -50,7 +49,7 @@ func NewServer(homeDir string) *Server {
 		homeDir: homeDir,
 		info:    make([]byte, InfoLen),
 		cmd:     nil,
-		pm:      types.NewPeerManager(),
+		pm:      NewPeerManager(),
 	}
 }
 
@@ -189,7 +188,7 @@ func (s *Server) IsUp(ctx context.Context) (bool, error) {
 // PreUp writes the configuration to the config file before starting the server process.
 func (s *Server) PreUp(v interface{}) error {
 	// Check for valid parameter type.
-	cfg, ok := v.(*types.ServerConfig)
+	cfg, ok := v.(*ServerConfig)
 	if !ok {
 		return fmt.Errorf("invalid parameter type %T", v)
 	}
@@ -274,7 +273,7 @@ func (s *Server) AddPeer(ctx context.Context, req []byte) ([]byte, error) {
 
 	// Encode the request buffer to email using base64 encoding and extract proxy type.
 	email := base64.StdEncoding.EncodeToString(req)
-	proxy := types.Proxy(req[0])
+	proxy := Proxy(req[0])
 
 	// Parse the UUID from the request buffer.
 	uid, err := uuid.ParseBytes(req[1:])
@@ -304,7 +303,7 @@ func (s *Server) AddPeer(ctx context.Context, req []byte) ([]byte, error) {
 
 	// Update the local peer collection with the new peer information.
 	s.pm.Put(
-		&types.Peer{
+		&Peer{
 			Email: email,
 		},
 	)
@@ -350,7 +349,7 @@ func (s *Server) RemovePeer(ctx context.Context, req []byte) error {
 
 	// Encode the data buffer to email using base64 encoding and extract proxy type.
 	email := base64.StdEncoding.EncodeToString(req)
-	proxy := types.Proxy(req[0])
+	proxy := Proxy(req[0])
 
 	// Prepare gRPC request to remove a user from the handler.
 	in := &proxymancommand.AlterInboundRequest{
@@ -399,7 +398,7 @@ func (s *Server) PeerStatistics(ctx context.Context) (items []*sentinelsdk.PeerS
 	}()
 
 	// Define a function to process each peer in the local collection.
-	fn := func(key string, _ *types.Peer) (bool, error) {
+	fn := func(key string, _ *Peer) (bool, error) {
 		// Prepare gRPC request to get uplink traffic stats.
 		in := &statscommand.GetStatsRequest{
 			Reset_: false,
