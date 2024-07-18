@@ -25,8 +25,8 @@ import (
 )
 
 const (
-	// DataLen is the expected length of data used for peer operations (1 byte for type + 16 bytes for UUID).
-	DataLen = 1 + 16
+	// RequestLen is the expected length of request used for peer operations (1 byte for type + 16 bytes for UUID).
+	RequestLen = 1 + 16
 
 	// InfoLen represents the length of the server information (2 bytes for version + 1 byte for type).
 	InfoLen = 2 + 1
@@ -253,10 +253,10 @@ func (s *Server) PostDown() error {
 }
 
 // AddPeer adds a new peer to the V2Ray server.
-func (s *Server) AddPeer(ctx context.Context, buf []byte) ([]byte, error) {
-	// Check if the data length is valid.
-	if len(buf) != DataLen {
-		return nil, fmt.Errorf("invalid data length; expected %d, got %d", DataLen, len(buf))
+func (s *Server) AddPeer(ctx context.Context, req []byte) ([]byte, error) {
+	// Check if the request length is valid.
+	if len(req) != RequestLen {
+		return nil, fmt.Errorf("invalid request length; expected %d, got %d", RequestLen, len(req))
 	}
 
 	// Establish a gRPC client connection to the handler service.
@@ -272,18 +272,18 @@ func (s *Server) AddPeer(ctx context.Context, buf []byte) ([]byte, error) {
 		}
 	}()
 
-	// Encode the data buffer to email using base64 encoding and extract proxy type.
-	email := base64.StdEncoding.EncodeToString(buf)
-	proxy := types.Proxy(buf[0])
+	// Encode the request buffer to email using base64 encoding and extract proxy type.
+	email := base64.StdEncoding.EncodeToString(req)
+	proxy := types.Proxy(req[0])
 
-	// Parse the UUID from the data buffer.
-	uid, err := uuid.ParseBytes(buf[1:])
+	// Parse the UUID from the request buffer.
+	uid, err := uuid.ParseBytes(req[1:])
 	if err != nil {
 		return nil, err
 	}
 
 	// Prepare gRPC request to add a user to the handler.
-	req := &proxymancommand.AlterInboundRequest{
+	in := &proxymancommand.AlterInboundRequest{
 		Tag: proxy.Tag(),
 		Operation: serial.ToTypedMessage(
 			&proxymancommand.AddUserOperation{
@@ -297,7 +297,7 @@ func (s *Server) AddPeer(ctx context.Context, buf []byte) ([]byte, error) {
 	}
 
 	// Send the request to add a user to the handler.
-	_, err = client.AlterInbound(ctx, req)
+	_, err = client.AlterInbound(ctx, in)
 	if err != nil {
 		return nil, err
 	}
@@ -314,14 +314,14 @@ func (s *Server) AddPeer(ctx context.Context, buf []byte) ([]byte, error) {
 }
 
 // HasPeer checks if a peer exists in the V2Ray server's peer list.
-func (s *Server) HasPeer(_ context.Context, buf []byte) (bool, error) {
-	// Check if the data length is valid.
-	if len(buf) != DataLen {
-		return false, fmt.Errorf("invalid data length; expected %d, got %d", DataLen, len(buf))
+func (s *Server) HasPeer(_ context.Context, req []byte) (bool, error) {
+	// Check if the request length is valid.
+	if len(req) != RequestLen {
+		return false, fmt.Errorf("invalid request length; expected %d, got %d", RequestLen, len(req))
 	}
 
-	// Encode the data buffer to email using base64 encoding.
-	email := base64.StdEncoding.EncodeToString(buf)
+	// Encode the request buffer to email using base64 encoding.
+	email := base64.StdEncoding.EncodeToString(req)
 	peer := s.pm.Get(email)
 
 	// Return true if the peer exists, otherwise false.
@@ -329,10 +329,10 @@ func (s *Server) HasPeer(_ context.Context, buf []byte) (bool, error) {
 }
 
 // RemovePeer removes a peer from the V2Ray server.
-func (s *Server) RemovePeer(ctx context.Context, buf []byte) error {
-	// Check if the data length is valid.
-	if len(buf) != DataLen {
-		return fmt.Errorf("invalid data length; expected %d, got %d", DataLen, len(buf))
+func (s *Server) RemovePeer(ctx context.Context, req []byte) error {
+	// Check if the request length is valid.
+	if len(req) != RequestLen {
+		return fmt.Errorf("invalid request length; expected %d, got %d", RequestLen, len(req))
 	}
 
 	// Establish a gRPC client connection to the handler service.
@@ -349,11 +349,11 @@ func (s *Server) RemovePeer(ctx context.Context, buf []byte) error {
 	}()
 
 	// Encode the data buffer to email using base64 encoding and extract proxy type.
-	email := base64.StdEncoding.EncodeToString(buf)
-	proxy := types.Proxy(buf[0])
+	email := base64.StdEncoding.EncodeToString(req)
+	proxy := types.Proxy(req[0])
 
 	// Prepare gRPC request to remove a user from the handler.
-	req := &proxymancommand.AlterInboundRequest{
+	in := &proxymancommand.AlterInboundRequest{
 		Tag: proxy.Tag(),
 		Operation: serial.ToTypedMessage(
 			&proxymancommand.RemoveUserOperation{
@@ -363,7 +363,7 @@ func (s *Server) RemovePeer(ctx context.Context, buf []byte) error {
 	}
 
 	// Send the request to remove a user from the handler.
-	_, err = client.AlterInbound(ctx, req)
+	_, err = client.AlterInbound(ctx, in)
 	if err != nil {
 		// If the user is not found, continue without error.
 		if !strings.Contains(err.Error(), "not found") {
@@ -401,13 +401,13 @@ func (s *Server) PeerStatistics(ctx context.Context) (items []*sentinelsdk.PeerS
 	// Define a function to process each peer in the local collection.
 	fn := func(key string, _ *types.Peer) (bool, error) {
 		// Prepare gRPC request to get uplink traffic stats.
-		req := &statscommand.GetStatsRequest{
+		in := &statscommand.GetStatsRequest{
 			Reset_: false,
 			Name:   fmt.Sprintf("user>>>%s>>>traffic>>>uplink", key),
 		}
 
 		// Send the request to get uplink traffic stats.
-		res, err := client.GetStats(ctx, req)
+		res, err := client.GetStats(ctx, in)
 		if err != nil {
 			// If the stat is not found, continue to the next peer.
 			if !strings.Contains(err.Error(), "not found") {
@@ -422,13 +422,13 @@ func (s *Server) PeerStatistics(ctx context.Context) (items []*sentinelsdk.PeerS
 		}
 
 		// Prepare gRPC request to get downlink traffic stats.
-		req = &statscommand.GetStatsRequest{
+		in = &statscommand.GetStatsRequest{
 			Reset_: false,
 			Name:   fmt.Sprintf("user>>>%s>>>traffic>>>downlink", key),
 		}
 
 		// Send the request to get downlink traffic stats.
-		res, err = client.GetStats(ctx, req)
+		res, err = client.GetStats(ctx, in)
 		if err != nil {
 			// If the stat is not found, continue to the next peer.
 			if !strings.Contains(err.Error(), "not found") {
