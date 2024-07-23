@@ -8,9 +8,9 @@ import (
 )
 
 // interfaceName retrieves the name of the WireGuard interface.
-func (c *Client) interfaceName() (string, error) {
+func (s *Server) interfaceName() (string, error) {
 	// Opens the file containing the interface name.
-	nameFile, err := os.Open(fmt.Sprintf("/var/run/wireguard/%s.name", c.name))
+	nameFile, err := os.Open(fmt.Sprintf("/var/run/wireguard/%s.name", s.name))
 	if err != nil {
 		return "", err
 	}

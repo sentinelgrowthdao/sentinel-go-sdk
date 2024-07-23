@@ -10,18 +10,18 @@ import (
 )
 
 // execFile returns the name of the executable file.
-func (c *Client) execFile(name string) string {
-	return ".\\" + filepath.Join("WireGuard", c.name+".exe")
+func (s *Server) execFile(name string) string {
+	return ".\\" + filepath.Join("WireGuard", s.name+".exe")
 }
 
 // interfaceName returns the name of the WireGuard interface.
-func (c *Client) interfaceName() (string, error) {
-	return c.name, nil
+func (s *Server) interfaceName() (string, error) {
+	return s.name, nil
 }
 
 // Down uninstalls the WireGuard tunnel service.
-func (c *Client) Down(ctx context.Context) error {
-	iface, err := c.interfaceName()
+func (s *Server) Down(ctx context.Context) error {
+	iface, err := s.interfaceName()
 	if err != nil {
 		return err
 	}
@@ -29,7 +29,7 @@ func (c *Client) Down(ctx context.Context) error {
 	// Executes the command to uninstall the WireGuard tunnel service.
 	cmd := exec.CommandContext(
 		ctx,
-		c.execFile("wireguard"),
+		s.execFile("wireguard"),
 		strings.Fields(fmt.Sprintf("/uninstalltunnelservice %s", iface))...,
 	)
 	cmd.Stdout = os.Stdout
@@ -39,12 +39,12 @@ func (c *Client) Down(ctx context.Context) error {
 }
 
 // Up installs the WireGuard tunnel service.
-func (c *Client) Up(ctx context.Context) error {
+func (s *Server) Up(ctx context.Context) error {
 	// Executes the command to install the WireGuard tunnel service.
 	cmd := exec.CommandContext(
 		ctx,
-		c.execFile("wireguard"),
-		strings.Fields(fmt.Sprintf("/uninstalltunnelservice %s", c.configFilePath()))...,
+		s.execFile("wireguard"),
+		strings.Fields(fmt.Sprintf("/uninstalltunnelservice %s", s.configFilePath()))...,
 	)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

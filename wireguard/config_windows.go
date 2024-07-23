@@ -1,7 +1,6 @@
 package wireguard
 
 import (
-	"fmt"
 	"net/netip"
 	"strings"
 
@@ -27,21 +26,6 @@ func (sc *ServerConfig) ToWgQuick() (string, error) {
 		}
 
 		addresses = append(addresses, address)
-	}
-
-	if sc.EnableIPv4 {
-		postUp = append(postUp, "iptables -A FORWARD -i %i -j ACCEPT;")
-		postUp = append(postUp, fmt.Sprintf("iptables -t nat -A POSTROUTING -o %s -j MASQUERADE;", sc.OutInterface))
-
-		postDown = append(postDown, "iptables -D FORWARD -i %i -j ACCEPT;")
-		postDown = append(postDown, fmt.Sprintf("iptables -t nat -D POSTROUTING -o %s -j MASQUERADE;", sc.OutInterface))
-	}
-	if sc.EnableIPv6 {
-		postUp = append(postUp, "ip6tables -A FORWARD -i %i -j ACCEPT;")
-		postUp = append(postUp, fmt.Sprintf("ip6tables -t nat -A POSTROUTING -o %s -j MASQUERADE;", sc.OutInterface))
-
-		postDown = append(postDown, "ip6tables -D FORWARD -i %i -j ACCEPT;")
-		postDown = append(postDown, fmt.Sprintf("ip6tables -t nat -D POSTROUTING -o %s -j MASQUERADE;", sc.OutInterface))
 	}
 
 	cfg := &conf.Config{
