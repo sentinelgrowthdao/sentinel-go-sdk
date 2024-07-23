@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/shirou/gopsutil/v4/process"
 
@@ -116,6 +117,21 @@ func (c *Client) PreUp(v interface{}) error {
 
 	// Writes configuration to file.
 	return cfg.WriteFile(c.configFilePath())
+}
+
+// Up starts the V2Ray client process.
+func (c *Client) Up(ctx context.Context) error {
+	// Constructs the command to start the V2Ray client.
+	c.cmd = exec.CommandContext(
+		ctx,
+		c.execFile(v2ray),
+		strings.Fields(fmt.Sprintf("run --config %s", c.configFilePath()))...,
+	)
+	c.cmd.Stdout = os.Stdout
+	c.cmd.Stderr = os.Stderr
+
+	// Starts the V2Ray client process.
+	return c.cmd.Start()
 }
 
 // PostUp performs operations after the client process is started.

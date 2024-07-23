@@ -197,6 +197,21 @@ func (s *Server) PreUp(v interface{}) error {
 	return cfg.WriteFile(s.configFilePath())
 }
 
+// Up starts the V2Ray server process.
+func (s *Server) Up(ctx context.Context) error {
+	// Constructs the command to start the V2Ray server.
+	s.cmd = exec.CommandContext(
+		ctx,
+		s.execFile(v2ray),
+		strings.Fields(fmt.Sprintf("run --config %s", s.configFilePath()))...,
+	)
+	s.cmd.Stdout = os.Stdout
+	s.cmd.Stderr = os.Stderr
+
+	// Starts the V2Ray server process.
+	return s.cmd.Start()
+}
+
 // PostUp performs operations after the server process is started.
 func (s *Server) PostUp() error {
 	// Check if command or process is nil.
