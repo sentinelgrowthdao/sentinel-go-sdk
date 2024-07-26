@@ -63,13 +63,13 @@ func (c *Client) IsUp(ctx context.Context) (bool, error) {
 // PreUp writes the configuration to the config file before starting the client process.
 func (c *Client) PreUp(v interface{}) error {
 	// Checks for valid parameter type.
-	cfg, ok := v.(*ClientConfig)
+	cfg, ok := v.(*ClientOptions)
 	if !ok {
 		return fmt.Errorf("invalid parameter type %T", v)
 	}
 
 	// Writes configuration to file.
-	return cfg.WriteFile(c.configFilePath())
+	return cfg.WriteConfigToFile(c.configFilePath())
 }
 
 // PostUp performs operations after the client process is started.

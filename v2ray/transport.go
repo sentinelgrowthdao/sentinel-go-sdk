@@ -40,6 +40,10 @@ func (t Transport) String() string {
 	}
 }
 
+func (t Transport) IsValid() bool {
+	return t.String() != ""
+}
+
 // NewTransportFromString converts a string to a Transport type.
 // This is often used for configuration parsing or interfacing with user inputs.
 func NewTransportFromString(v string) Transport {

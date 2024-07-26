@@ -7,8 +7,9 @@ import (
 	"github.com/sentinel-official/sentinel-go-sdk/v1/third_party/wireguard/windows/conf"
 )
 
-func (sc *ServerConfig) ToWgQuick() (string, error) {
-	privateKey, err := conf.NewPrivateKeyFromString(sc.PrivateKey)
+// ToWgQuick converts the ServerOptions to a WireGuard quick configuration string.
+func (so *ServerOptions) ToWgQuick() (string, error) {
+	privateKey, err := conf.NewPrivateKeyFromString(so.PrivateKey)
 	if err != nil {
 		return "", err
 	}
@@ -19,7 +20,7 @@ func (sc *ServerConfig) ToWgQuick() (string, error) {
 		postDown  []string
 	)
 
-	for _, item := range sc.Addresses {
+	for _, item := range so.Addresses {
 		address, err := netip.ParsePrefix(item)
 		if err != nil {
 			return "", err
@@ -29,11 +30,11 @@ func (sc *ServerConfig) ToWgQuick() (string, error) {
 	}
 
 	cfg := &conf.Config{
-		Name: sc.Interface,
+		Name: so.Interface,
 		Interface: conf.Interface{
 			PrivateKey: *privateKey,
 			Addresses:  addresses,
-			ListenPort: sc.ListenPort,
+			ListenPort: so.ListenPort,
 			PostUp:     strings.Join(postUp, " "),
 			PostDown:   strings.Join(postDown, " "),
 		},

@@ -69,13 +69,13 @@ func (s *Server) IsUp(ctx context.Context) (bool, error) {
 // PreUp writes the configuration to the config file before starting the server process.
 func (s *Server) PreUp(v interface{}) error {
 	// Checks for valid parameter type.
-	cfg, ok := v.(*ServerConfig)
+	cfg, ok := v.(*ServerOptions)
 	if !ok {
 		return fmt.Errorf("invalid parameter type %T", v)
 	}
 
 	// Writes configuration to file.
-	return cfg.WriteFile(s.configFilePath())
+	return cfg.WriteConfigToFile(s.configFilePath())
 }
 
 // PostUp performs operations after the server process is started.

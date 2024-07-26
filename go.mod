@@ -5,6 +5,7 @@ go 1.22.5
 require (
 	github.com/cometbft/cometbft v0.37.7
 	github.com/cosmos/cosmos-sdk v0.47.12
+	github.com/pelletier/go-toml/v2 v2.1.0
 	github.com/sentinel-official/hub/v12 v12.0.0-rc5
 	github.com/shirou/gopsutil/v4 v4.24.6
 	github.com/spf13/cobra v1.8.1
@@ -92,7 +93,6 @@ require (
 	github.com/mimoo/StrobeGo v0.0.0-20210601165009-122bf33a46e0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mtibben/percent v0.2.1 // indirect
-	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/petermattis/goid v0.0.0-20230317030725-371a4b8eda08 // indirect
 	github.com/pires/go-proxyproto v0.7.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
