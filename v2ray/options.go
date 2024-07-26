@@ -47,8 +47,15 @@ func NewClientOptionsFromFile(filepath string) (*ClientOptions, error) {
 
 // VMessServerOptions represents the V2Ray VMess server configuration options.
 type VMessServerOptions struct {
+	EnableTLS  bool   `json:"enable_tls"`
 	ListenPort uint16 `json:"listen_port"`
 	Transport  string `json:"transport"`
+}
+
+// WithEnableTLS sets the EnableTLS field and returns the modified VMessServerOptions instance.
+func (so *VMessServerOptions) WithEnableTLS(v bool) *VMessServerOptions {
+	so.EnableTLS = v
+	return so
 }
 
 // WithListenPort sets the ListenPort field and returns the modified VMessServerOptions instance.
@@ -86,6 +93,7 @@ func AddVMessServerFlagsToCmd(cmd *cobra.Command, prefix string) {
 		prefix = prefix + "."
 	}
 
+	cmd.Flags().Bool(prefix+"enable-tls", false, "Enable TLS for the VMess server.")
 	cmd.Flags().Uint16(prefix+"listen-port", 0, "Listen port for the VMess server.")
 	cmd.Flags().String(prefix+"transport", "", "Transport protocol for the VMess server.")
 }
@@ -94,6 +102,11 @@ func AddVMessServerFlagsToCmd(cmd *cobra.Command, prefix string) {
 func NewVMessServerOptionsFromCmd(cmd *cobra.Command, prefix string) (*VMessServerOptions, error) {
 	if prefix != "" {
 		prefix = prefix + "."
+	}
+
+	enableTLS, err := cmd.Flags().GetBool(prefix + "enable-tls")
+	if err != nil {
+		return nil, err
 	}
 
 	listenPort, err := cmd.Flags().GetUint16(prefix + "listen-port")
@@ -107,6 +120,7 @@ func NewVMessServerOptionsFromCmd(cmd *cobra.Command, prefix string) (*VMessServ
 	}
 
 	return &VMessServerOptions{
+		EnableTLS:  enableTLS,
 		ListenPort: listenPort,
 		Transport:  transport,
 	}, nil
