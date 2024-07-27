@@ -144,4 +144,4 @@ require (
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
-replace github.com/cosmos/gogoproto => github.com/cosmos/gogoproto v1.4.11
+replace golang.org/x/exp => golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb
