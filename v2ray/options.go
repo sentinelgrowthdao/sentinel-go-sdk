@@ -4,16 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/pelletier/go-toml/v2"
 	"github.com/spf13/cobra"
-
-	"github.com/sentinel-official/sentinel-go-sdk/v1/utils"
 )
 
 // ClientOptions represents the V2Ray client configuration options.
-type ClientOptions struct {
-}
+type ClientOptions struct{}
 
 // WriteToFile writes the ClientOptions configuration to a TOML file.
 func (co *ClientOptions) WriteToFile(filepath string) error {
@@ -27,7 +25,12 @@ func (co *ClientOptions) WriteToFile(filepath string) error {
 
 // WriteConfigToFile writes the ClientOptions configuration to a file in JSON format.
 func (co *ClientOptions) WriteConfigToFile(filepath string) error {
-	return os.WriteFile(filepath, utils.MustMarshalJSON(co), 0644)
+	data, err := co.ToConfig()
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(filepath, []byte(data), 0644)
 }
 
 // NewClientOptionsFromFile reads the configuration from a TOML file and unmarshals it into a ClientOptions instance.
@@ -45,96 +48,120 @@ func NewClientOptionsFromFile(filepath string) (*ClientOptions, error) {
 	return &co, nil
 }
 
-// VMessServerOptions represents the V2Ray VMess server configuration options.
-type VMessServerOptions struct {
-	EnableTLS  bool   `json:"enable_tls"`
-	ListenPort uint16 `json:"listen_port"`
-	Transport  string `json:"transport"`
+// InboundServerOptions represents the V2Ray inbound server configuration options.
+type InboundServerOptions struct {
+	Network     string `json:"network"`
+	Port        uint16 `json:"port"`
+	Protocol    string `json:"protocol"`
+	Security    string `json:"security"`
+	TLSCertPath string `json:"tls_cert_path"`
+	TLSKeyPath  string `json:"tls_key_path"`
 }
 
-// WithEnableTLS sets the EnableTLS field and returns the modified VMessServerOptions instance.
-func (so *VMessServerOptions) WithEnableTLS(v bool) *VMessServerOptions {
-	so.EnableTLS = v
+// WithNetwork sets the Network field.
+func (so *InboundServerOptions) WithNetwork(network string) *InboundServerOptions {
+	so.Network = network
 	return so
 }
 
-// WithListenPort sets the ListenPort field and returns the modified VMessServerOptions instance.
-func (so *VMessServerOptions) WithListenPort(v uint16) *VMessServerOptions {
-	so.ListenPort = v
+// WithPort sets the Port field.
+func (so *InboundServerOptions) WithPort(port uint16) *InboundServerOptions {
+	so.Port = port
 	return so
 }
 
-// WithTransport sets the Transport field and returns the modified VMessServerOptions instance.
-func (so *VMessServerOptions) WithTransport(v string) *VMessServerOptions {
-	so.Transport = v
+// WithProtocol sets the Protocol field.
+func (so *InboundServerOptions) WithProtocol(protocol string) *InboundServerOptions {
+	so.Protocol = protocol
 	return so
 }
 
-// Validate validates the VMessServerOptions fields.
-func (so *VMessServerOptions) Validate() error {
-	if so.ListenPort == 0 {
-		return errors.New("listen_port cannot be zero")
+// WithSecurity sets the Security field.
+func (so *InboundServerOptions) WithSecurity(security string) *InboundServerOptions {
+	so.Security = security
+	return so
+}
+
+// WithTLSCertPath sets the TLSCertPath field.
+func (so *InboundServerOptions) WithTLSCertPath(certPath string) *InboundServerOptions {
+	so.TLSCertPath = certPath
+	return so
+}
+
+// WithTLSKeyPath sets the TLSKeyPath field.
+func (so *InboundServerOptions) WithTLSKeyPath(keyPath string) *InboundServerOptions {
+	so.TLSKeyPath = keyPath
+	return so
+}
+
+// Tag returns a unique tag for the InboundServerOptions instance.
+func (so *InboundServerOptions) Tag() string {
+	return fmt.Sprintf("%s_%s_%s", so.Protocol, so.Network, so.Security)
+}
+
+// Validate validates the InboundServerOptions fields.
+func (so *InboundServerOptions) Validate() error {
+	network := NewNetworkFromString(so.Network)
+	if !network.IsValid() {
+		return fmt.Errorf("invalid network value: %s", so.Network)
 	}
-	if so.Transport == "" {
-		return errors.New("transport cannot be empty")
+
+	protocol := NewProtocolFromString(so.Protocol)
+	if !protocol.IsValid() {
+		return fmt.Errorf("invalid protocol value: %s", so.Protocol)
 	}
 
-	t := NewTransportFromString(so.Transport)
-	if !t.IsValid() {
-		return errors.New("invalid transport")
+	security := NewSecurityFromString(so.Security)
+	if !security.IsValid() {
+		return fmt.Errorf("invalid security value: %s", so.Security)
+	}
+
+	if security == SecurityTLS {
+		if so.TLSCertPath == "" || so.TLSKeyPath == "" {
+			return errors.New("TLS cert path and key path cannot be empty when security is 'tls'")
+		}
 	}
 
 	return nil
 }
 
-// AddVMessServerFlagsToCmd adds VMess server-related flags to the given Cobra command.
-func AddVMessServerFlagsToCmd(cmd *cobra.Command, prefix string) {
-	if prefix != "" {
-		prefix = prefix + "."
-	}
-
-	cmd.Flags().Bool(prefix+"enable-tls", false, "Enable TLS for the VMess server.")
-	cmd.Flags().Uint16(prefix+"listen-port", 0, "Listen port for the VMess server.")
-	cmd.Flags().String(prefix+"transport", "", "Transport protocol for the VMess server.")
-}
-
-// NewVMessServerOptionsFromCmd creates and returns a VMessServerOptions instance from the given Cobra command's flags.
-func NewVMessServerOptionsFromCmd(cmd *cobra.Command, prefix string) (*VMessServerOptions, error) {
-	if prefix != "" {
-		prefix = prefix + "."
-	}
-
-	enableTLS, err := cmd.Flags().GetBool(prefix + "enable-tls")
-	if err != nil {
-		return nil, err
-	}
-
-	listenPort, err := cmd.Flags().GetUint16(prefix + "listen-port")
-	if err != nil {
-		return nil, err
-	}
-
-	transport, err := cmd.Flags().GetString(prefix + "transport")
-	if err != nil {
-		return nil, err
-	}
-
-	return &VMessServerOptions{
-		EnableTLS:  enableTLS,
-		ListenPort: listenPort,
-		Transport:  transport,
-	}, nil
-}
-
 // ServerOptions represents the V2Ray server configuration options.
 type ServerOptions struct {
-	VMess *VMessServerOptions `json:"vmess"`
+	Inbounds []*InboundServerOptions `json:"inbounds"`
 }
 
-// WithVMess sets the VMess field and returns the modified ServerOptions instance.
-func (so *ServerOptions) WithVMess(v *VMessServerOptions) *ServerOptions {
-	so.VMess = v
+// WithInbounds sets the Inbounds field.
+func (so *ServerOptions) WithInbounds(inbounds ...*InboundServerOptions) *ServerOptions {
+	so.Inbounds = inbounds
 	return so
+}
+
+// Validate validates the ServerOptions fields.
+func (so *ServerOptions) Validate() error {
+	portSet := make(map[uint16]bool)
+	tagSet := make(map[string]bool)
+
+	for _, inbound := range so.Inbounds {
+		if err := inbound.Validate(); err != nil {
+			return err
+		}
+
+		if inbound.Port <= 1024 {
+			return fmt.Errorf("port must be greater than 1024, got: %d", inbound.Port)
+		}
+		if portSet[inbound.Port] {
+			return fmt.Errorf("port collision detected for port: %d", inbound.Port)
+		}
+		portSet[inbound.Port] = true
+
+		tag := inbound.Tag()
+		if tagSet[tag] {
+			return fmt.Errorf("duplicate tag detected: %s", tag)
+		}
+		tagSet[tag] = true
+	}
+
+	return nil
 }
 
 // WriteToFile writes the ServerOptions configuration to a TOML file.
@@ -149,19 +176,12 @@ func (so *ServerOptions) WriteToFile(filepath string) error {
 
 // WriteConfigToFile writes the ServerOptions configuration to a file in JSON format.
 func (so *ServerOptions) WriteConfigToFile(filepath string) error {
-	return os.WriteFile(filepath, utils.MustMarshalJSON(so), 0644)
-}
-
-// Validate validates the ServerOptions fields.
-func (so *ServerOptions) Validate() error {
-	if so.VMess == nil {
-		return errors.New("vmess cannot be empty")
-	}
-	if err := so.VMess.Validate(); err != nil {
-		return fmt.Errorf("invalid vmess server options: %w", err)
+	data, err := so.ToConfig()
+	if err != nil {
+		return err
 	}
 
-	return nil
+	return os.WriteFile(filepath, []byte(data), 0644)
 }
 
 // AddServerFlagsToCmd adds server-related flags to the given Cobra command.
@@ -170,7 +190,12 @@ func AddServerFlagsToCmd(cmd *cobra.Command, prefix string) {
 		prefix = prefix + "."
 	}
 
-	AddVMessServerFlagsToCmd(cmd, prefix+"vmess")
+	cmd.Flags().StringSlice(prefix+"network", []string{}, "Comma-separated list of network types for inbound servers.")
+	cmd.Flags().StringSlice(prefix+"port", []string{}, "Comma-separated list of ports for inbound servers.")
+	cmd.Flags().StringSlice(prefix+"protocol", []string{}, "Comma-separated list of protocols for inbound servers.")
+	cmd.Flags().StringSlice(prefix+"security", []string{}, "Comma-separated list of security settings for inbound servers.")
+	cmd.Flags().StringSlice(prefix+"tls-cert-path", []string{}, "Comma-separated list of TLS certificate paths for inbound servers.")
+	cmd.Flags().StringSlice(prefix+"tls-key-path", []string{}, "Comma-separated list of TLS certificate keys for inbound servers.")
 }
 
 // NewServerOptionsFromCmd creates and returns a ServerOptions instance from the given Cobra command's flags.
@@ -179,13 +204,60 @@ func NewServerOptionsFromCmd(cmd *cobra.Command, prefix string) (*ServerOptions,
 		prefix = prefix + "."
 	}
 
-	vmessOpts, err := NewVMessServerOptionsFromCmd(cmd, prefix+"vmess")
+	networkList, err := cmd.Flags().GetStringSlice(prefix + "network")
 	if err != nil {
 		return nil, err
 	}
 
+	portList, err := cmd.Flags().GetStringSlice(prefix + "port")
+	if err != nil {
+		return nil, err
+	}
+
+	protocolList, err := cmd.Flags().GetStringSlice(prefix + "protocol")
+	if err != nil {
+		return nil, err
+	}
+
+	securityList, err := cmd.Flags().GetStringSlice(prefix + "security")
+	if err != nil {
+		return nil, err
+	}
+
+	tlsCertPathList, err := cmd.Flags().GetStringSlice(prefix + "tls-cert-path")
+	if err != nil {
+		return nil, err
+	}
+
+	tlsKeyPathList, err := cmd.Flags().GetStringSlice(prefix + "tls-key-path")
+	if err != nil {
+		return nil, err
+	}
+
+	if len(networkList) != len(portList) || len(networkList) != len(protocolList) || len(networkList) != len(securityList) ||
+		len(networkList) != len(tlsCertPathList) || len(networkList) != len(tlsKeyPathList) {
+		return nil, errors.New("all inbound server flags must have the same number of values")
+	}
+
+	var inbounds []*InboundServerOptions
+	for i := range networkList {
+		port, err := strconv.ParseUint(portList[i], 10, 16)
+		if err != nil {
+			return nil, fmt.Errorf("invalid port: %w", err)
+		}
+
+		inbounds = append(inbounds, &InboundServerOptions{
+			Network:     networkList[i],
+			Port:        uint16(port),
+			Protocol:    protocolList[i],
+			Security:    securityList[i],
+			TLSCertPath: tlsCertPathList[i],
+			TLSKeyPath:  tlsKeyPathList[i],
+		})
+	}
+
 	return &ServerOptions{
-		VMess: vmessOpts,
+		Inbounds: inbounds,
 	}, nil
 }
 
