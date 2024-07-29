@@ -1,8 +1,9 @@
-package v2ray
+package wireguard
 
 import (
 	"bytes"
 	"embed"
+	"strings"
 	"text/template"
 )
 
@@ -11,19 +12,19 @@ var fs embed.FS
 
 // Template function map for reusability.
 var tmplFuncMap = template.FuncMap{
-	"sum": func(a, b int) int {
-		return a + b
+	"join": func(v []string, sep string) string {
+		return strings.Join(v, sep)
 	},
 }
 
-// ToConfig generates the V2Ray client configuration as a string.
+// ToConfig generates the WireGuard client configuration as a string.
 func (co *ClientOptions) ToConfig() (string, error) {
 	return "", nil
 }
 
-// ToConfig generates the V2Ray server configuration as a string.
+// ToConfig generates the WireGuard server configuration as a string.
 func (so *ServerOptions) ToConfig() (string, error) {
-	text, err := fs.ReadFile("server.json.tmpl")
+	text, err := fs.ReadFile("server.conf.tmpl")
 	if err != nil {
 		return "", err
 	}

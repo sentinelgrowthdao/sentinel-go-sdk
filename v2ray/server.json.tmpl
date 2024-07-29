@@ -34,9 +34,9 @@
                 }
                 {{- end }}
             },
-            "tag": "{{ tag . }}"
+            "tag": "{{ .Tag }}"
         }
-        {{- if ne (add $index 1) (len $.Inbounds) }},{{- end }}
+        {{- if ne (sum $index 1) (len $.Inbounds) }},{{- end }}
         {{- end }}
     ],
     "log": {

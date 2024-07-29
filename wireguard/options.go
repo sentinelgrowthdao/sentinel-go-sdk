@@ -8,19 +8,10 @@ import (
 
 	"github.com/pelletier/go-toml/v2"
 	"github.com/spf13/cobra"
-
-	"github.com/sentinel-official/sentinel-go-sdk/v1/third_party/wireguard/windows/conf"
 )
 
 // ClientOptions represents the WireGuard client configuration options.
-type ClientOptions struct {
-	conf.Config
-}
-
-// ToWgQuick converts the ClientOptions to a WireGuard quick configuration string.
-func (co *ClientOptions) ToWgQuick() (string, error) {
-	return co.Config.ToWgQuick(), nil
-}
+type ClientOptions struct{}
 
 // WriteToFile writes the ClientOptions configuration to a TOML file.
 func (co *ClientOptions) WriteToFile(filepath string) error {
@@ -34,7 +25,7 @@ func (co *ClientOptions) WriteToFile(filepath string) error {
 
 // WriteConfigToFile writes the WireGuard configuration to a file in a format recognized by WireGuard.
 func (co *ClientOptions) WriteConfigToFile(filepath string) error {
-	data, err := co.ToWgQuick()
+	data, err := co.ToConfig()
 	if err != nil {
 		return err
 	}
@@ -122,7 +113,7 @@ func (so *ServerOptions) WriteToFile(filepath string) error {
 
 // WriteConfigToFile writes the WireGuard server configuration to a file in a format recognized by WireGuard.
 func (so *ServerOptions) WriteConfigToFile(filepath string) error {
-	data, err := so.ToWgQuick()
+	data, err := so.ToConfig()
 	if err != nil {
 		return err
 	}
@@ -152,7 +143,7 @@ func (so *ServerOptions) Validate() error {
 		return errors.New("out_interface cannot be empty")
 	}
 
-	_, err := conf.NewPrivateKeyFromString(so.PrivateKey)
+	_, err := NewPrivateKeyFromString(so.PrivateKey)
 	if err != nil {
 		return fmt.Errorf("invalid private_key: %w", err)
 	}
