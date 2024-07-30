@@ -2,7 +2,6 @@ package v2ray
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 	"os"
 	"os/exec"
@@ -15,7 +14,6 @@ import (
 	statscommand "github.com/v2fly/v2ray-core/v5/app/stats/command"
 	"github.com/v2fly/v2ray-core/v5/common/protocol"
 	"github.com/v2fly/v2ray-core/v5/common/serial"
-	"github.com/v2fly/v2ray-core/v5/common/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -24,9 +22,6 @@ import (
 )
 
 const (
-	// RequestLen is the expected length of request used for peer operations (3 bytes for tag + 16 bytes for UUID).
-	RequestLen = 3 + 16
-
 	// InfoLen represents the length of the server information (2 bytes for version + 1 byte for type).
 	InfoLen = 2 + 1
 )
@@ -49,7 +44,7 @@ func NewServer(homeDir string) *Server {
 		homeDir: homeDir,
 		info:    make([]byte, InfoLen),
 		cmd:     nil,
-		pm:      NewPeerManager(),
+		pm:      NewPeerManager(), // Initialize a new PeerManager for managing peers.
 	}
 }
 
@@ -267,10 +262,14 @@ func (s *Server) PostDown() error {
 }
 
 // AddPeer adds a new peer to the V2Ray server.
-func (s *Server) AddPeer(ctx context.Context, req []byte) ([]byte, error) {
-	// Check if the request length is valid.
-	if len(req) != RequestLen {
-		return nil, fmt.Errorf("invalid request length; expected %d, got %d", RequestLen, len(req))
+func (s *Server) AddPeer(ctx context.Context, req interface{}) ([]byte, error) {
+	// Cast the request to AddPeerRequest type.
+	r, ok := req.(*AddPeerRequest)
+	if !ok {
+		return nil, fmt.Errorf("invalid request type: %T", req)
+	}
+	if err := r.Validate(); err != nil {
+		return nil, fmt.Errorf("invalid request: %w", err)
 	}
 
 	// Establish a gRPC client connection to the handler service.
@@ -286,28 +285,19 @@ func (s *Server) AddPeer(ctx context.Context, req []byte) ([]byte, error) {
 		}
 	}()
 
-	// Encode the request buffer to email using base64 encoding and extract proxy type.
-	email := base64.StdEncoding.EncodeToString(req)
-	tag := &Tag{
-		p: Protocol(req[0]),
-		n: Network(req[1]),
-		s: Security(req[2]),
-	}
+	// Extract information from the request.
+	account := r.Account()
+	email := r.Key()
+	tag := r.Tag()
 
-	// Parse the UUID from the request buffer.
-	uid, err := uuid.ParseBytes(req[3:])
-	if err != nil {
-		return nil, err
-	}
-
-	// Prepare gRPC request to add a user to the handler.
+	// Prepare gRPC request to add a new user to the handler.
 	in := &proxymancommand.AlterInboundRequest{
 		Tag: tag.String(),
 		Operation: serial.ToTypedMessage(
 			&proxymancommand.AddUserOperation{
 				User: &protocol.User{
 					Email:   email,
-					Account: tag.Account(uid),
+					Account: account,
 				},
 			},
 		),
@@ -331,14 +321,18 @@ func (s *Server) AddPeer(ctx context.Context, req []byte) ([]byte, error) {
 }
 
 // HasPeer checks if a peer exists in the V2Ray server's peer list.
-func (s *Server) HasPeer(_ context.Context, req []byte) (bool, error) {
-	// Check if the request length is valid.
-	if len(req) != RequestLen {
-		return false, fmt.Errorf("invalid request length; expected %d, got %d", RequestLen, len(req))
+func (s *Server) HasPeer(_ context.Context, req interface{}) (bool, error) {
+	// Cast the request to HasPeerRequest type.
+	r, ok := req.(*HasPeerRequest)
+	if !ok {
+		return false, fmt.Errorf("invalid request type: %T", req)
+	}
+	if err := r.Validate(); err != nil {
+		return false, fmt.Errorf("invalid request: %w", err)
 	}
 
-	// Encode the request buffer to email using base64 encoding.
-	email := base64.StdEncoding.EncodeToString(req)
+	// Retrieve the key from the request.
+	email := r.Key()
 	peer := s.pm.Get(email)
 
 	// Return true if the peer exists, otherwise false.
@@ -346,10 +340,14 @@ func (s *Server) HasPeer(_ context.Context, req []byte) (bool, error) {
 }
 
 // RemovePeer removes a peer from the V2Ray server.
-func (s *Server) RemovePeer(ctx context.Context, req []byte) error {
-	// Check if the request length is valid.
-	if len(req) != RequestLen {
-		return fmt.Errorf("invalid request length; expected %d, got %d", RequestLen, len(req))
+func (s *Server) RemovePeer(ctx context.Context, req interface{}) error {
+	// Cast the request to RemovePeerRequest type.
+	r, ok := req.(*RemovePeerRequest)
+	if !ok {
+		return fmt.Errorf("invalid request type: %T", req)
+	}
+	if err := r.Validate(); err != nil {
+		return fmt.Errorf("invalid request: %w", err)
 	}
 
 	// Establish a gRPC client connection to the handler service.
@@ -365,13 +363,9 @@ func (s *Server) RemovePeer(ctx context.Context, req []byte) error {
 		}
 	}()
 
-	// Encode the data buffer to email using base64 encoding and extract proxy type.
-	email := base64.StdEncoding.EncodeToString(req)
-	tag := &Tag{
-		p: Protocol(req[0]),
-		n: Network(req[1]),
-		s: Security(req[2]),
-	}
+	// Extract key and tag from the request.
+	email := r.Key()
+	tag := r.Tag()
 
 	// Prepare gRPC request to remove a user from the handler.
 	in := &proxymancommand.AlterInboundRequest{

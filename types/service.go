@@ -74,9 +74,9 @@ type ServerService interface {
 	Down(context.Context) error // Down brings down the server service.
 	PostDown() error            // PostDown performs operations after the service is brought down.
 
-	AddPeer(context.Context, []byte) ([]byte, error)          // AddPeer adds a peer to the server service.
-	HasPeer(context.Context, []byte) (bool, error)            // HasPeer checks if a peer exists in the server service.
-	RemovePeer(context.Context, []byte) error                 // RemovePeer removes a peer from the server service.
+	AddPeer(context.Context, interface{}) ([]byte, error)     // AddPeer adds a peer to the server service.
+	HasPeer(context.Context, interface{}) (bool, error)       // HasPeer checks if a peer exists in the server service.
+	RemovePeer(context.Context, interface{}) error            // RemovePeer removes a peer from the server service.
 	PeerCount() int                                           // PeerCount returns the count of peers.
 	PeerStatistics(context.Context) ([]*PeerStatistic, error) // PeerStatistics returns the statistics for all peers.
 }

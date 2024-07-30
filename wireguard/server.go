@@ -2,7 +2,6 @@ package wireguard
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 	"os"
 	"os/exec"
@@ -12,11 +11,6 @@ import (
 
 	sentinelsdk "github.com/sentinel-official/sentinel-go-sdk/v1/types"
 	"github.com/sentinel-official/sentinel-go-sdk/v1/utils"
-)
-
-const (
-	// RequestLen is the expected length of a request for peer operations.
-	RequestLen = 16
 )
 
 // Ensure Server implements sentinelsdk.ServerService interface.
@@ -99,14 +93,18 @@ func (s *Server) PostDown() error {
 }
 
 // AddPeer adds a new peer to the WireGuard server.
-func (s *Server) AddPeer(ctx context.Context, req []byte) (res []byte, err error) {
-	// Check if the request length is valid.
-	if len(req) != RequestLen {
-		return nil, fmt.Errorf("invalid request length; expected %d, got %d", RequestLen, len(req))
+func (s *Server) AddPeer(ctx context.Context, req interface{}) (res []byte, err error) {
+	// Cast the request to AddPeerRequest type.
+	r, ok := req.(*AddPeerRequest)
+	if !ok {
+		return nil, fmt.Errorf("invalid request type: %T", req)
+	}
+	if err := r.Validate(); err != nil {
+		return nil, fmt.Errorf("invalid request: %w", err)
 	}
 
-	// Encode the request to identity using base64 encoding.
-	identity := base64.StdEncoding.EncodeToString(req)
+	// Retrieve the identity from the request.
+	identity := r.Key()
 
 	// Add peer to the peer manager and retrieve assigned IP addresses.
 	ipv4Addr, ipv6Addr, err := s.pm.Put(identity)
@@ -135,14 +133,18 @@ func (s *Server) AddPeer(ctx context.Context, req []byte) (res []byte, err error
 }
 
 // HasPeer checks if a peer exists in the WireGuard server's peer list.
-func (s *Server) HasPeer(_ context.Context, req []byte) (bool, error) {
-	// Check if the request length is valid.
-	if len(req) != RequestLen {
-		return false, fmt.Errorf("invalid request length; expected %d, got %d", RequestLen, len(req))
+func (s *Server) HasPeer(_ context.Context, req interface{}) (bool, error) {
+	// Cast the request to HasPeerRequest type.
+	r, ok := req.(*HasPeerRequest)
+	if !ok {
+		return false, fmt.Errorf("invalid request type: %T", req)
+	}
+	if err := r.Validate(); err != nil {
+		return false, fmt.Errorf("invalid request: %w", err)
 	}
 
-	// Encode the request to identity using base64 encoding.
-	identity := base64.StdEncoding.EncodeToString(req)
+	// Retrieve the identity from the request.
+	identity := r.Key()
 	peer := s.pm.Get(identity)
 
 	// Return true if the peer exists, otherwise false.
@@ -150,14 +152,18 @@ func (s *Server) HasPeer(_ context.Context, req []byte) (bool, error) {
 }
 
 // RemovePeer removes a peer from the WireGuard server.
-func (s *Server) RemovePeer(ctx context.Context, req []byte) error {
-	// Check if the request length is valid.
-	if len(req) != RequestLen {
-		return fmt.Errorf("invalid request length; expected %d, got %d", RequestLen, len(req))
+func (s *Server) RemovePeer(ctx context.Context, req interface{}) error {
+	// Cast the request to RemovePeerRequest type.
+	r, ok := req.(*RemovePeerRequest)
+	if !ok {
+		return fmt.Errorf("invalid request type: %T", req)
+	}
+	if err := r.Validate(); err != nil {
+		return fmt.Errorf("invalid request: %w", err)
 	}
 
-	// Encode the request to identity using base64 encoding.
-	identity := base64.StdEncoding.EncodeToString(req)
+	// Retrieve the identity from the request.
+	identity := r.Key()
 
 	// Executes the 'wg set' command to remove the peer from the WireGuard interface.
 	cmd := exec.CommandContext(
