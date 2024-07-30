@@ -1,5 +1,13 @@
 package v2ray
 
+import (
+	"github.com/v2fly/v2ray-core/v5/common/serial"
+	"github.com/v2fly/v2ray-core/v5/common/uuid"
+	"github.com/v2fly/v2ray-core/v5/proxy/vless"
+	"github.com/v2fly/v2ray-core/v5/proxy/vmess"
+	"google.golang.org/protobuf/types/known/anypb"
+)
+
 // Protocol is a custom type used to represent different protocols.
 type Protocol byte
 
@@ -25,6 +33,26 @@ func (p Protocol) String() string {
 // IsValid checks if the Protocol value is valid.
 func (p Protocol) IsValid() bool {
 	return p.String() != ""
+}
+
+// Account generates an account message based on the Protocol type.
+func (p Protocol) Account(uid uuid.UUID) *anypb.Any {
+	switch p {
+	case ProtocolVLess:
+		return serial.ToTypedMessage(
+			&vless.Account{
+				Id: uid.String(),
+			},
+		)
+	case ProtocolVMess:
+		return serial.ToTypedMessage(
+			&vmess.Account{
+				Id: uid.String(),
+			},
+		)
+	default:
+		return nil
+	}
 }
 
 // NewProtocolFromString converts a string to a Protocol type.

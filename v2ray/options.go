@@ -94,9 +94,17 @@ func (so *InboundServerOptions) WithTLSKeyPath(keyPath string) *InboundServerOpt
 	return so
 }
 
-// Tag returns a unique tag for the InboundServerOptions instance.
-func (so *InboundServerOptions) Tag() string {
-	return fmt.Sprintf("%s_%s_%s", so.Protocol, so.Network, so.Security)
+// Tag creates a Tag instance based on the InboundServerOptions configuration.
+func (so *InboundServerOptions) Tag() *Tag {
+	protocol := NewProtocolFromString(so.Protocol)
+	network := NewNetworkFromString(so.Network)
+	security := NewSecurityFromString(so.Security)
+
+	return &Tag{
+		p: protocol,
+		n: network,
+		s: security,
+	}
 }
 
 // Validate validates the InboundServerOptions fields.
@@ -154,7 +162,7 @@ func (so *ServerOptions) Validate() error {
 		}
 		portSet[inbound.Port] = true
 
-		tag := inbound.Tag()
+		tag := inbound.Tag().String()
 		if tagSet[tag] {
 			return fmt.Errorf("duplicate tag detected: %s", tag)
 		}

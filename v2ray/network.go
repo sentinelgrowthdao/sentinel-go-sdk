@@ -62,7 +62,7 @@ func NewNetworkFromString(v string) Network {
 		return NetworkQUIC
 	case "tcp":
 		return NetworkTCP
-	case "websocket":
+	case "websocket", "ws":
 		return NetworkWebSocket
 	default:
 		return NetworkUnspecified // Returns the default network type if no match is found

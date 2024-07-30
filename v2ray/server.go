@@ -24,8 +24,8 @@ import (
 )
 
 const (
-	// RequestLen is the expected length of request used for peer operations (1 byte for type + 16 bytes for UUID).
-	RequestLen = 1 + 16
+	// RequestLen is the expected length of request used for peer operations (3 bytes for tag + 16 bytes for UUID).
+	RequestLen = 3 + 16
 
 	// InfoLen represents the length of the server information (2 bytes for version + 1 byte for type).
 	InfoLen = 2 + 1
@@ -288,23 +288,26 @@ func (s *Server) AddPeer(ctx context.Context, req []byte) ([]byte, error) {
 
 	// Encode the request buffer to email using base64 encoding and extract proxy type.
 	email := base64.StdEncoding.EncodeToString(req)
-	proxy := Proxy(req[0])
+	tag := &Tag{
+		p: Protocol(req[0]),
+		n: Network(req[1]),
+		s: Security(req[2]),
+	}
 
 	// Parse the UUID from the request buffer.
-	uid, err := uuid.ParseBytes(req[1:])
+	uid, err := uuid.ParseBytes(req[3:])
 	if err != nil {
 		return nil, err
 	}
 
 	// Prepare gRPC request to add a user to the handler.
 	in := &proxymancommand.AlterInboundRequest{
-		Tag: proxy.Tag(),
+		Tag: tag.String(),
 		Operation: serial.ToTypedMessage(
 			&proxymancommand.AddUserOperation{
 				User: &protocol.User{
-					Level:   0,
 					Email:   email,
-					Account: proxy.Account(uid),
+					Account: tag.Account(uid),
 				},
 			},
 		),
@@ -364,11 +367,15 @@ func (s *Server) RemovePeer(ctx context.Context, req []byte) error {
 
 	// Encode the data buffer to email using base64 encoding and extract proxy type.
 	email := base64.StdEncoding.EncodeToString(req)
-	proxy := Proxy(req[0])
+	tag := &Tag{
+		p: Protocol(req[0]),
+		n: Network(req[1]),
+		s: Security(req[2]),
+	}
 
 	// Prepare gRPC request to remove a user from the handler.
 	in := &proxymancommand.AlterInboundRequest{
-		Tag: proxy.Tag(),
+		Tag: tag.String(),
 		Operation: serial.ToTypedMessage(
 			&proxymancommand.RemoveUserOperation{
 				Email: email,
