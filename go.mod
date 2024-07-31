@@ -1,4 +1,4 @@
-module github.com/sentinel-official/sentinel-go-sdk/v1
+module github.com/sentinel-official/sentinel-go-sdk
 
 go 1.22.5
 

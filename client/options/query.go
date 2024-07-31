@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/spf13/cobra"
 
-	"github.com/sentinel-official/sentinel-go-sdk/v1/utils"
+	"github.com/sentinel-official/sentinel-go-sdk/utils"
 )
 
 // Default values for query options.

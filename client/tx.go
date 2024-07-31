@@ -12,8 +12,8 @@ import (
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	"github.com/sentinel-official/sentinel-go-sdk/v1/client/options"
-	"github.com/sentinel-official/sentinel-go-sdk/v1/utils"
+	"github.com/sentinel-official/sentinel-go-sdk/client/options"
+	"github.com/sentinel-official/sentinel-go-sdk/utils"
 )
 
 // Simulate simulates the execution of a transaction before broadcasting it.

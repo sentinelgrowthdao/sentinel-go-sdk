@@ -11,8 +11,8 @@ import (
 
 	"github.com/shirou/gopsutil/v4/process"
 
-	sentinelsdk "github.com/sentinel-official/sentinel-go-sdk/v1/types"
-	"github.com/sentinel-official/sentinel-go-sdk/v1/utils"
+	sentinelsdk "github.com/sentinel-official/sentinel-go-sdk/types"
+	"github.com/sentinel-official/sentinel-go-sdk/utils"
 )
 
 // Ensure Client implements the sentinelsdk.ClientService interface.

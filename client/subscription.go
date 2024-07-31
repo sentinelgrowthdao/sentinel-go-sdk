@@ -7,7 +7,7 @@ import (
 	"github.com/sentinel-official/hub/v12/x/subscription/types/v2"
 	"github.com/sentinel-official/hub/v12/x/subscription/types/v3"
 
-	"github.com/sentinel-official/sentinel-go-sdk/v1/client/options"
+	"github.com/sentinel-official/sentinel-go-sdk/client/options"
 )
 
 const (

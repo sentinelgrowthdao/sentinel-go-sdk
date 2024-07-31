@@ -5,7 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 
-	"github.com/sentinel-official/sentinel-go-sdk/v1/types"
+	"github.com/sentinel-official/sentinel-go-sdk/types"
 )
 
 // Client contains necessary components for transaction handling, encoding and decoding.

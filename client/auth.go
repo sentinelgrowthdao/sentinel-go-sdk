@@ -6,7 +6,7 @@ import (
 	cosmossdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	"github.com/sentinel-official/sentinel-go-sdk/v1/client/options"
+	"github.com/sentinel-official/sentinel-go-sdk/client/options"
 )
 
 const (

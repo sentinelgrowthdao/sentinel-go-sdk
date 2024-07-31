@@ -5,7 +5,7 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/go-bip39"
 
-	"github.com/sentinel-official/sentinel-go-sdk/v1/client/options"
+	"github.com/sentinel-official/sentinel-go-sdk/client/options"
 )
 
 // Key retrieves key information from the keyring based on the provided name and options.

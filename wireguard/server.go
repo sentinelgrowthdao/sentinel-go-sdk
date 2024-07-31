@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"strings"
 
-	sentinelsdk "github.com/sentinel-official/sentinel-go-sdk/v1/types"
-	"github.com/sentinel-official/sentinel-go-sdk/v1/utils"
+	sentinelsdk "github.com/sentinel-official/sentinel-go-sdk/types"
+	"github.com/sentinel-official/sentinel-go-sdk/utils"
 )
 
 // Ensure Server implements sentinelsdk.ServerService interface.

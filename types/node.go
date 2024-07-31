@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	base "github.com/sentinel-official/hub/v12/types"
 
-	"github.com/sentinel-official/sentinel-go-sdk/v1/geoip"
+	"github.com/sentinel-official/sentinel-go-sdk/geoip"
 )
 
 type (

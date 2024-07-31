@@ -10,7 +10,7 @@ import (
 	"github.com/cometbft/cometbft/libs/bytes"
 	"github.com/cosmos/cosmos-sdk/codec"
 
-	"github.com/sentinel-official/sentinel-go-sdk/v1/client/options"
+	"github.com/sentinel-official/sentinel-go-sdk/client/options"
 )
 
 // ABCIQueryWithOptions performs an ABCI query with configurable options.
