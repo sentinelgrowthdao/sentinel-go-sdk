@@ -51,7 +51,7 @@ func keysAdd() *cobra.Command {
 			reader := bufio.NewReader(opts.Input)
 
 			// Prompt for mnemonic
-			mnemonic, err := input.GetString("Enter your bip39 mnemonic, or hit enter to generate one:", reader)
+			mnemonic, err := input.GetString("Enter your bip39 mnemonic, or hit enter to generate one.\n", reader)
 			if err != nil {
 				return err
 			}
@@ -98,6 +98,7 @@ func keysAdd() *cobra.Command {
 			}
 
 			if newMnemonic != mnemonic {
+				writeMnemonicWarningToCmd(cmd)
 				output.Mnemonic = newMnemonic
 			}
 

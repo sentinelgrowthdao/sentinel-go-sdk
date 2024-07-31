@@ -53,3 +53,14 @@ func writeOutputToCmd(cmd *cobra.Command, v interface{}, format string) error {
 	cmd.Println() // Adding a newline after output
 	return nil
 }
+
+// writeMnemonicWarningToCmd prints a formatted warning message to save the mnemonic securely.
+func writeMnemonicWarningToCmd(cmd *cobra.Command) {
+	cmd.Printf("\n")
+	cmd.Printf("####################################################################\n")
+	cmd.Printf("WARNING: YOU MUST SAVE THE FOLLOWING MNEMONIC SECURELY!\n")
+	cmd.Printf("THIS MNEMONIC IS REQUIRED TO RECOVER YOUR KEY.\n")
+	cmd.Printf("IF YOU LOSE THIS MNEMONIC, YOU WILL NOT BE ABLE TO RECOVER YOUR KEY.\n")
+	cmd.Printf("####################################################################\n")
+	cmd.Printf("\n")
+}
