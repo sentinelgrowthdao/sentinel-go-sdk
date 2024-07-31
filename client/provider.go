@@ -19,7 +19,7 @@ const (
 // Provider queries and returns information about a specific provider based on the provided provider address.
 // It uses gRPC to send a request to the "/sentinel.provider.v2.QueryService/QueryProvider" endpoint.
 // The result is a pointer to v2.Provider and an error if the query fails.
-func (c *Context) Provider(ctx context.Context, provAddr base.ProvAddress, opts *options.QueryOptions) (res *v2.Provider, err error) {
+func (c *Client) Provider(ctx context.Context, provAddr base.ProvAddress, opts *options.QueryOptions) (res *v2.Provider, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v2.QueryProviderResponse
@@ -40,7 +40,7 @@ func (c *Context) Provider(ctx context.Context, provAddr base.ProvAddress, opts 
 // Providers queries and returns a list of providers based on the provided status and options.
 // It uses gRPC to send a request to the "/sentinel.provider.v2.QueryService/QueryProviders" endpoint.
 // The result is a slice of v2.Provider and an error if the query fails.
-func (c *Context) Providers(ctx context.Context, status v1base.Status, opts *options.QueryOptions) (res []v2.Provider, err error) {
+func (c *Client) Providers(ctx context.Context, status v1base.Status, opts *options.QueryOptions) (res []v2.Provider, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v2.QueryProvidersResponse

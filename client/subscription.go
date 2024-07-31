@@ -25,7 +25,7 @@ const (
 // Subscription queries and returns information about a specific subscription based on the provided subscription ID.
 // It uses gRPC to send a request to the "/sentinel.subscription.v3.QueryService/QuerySubscription" endpoint.
 // The result is a v3.Subscription and an error if the query fails.
-func (c *Context) Subscription(ctx context.Context, id uint64, opts *options.QueryOptions) (res *v3.Subscription, err error) {
+func (c *Client) Subscription(ctx context.Context, id uint64, opts *options.QueryOptions) (res *v3.Subscription, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v3.QuerySubscriptionResponse
@@ -46,7 +46,7 @@ func (c *Context) Subscription(ctx context.Context, id uint64, opts *options.Que
 // Subscriptions queries and returns a list of subscriptions based on the provided options.
 // It uses gRPC to send a request to the "/sentinel.subscription.v3.QueryService/QuerySubscriptions" endpoint.
 // The result is a slice of v3.Subscription and an error if the query fails.
-func (c *Context) Subscriptions(ctx context.Context, opts *options.QueryOptions) (res []v3.Subscription, err error) {
+func (c *Client) Subscriptions(ctx context.Context, opts *options.QueryOptions) (res []v3.Subscription, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v3.QuerySubscriptionsResponse
@@ -68,7 +68,7 @@ func (c *Context) Subscriptions(ctx context.Context, opts *options.QueryOptions)
 // It uses gRPC to send a request to the "/sentinel.subscription.v3.QueryService/QuerySubscriptionsForAccount" endpoint.
 // The result is a slice of v3.Subscription and an error if the query fails.
 // The account is identified by the provided cosmossdk.AccAddress.
-func (c *Context) SubscriptionsForAccount(ctx context.Context, accAddr cosmossdk.AccAddress, opts *options.QueryOptions) (res []v3.Subscription, err error) {
+func (c *Client) SubscriptionsForAccount(ctx context.Context, accAddr cosmossdk.AccAddress, opts *options.QueryOptions) (res []v3.Subscription, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v3.QuerySubscriptionsForAccountResponse
@@ -91,7 +91,7 @@ func (c *Context) SubscriptionsForAccount(ctx context.Context, accAddr cosmossdk
 // It uses gRPC to send a request to the "/sentinel.subscription.v3.QueryService/QuerySubscriptionsForPlan" endpoint.
 // The result is a slice of v3.Subscription and an error if the query fails.
 // The plan is identified by the provided ID.
-func (c *Context) SubscriptionsForPlan(ctx context.Context, id uint64, opts *options.QueryOptions) (res []v3.Subscription, err error) {
+func (c *Client) SubscriptionsForPlan(ctx context.Context, id uint64, opts *options.QueryOptions) (res []v3.Subscription, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v3.QuerySubscriptionsForPlanResponse
@@ -113,7 +113,7 @@ func (c *Context) SubscriptionsForPlan(ctx context.Context, id uint64, opts *opt
 // SubscriptionAllocation queries and returns information about a specific allocation within a subscription.
 // It uses gRPC to send a request to the "/sentinel.subscription.v2.QueryService/QueryAllocation" endpoint.
 // The result is a pointer to v2.Allocation and an error if the query fails.
-func (c *Context) SubscriptionAllocation(ctx context.Context, id uint64, accAddr cosmossdk.AccAddress, opts *options.QueryOptions) (res *v2.Allocation, err error) {
+func (c *Client) SubscriptionAllocation(ctx context.Context, id uint64, accAddr cosmossdk.AccAddress, opts *options.QueryOptions) (res *v2.Allocation, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v2.QueryAllocationResponse
@@ -135,7 +135,7 @@ func (c *Context) SubscriptionAllocation(ctx context.Context, id uint64, accAddr
 // SubscriptionAllocations queries and returns a list of allocations within a specific subscription.
 // It uses gRPC to send a request to the "/sentinel.subscription.v2.QueryService/QueryAllocations" endpoint.
 // The result is a slice of v2.Allocation and an error if the query fails.
-func (c *Context) SubscriptionAllocations(ctx context.Context, id uint64, opts *options.QueryOptions) (res []v2.Allocation, err error) {
+func (c *Client) SubscriptionAllocations(ctx context.Context, id uint64, opts *options.QueryOptions) (res []v2.Allocation, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v2.QueryAllocationsResponse

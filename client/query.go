@@ -15,9 +15,9 @@ import (
 
 // ABCIQueryWithOptions performs an ABCI query with configurable options.
 // It retries the query according to the specified maximum number of retries.
-func (c *Context) ABCIQueryWithOptions(ctx context.Context, path string, data bytes.HexBytes, opts *options.QueryOptions) (*abcitypes.ResponseQuery, error) {
-	// Get the ABCI client from the provided options.
-	client, err := opts.Client()
+func (c *Client) ABCIQueryWithOptions(ctx context.Context, path string, data bytes.HexBytes, opts *options.QueryOptions) (*abcitypes.ResponseQuery, error) {
+	// Get the RPC client from the provided options.
+	rpcClient, err := opts.Client()
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +25,7 @@ func (c *Context) ABCIQueryWithOptions(ctx context.Context, path string, data by
 	// Retry the query for the specified number of times.
 	for t := 0; t < opts.MaxRetries; t++ {
 		// Perform the ABCI query with options.
-		result, err := client.ABCIQueryWithOptions(ctx, path, data, opts.ABCIQueryOptions())
+		result, err := rpcClient.ABCIQueryWithOptions(ctx, path, data, opts.ABCIQueryOptions())
 		if err != nil {
 			// Retry on specific errors, such as EOF or invalid character.
 			if strings.Contains(err.Error(), "EOF") || strings.Contains(err.Error(), "invalid character '<' looking for beginning of value") {
@@ -50,7 +50,7 @@ func (c *Context) ABCIQueryWithOptions(ctx context.Context, path string, data by
 }
 
 // QueryKey performs an ABCI query for a specific key in a store.
-func (c *Context) QueryKey(ctx context.Context, store string, data bytes.HexBytes, opts *options.QueryOptions) (*abcitypes.ResponseQuery, error) {
+func (c *Client) QueryKey(ctx context.Context, store string, data bytes.HexBytes, opts *options.QueryOptions) (*abcitypes.ResponseQuery, error) {
 	// Construct the path for querying a key in the store.
 	path := fmt.Sprintf("/store/%s/key", store)
 
@@ -59,7 +59,7 @@ func (c *Context) QueryKey(ctx context.Context, store string, data bytes.HexByte
 }
 
 // QuerySubspace performs an ABCI query for a subspace in a store.
-func (c *Context) QuerySubspace(ctx context.Context, store string, data bytes.HexBytes, opts *options.QueryOptions) (*abcitypes.ResponseQuery, error) {
+func (c *Client) QuerySubspace(ctx context.Context, store string, data bytes.HexBytes, opts *options.QueryOptions) (*abcitypes.ResponseQuery, error) {
 	// Construct the path for querying a subspace in the store.
 	path := fmt.Sprintf("/store/%s/subspace", store)
 
@@ -69,7 +69,7 @@ func (c *Context) QuerySubspace(ctx context.Context, store string, data bytes.He
 
 // QueryGRPC performs a gRPC query using ABCI with configurable options.
 // It marshals the request, queries with ABCI, and unmarshals the response.
-func (c *Context) QueryGRPC(ctx context.Context, method string, req, resp codec.ProtoMarshaler, opts *options.QueryOptions) error {
+func (c *Client) QueryGRPC(ctx context.Context, method string, req, resp codec.ProtoMarshaler, opts *options.QueryOptions) error {
 	// Marshal the gRPC request.
 	data, err := c.Marshal(req)
 	if err != nil {

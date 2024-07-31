@@ -14,6 +14,7 @@ import (
 // Default values for query options.
 const (
 	DefaultQueryMaxRetries = 15
+	DefaultQueryPageLimit  = 25
 	DefaultQueryRPCAddr    = "https://rpc.sentinel.co:443"
 	DefaultQueryTimeout    = 15 * time.Second
 )
@@ -36,6 +37,7 @@ type QueryOptions struct {
 func Query() *QueryOptions {
 	return &QueryOptions{
 		MaxRetries: DefaultQueryMaxRetries,
+		PageLimit:  DefaultQueryPageLimit,
 		RPCAddr:    DefaultQueryRPCAddr,
 		Timeout:    DefaultQueryTimeout,
 	}
@@ -131,7 +133,7 @@ func AddQueryFlagsToCmd(cmd *cobra.Command) {
 	cmd.Flags().Int("query.max-retries", DefaultQueryMaxRetries, "Maximum number of retries for the query.")
 	cmd.Flags().Bool("query.page-count-total", false, "Include total count in paged queries.")
 	cmd.Flags().BytesBase64("query.page-key", nil, "Base64-encoded key for pagination.")
-	cmd.Flags().Uint64("query.page-limit", 0, "Maximum number of results per page.")
+	cmd.Flags().Uint64("query.page-limit", DefaultQueryPageLimit, "Maximum number of results per page.")
 	cmd.Flags().Uint64("query.page-offset", 0, "Offset for pagination.")
 	cmd.Flags().Bool("query.page-reverse", false, "Reverse the order of results in pagination.")
 	cmd.Flags().Bool("query.prove", false, "Include proof in query results.")
