@@ -2,7 +2,6 @@ package options
 
 import (
 	"io"
-	"os"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	cryptohd "github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -93,7 +92,7 @@ func NewKeyringOptionsFromCmd(cmd *cobra.Command) (*KeyringOptions, error) {
 		AppName: appName,
 		Backend: backend,
 		HomeDir: homeDir,
-		Input:   os.Stdin, // Default input source is stdin if not set.
+		Input:   cmd.InOrStdin(),
 	}, nil
 }
 

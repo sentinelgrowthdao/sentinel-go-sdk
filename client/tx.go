@@ -120,7 +120,7 @@ func (c *Client) signTx(txb client.TxBuilder, key *keyring.Record, account autht
 	}
 
 	// Sign the transaction bytes
-	buf, _, err = c.Sign(opts.FromName, buf, opts.KeyOptions)
+	buf, _, err = c.Sign(opts.FromName, buf, opts.KeyringOptions)
 	if err != nil {
 		return err
 	}
@@ -199,7 +199,7 @@ func (c *Client) prepareTx(ctx context.Context, key *keyring.Record, account aut
 // and returns the broadcast result and an error, if any.
 func (c *Client) BroadcastTx(ctx context.Context, msgs []sdk.Msg, opts *options.TxOptions) (*coretypes.ResultBroadcastTx, error) {
 	// Get key for signing
-	key, err := c.Key(opts.FromName, opts.KeyOptions)
+	key, err := c.Key(opts.FromName, opts.KeyringOptions)
 	if err != nil {
 		return nil, err
 	}
