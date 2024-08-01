@@ -15,8 +15,6 @@ const (
 
 // TxOptions represents options for transactions.
 type TxOptions struct {
-	*KeyOptions                // Embedding KeyOptions for key-related options.
-	*QueryOptions              // Embedding QueryOptions for query-related options.
 	ChainID            string  `json:"chain_id,omitempty"`             // ChainID is the identifier of the blockchain network.
 	FeeGranterAddr     string  `json:"fee_granter_addr,omitempty"`     // FeeGranterAddr is the address of the entity granting fees.
 	Fees               string  `json:"fees,omitempty"`                 // Fees is the transaction fees.
@@ -29,29 +27,15 @@ type TxOptions struct {
 	TimeoutHeight      uint64  `json:"timeout_height,omitempty"`       // TimeoutHeight is the block height at which the transaction times out.
 }
 
-// Tx creates a new TxOptions instance with default values.
-func Tx() *TxOptions {
+// NewDefaultTxOptions creates a new TxOptions instance with default values.
+func NewDefaultTxOptions() *TxOptions {
 	return &TxOptions{
-		KeyOptions:         Key(),   // Initialize embedded KeyOptions.
-		QueryOptions:       Query(), // Initialize embedded QueryOptions.
 		ChainID:            DefaultTxChainID,
 		Gas:                DefaultTxGas,
 		GasAdjustment:      DefaultTxGasAdjustment,
 		GasPrices:          DefaultTxGasPrices,
 		SimulateAndExecute: DefaultTxSimulateAndExecute,
 	}
-}
-
-// WithKeyOptions sets the KeyOptions field and returns the modified TxOptions instance.
-func (t *TxOptions) WithKeyOptions(v *KeyOptions) *TxOptions {
-	t.KeyOptions = v
-	return t
-}
-
-// WithQueryOptions sets the QueryOptions field and returns the modified TxOptions instance.
-func (t *TxOptions) WithQueryOptions(v *QueryOptions) *TxOptions {
-	t.QueryOptions = v
-	return t
 }
 
 // WithChainID sets the ChainID field and returns the modified TxOptions instance.
@@ -96,6 +80,12 @@ func (t *TxOptions) WithGasPrices(v string) *TxOptions {
 	return t
 }
 
+// WithMemo sets the Memo field and returns the modified TxOptions instance.
+func (t *TxOptions) WithMemo(v string) *TxOptions {
+	t.Memo = v
+	return t
+}
+
 // WithSimulateAndExecute sets the SimulateAndExecute field and returns the modified TxOptions instance.
 func (t *TxOptions) WithSimulateAndExecute(v bool) *TxOptions {
 	t.SimulateAndExecute = v
@@ -108,102 +98,184 @@ func (t *TxOptions) WithTimeoutHeight(v uint64) *TxOptions {
 	return t
 }
 
-// AddTxFlagsToCmd adds transaction-related flags to the given cobra command.
-func AddTxFlagsToCmd(cmd *cobra.Command) {
-	// Add key and query related flags to the command.
-	AddKeyFlagsToCmd(cmd)
-	AddQueryFlagsToCmd(cmd)
-
+// SetFlagTxChainID adds the tx.chain-id flag to the given command.
+func SetFlagTxChainID(cmd *cobra.Command) {
 	cmd.Flags().String("tx.chain-id", DefaultTxChainID, "Blockchain network identifier.")
+}
+
+// SetFlagTxFeeGranterAddr adds the tx.fee-granter-addr flag to the given command.
+func SetFlagTxFeeGranterAddr(cmd *cobra.Command) {
 	cmd.Flags().String("tx.fee-granter-addr", "", "Address of the entity granting fees for the transaction.")
+}
+
+// SetFlagTxFees adds the tx.fees flag to the given command.
+func SetFlagTxFees(cmd *cobra.Command) {
 	cmd.Flags().String("tx.fees", "", "Transaction fees to be paid.")
+}
+
+// SetFlagTxFromName adds the tx.from-name flag to the given command.
+func SetFlagTxFromName(cmd *cobra.Command) {
 	cmd.Flags().String("tx.from-name", "", "Name of the sender's account in the keyring.")
+}
+
+// SetFlagTxGas adds the tx.gas flag to the given command.
+func SetFlagTxGas(cmd *cobra.Command) {
 	cmd.Flags().Uint64("tx.gas", DefaultTxGas, "Gas limit set for the transaction.")
+}
+
+// SetFlagTxGasAdjustment adds the tx.gas-adjustment flag to the given command.
+func SetFlagTxGasAdjustment(cmd *cobra.Command) {
 	cmd.Flags().Float64("tx.gas-adjustment", DefaultTxGasAdjustment, "Factor to adjust gas estimation (used in simulation).")
+}
+
+// SetFlagTxGasPrices adds the tx.gas-prices flag to the given command.
+func SetFlagTxGasPrices(cmd *cobra.Command) {
 	cmd.Flags().String("tx.gas-prices", DefaultTxGasPrices, "Gas prices to be applied for transaction execution.")
+}
+
+// SetFlagTxMemo adds the tx.memo flag to the given command.
+func SetFlagTxMemo(cmd *cobra.Command) {
 	cmd.Flags().String("tx.memo", "", "Memo text attached to the transaction.")
+}
+
+// SetFlagTxSimulateAndExecute adds the tx.simulate-and-execute flag to the given command.
+func SetFlagTxSimulateAndExecute(cmd *cobra.Command) {
 	cmd.Flags().Bool("tx.simulate-and-execute", DefaultTxSimulateAndExecute, "Flag to simulate the transaction before execution.")
+}
+
+// SetFlagTxTimeoutHeight adds the tx.timeout-height flag to the given command.
+func SetFlagTxTimeoutHeight(cmd *cobra.Command) {
 	cmd.Flags().Uint64("tx.timeout-height", 0, "Block height after which the transaction will not be processed.")
+}
+
+// GetTxChainIDFromCmd retrieves the value of the tx.chain-id flag from the given command.
+func GetTxChainIDFromCmd(cmd *cobra.Command) (string, error) {
+	return cmd.Flags().GetString("tx.chain-id")
+}
+
+// GetTxFeeGranterAddrFromCmd retrieves the value of the tx.fee-granter-addr flag from the given command.
+func GetTxFeeGranterAddrFromCmd(cmd *cobra.Command) (string, error) {
+	return cmd.Flags().GetString("tx.fee-granter-addr")
+}
+
+// GetTxFeesFromCmd retrieves the value of the tx.fees flag from the given command.
+func GetTxFeesFromCmd(cmd *cobra.Command) (string, error) {
+	return cmd.Flags().GetString("tx.fees")
+}
+
+// GetTxFromNameFromCmd retrieves the value of the tx.from-name flag from the given command.
+func GetTxFromNameFromCmd(cmd *cobra.Command) (string, error) {
+	return cmd.Flags().GetString("tx.from-name")
+}
+
+// GetTxGasFromCmd retrieves the value of the tx.gas flag from the given command.
+func GetTxGasFromCmd(cmd *cobra.Command) (uint64, error) {
+	return cmd.Flags().GetUint64("tx.gas")
+}
+
+// GetTxGasAdjustmentFromCmd retrieves the value of the tx.gas-adjustment flag from the given command.
+func GetTxGasAdjustmentFromCmd(cmd *cobra.Command) (float64, error) {
+	return cmd.Flags().GetFloat64("tx.gas-adjustment")
+}
+
+// GetTxGasPricesFromCmd retrieves the value of the tx.gas-prices flag from the given command.
+func GetTxGasPricesFromCmd(cmd *cobra.Command) (string, error) {
+	return cmd.Flags().GetString("tx.gas-prices")
+}
+
+// GetTxMemoFromCmd retrieves the value of the tx.memo flag from the given command.
+func GetTxMemoFromCmd(cmd *cobra.Command) (string, error) {
+	return cmd.Flags().GetString("tx.memo")
+}
+
+// GetTxSimulateAndExecuteFromCmd retrieves the value of the tx.simulate-and-execute flag from the given command.
+func GetTxSimulateAndExecuteFromCmd(cmd *cobra.Command) (bool, error) {
+	return cmd.Flags().GetBool("tx.simulate-and-execute")
+}
+
+// GetTxTimeoutHeightFromCmd retrieves the value of the tx.timeout-height flag from the given command.
+func GetTxTimeoutHeightFromCmd(cmd *cobra.Command) (uint64, error) {
+	return cmd.Flags().GetUint64("tx.timeout-height")
+}
+
+// AddTxFlagsToCmd configures all transaction-related flags for the given command.
+func AddTxFlagsToCmd(cmd *cobra.Command) {
+	SetFlagTxChainID(cmd)
+	SetFlagTxFeeGranterAddr(cmd)
+	SetFlagTxFees(cmd)
+	SetFlagTxFromName(cmd)
+	SetFlagTxGas(cmd)
+	SetFlagTxGasAdjustment(cmd)
+	SetFlagTxGasPrices(cmd)
+	SetFlagTxMemo(cmd)
+	SetFlagTxSimulateAndExecute(cmd)
+	SetFlagTxTimeoutHeight(cmd)
 }
 
 // NewTxOptionsFromCmd creates and returns TxOptions from the given cobra command's flags.
 func NewTxOptionsFromCmd(cmd *cobra.Command) (*TxOptions, error) {
-	// Retrieve and create KeyOptions from the command's flags.
-	keyOpts, err := NewKeyOptionsFromCmd(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	// Retrieve and create QueryOptions from the command's flags.
-	queryOpts, err := NewQueryOptionsFromCmd(cmd)
-	if err != nil {
-		return nil, err
-	}
-
 	// Retrieve the value of the "tx.chain-id" flag.
-	chainID, err := cmd.Flags().GetString("tx.chain-id")
+	chainID, err := GetTxChainIDFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
 	// Retrieve the value of the "tx.fee-granter-addr" flag.
-	feeGranterAddr, err := cmd.Flags().GetString("tx.fee-granter-addr")
+	feeGranterAddr, err := GetTxFeeGranterAddrFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
 	// Retrieve the value of the "tx.fees" flag.
-	fees, err := cmd.Flags().GetString("tx.fees")
+	fees, err := GetTxFeesFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
 	// Retrieve the value of the "tx.from-name" flag.
-	fromName, err := cmd.Flags().GetString("tx.from-name")
+	fromName, err := GetTxFromNameFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
 	// Retrieve the value of the "tx.gas" flag.
-	gas, err := cmd.Flags().GetUint64("tx.gas")
+	gas, err := GetTxGasFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
 	// Retrieve the value of the "tx.gas-adjustment" flag.
-	gasAdjustment, err := cmd.Flags().GetFloat64("tx.gas-adjustment")
+	gasAdjustment, err := GetTxGasAdjustmentFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
 	// Retrieve the value of the "tx.gas-prices" flag.
-	gasPrices, err := cmd.Flags().GetString("tx.gas-prices")
+	gasPrices, err := GetTxGasPricesFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
 	// Retrieve the value of the "tx.memo" flag.
-	memo, err := cmd.Flags().GetString("tx.memo")
+	memo, err := GetTxMemoFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
 	// Retrieve the value of the "tx.simulate-and-execute" flag.
-	simulateAndExecute, err := cmd.Flags().GetBool("tx.simulate-and-execute")
+	simulateAndExecute, err := GetTxSimulateAndExecuteFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
 	// Retrieve the value of the "tx.timeout-height" flag.
-	timeoutHeight, err := cmd.Flags().GetUint64("tx.timeout-height")
+	timeoutHeight, err := GetTxTimeoutHeightFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
-	// Return a new TxOptions instance populated with the retrieved flag values, KeyOptions, and QueryOptions.
+	// Return a new TxOptions instance populated with the retrieved flag values.
 	return &TxOptions{
-		KeyOptions:         keyOpts,
-		QueryOptions:       queryOpts,
 		ChainID:            chainID,
 		FeeGranterAddr:     feeGranterAddr,
 		Fees:               fees,

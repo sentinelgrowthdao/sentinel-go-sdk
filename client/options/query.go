@@ -11,33 +11,186 @@ import (
 	"github.com/sentinel-official/sentinel-go-sdk/utils"
 )
 
-// Default values for query options.
+// Default values for page and query options.
 const (
+	DefaultPageLimit = 25
+
 	DefaultQueryMaxRetries = 15
-	DefaultQueryPageLimit  = 25
 	DefaultQueryRPCAddr    = "https://rpc.sentinel.co:443"
 	DefaultQueryTimeout    = 15 * time.Second
 )
 
-// QueryOptions represents options for making queries.
-type QueryOptions struct {
-	Height         int64         `json:"height,omitempty"`           // Height is the block height at which the query is to be performed.
-	MaxRetries     int           `json:"max_retries,omitempty"`      // MaxRetries is the maximum number of retries for the query.
-	PageCountTotal bool          `json:"page_count_total,omitempty"` // PageCountTotal indicates whether to include total count in paged queries.
-	PageKey        []byte        `json:"page_key,omitempty"`         // PageKey is the key for pagination.
-	PageLimit      uint64        `json:"page_limit,omitempty"`       // PageLimit is the maximum number of results per page.
-	PageOffset     uint64        `json:"page_offset,omitempty"`      // PageOffset is the offset for pagination.
-	PageReverse    bool          `json:"page_reverse,omitempty"`     // PageReverse indicates whether to reverse the order of results in pagination.
-	Prove          bool          `json:"prove,omitempty"`            // Prove indicates whether to include proof in query results.
-	RPCAddr        string        `json:"rpc_addr,omitempty"`         // RPCAddr is the address of the RPC server.
-	Timeout        time.Duration `json:"timeout,omitempty"`          // Timeout is the maximum duration for the query to be executed.
+// PageOptions represents page-related options.
+type PageOptions struct {
+	CountTotal bool   `json:"count_total,omitempty"` // CountTotal indicates whether to include total count in paged queries.
+	Key        []byte `json:"key,omitempty"`         // Key is the key for page.
+	Limit      uint64 `json:"limit,omitempty"`       // Limit is the maximum number of results per page.
+	Offset     uint64 `json:"offset,omitempty"`      // Offset is the offset for page.
+	Reverse    bool   `json:"reverse,omitempty"`     // Reverse indicates whether to reverse the order of results in page.
 }
 
-// Query creates a new QueryOptions instance with default values.
-func Query() *QueryOptions {
+// NewDefaultPageOptions creates a new PageOptions instance with default values.
+func NewDefaultPageOptions() *PageOptions {
+	return &PageOptions{
+		Limit: DefaultPageLimit,
+	}
+}
+
+// WithCountTotal sets the CountTotal field and returns the modified PageOptions instance.
+func (p *PageOptions) WithCountTotal(v bool) *PageOptions {
+	p.CountTotal = v
+	return p
+}
+
+// WithKey sets the Key field and returns the modified PageOptions instance.
+func (p *PageOptions) WithKey(v []byte) *PageOptions {
+	p.Key = v
+	return p
+}
+
+// WithLimit sets the Limit field and returns the modified PageOptions instance.
+func (p *PageOptions) WithLimit(v uint64) *PageOptions {
+	p.Limit = v
+	return p
+}
+
+// WithOffset sets the Offset field and returns the modified PageOptions instance.
+func (p *PageOptions) WithOffset(v uint64) *PageOptions {
+	p.Offset = v
+	return p
+}
+
+// WithReverse sets the Reverse field and returns the modified PageOptions instance.
+func (p *PageOptions) WithReverse(v bool) *PageOptions {
+	p.Reverse = v
+	return p
+}
+
+// PageRequest creates a new PageRequest with the configured options.
+func (p *PageOptions) PageRequest() *query.PageRequest {
+	return &query.PageRequest{
+		Key:        p.Key,
+		Offset:     p.Offset,
+		Limit:      p.Limit,
+		CountTotal: p.CountTotal,
+		Reverse:    p.Reverse,
+	}
+}
+
+// GetPageCountFromCmd retrieves the "page.count-total" flag value from the command.
+func GetPageCountFromCmd(cmd *cobra.Command) (bool, error) {
+	return cmd.Flags().GetBool("page.count-total")
+}
+
+// GetPageKeyFromCmd retrieves the "page.key" flag value from the command.
+func GetPageKeyFromCmd(cmd *cobra.Command) ([]byte, error) {
+	return cmd.Flags().GetBytesBase64("page.key")
+}
+
+// GetPageLimitFromCmd retrieves the "page.limit" flag value from the command.
+func GetPageLimitFromCmd(cmd *cobra.Command) (uint64, error) {
+	return cmd.Flags().GetUint64("page.limit")
+}
+
+// GetPageOffsetFromCmd retrieves the "page.offset" flag value from the command.
+func GetPageOffsetFromCmd(cmd *cobra.Command) (uint64, error) {
+	return cmd.Flags().GetUint64("page.offset")
+}
+
+// GetPageReverseFromCmd retrieves the "page.reverse" flag value from the command.
+func GetPageReverseFromCmd(cmd *cobra.Command) (bool, error) {
+	return cmd.Flags().GetBool("page.reverse")
+}
+
+// SetFlagPageCount adds the "page.count-total" flag to the command.
+func SetFlagPageCount(cmd *cobra.Command) {
+	cmd.Flags().Bool("page.count-total", false, "Include total count in paged queries.")
+}
+
+// SetFlagPageKey adds the "page.key" flag to the command.
+func SetFlagPageKey(cmd *cobra.Command) {
+	cmd.Flags().BytesBase64("page.key", nil, "Base64-encoded key for page.")
+}
+
+// SetFlagPageLimit adds the "page.limit" flag to the command.
+func SetFlagPageLimit(cmd *cobra.Command) {
+	cmd.Flags().Uint64("page.limit", DefaultPageLimit, "Maximum number of results per page.")
+}
+
+// SetFlagPageOffset adds the "page.offset" flag to the command.
+func SetFlagPageOffset(cmd *cobra.Command) {
+	cmd.Flags().Uint64("page.offset", 0, "Offset for page.")
+}
+
+// SetFlagPageReverse adds the "page.reverse" flag to the command.
+func SetFlagPageReverse(cmd *cobra.Command) {
+	cmd.Flags().Bool("page.reverse", false, "Reverse the order of results in page.")
+}
+
+// AddPageFlagsToCmd adds page-related flags to the given cobra command.
+func AddPageFlagsToCmd(cmd *cobra.Command) {
+	SetFlagPageCount(cmd)
+	SetFlagPageKey(cmd)
+	SetFlagPageLimit(cmd)
+	SetFlagPageOffset(cmd)
+	SetFlagPageReverse(cmd)
+}
+
+// NewPageOptionsFromCmd creates and returns PageOptions from the given cobra command's flags.
+func NewPageOptionsFromCmd(cmd *cobra.Command) (*PageOptions, error) {
+	// Retrieve the value of the "page.count-total" flag.
+	countTotal, err := GetPageCountFromCmd(cmd)
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "page.key" flag.
+	key, err := GetPageKeyFromCmd(cmd)
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "page.limit" flag.
+	limit, err := GetPageLimitFromCmd(cmd)
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "page.offset" flag.
+	offset, err := GetPageOffsetFromCmd(cmd)
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve the value of the "page.reverse" flag.
+	reverse, err := GetPageReverseFromCmd(cmd)
+	if err != nil {
+		return nil, err
+	}
+
+	// Return a new PageOptions instance populated with the retrieved flag values.
+	return &PageOptions{
+		CountTotal: countTotal,
+		Key:        key,
+		Limit:      limit,
+		Offset:     offset,
+		Reverse:    reverse,
+	}, nil
+}
+
+// QueryOptions represents options for making queries.
+type QueryOptions struct {
+	Height     int64         `json:"height,omitempty"`      // Height is the block height at which the query is to be performed.
+	MaxRetries int           `json:"max_retries,omitempty"` // MaxRetries is the maximum number of retries for the query.
+	Prove      bool          `json:"prove,omitempty"`       // Prove indicates whether to include proof in query results.
+	RPCAddr    string        `json:"rpc_addr,omitempty"`    // RPCAddr is the address of the RPC server.
+	Timeout    time.Duration `json:"timeout,omitempty"`     // Timeout is the maximum duration for the query to be executed.
+}
+
+// NewDefaultQueryOptions creates a new QueryOptions instance with default values.
+func NewDefaultQueryOptions() *QueryOptions {
 	return &QueryOptions{
 		MaxRetries: DefaultQueryMaxRetries,
-		PageLimit:  DefaultQueryPageLimit,
 		RPCAddr:    DefaultQueryRPCAddr,
 		Timeout:    DefaultQueryTimeout,
 	}
@@ -52,36 +205,6 @@ func (q *QueryOptions) WithHeight(v int64) *QueryOptions {
 // WithMaxRetries sets the MaxRetries field and returns the modified QueryOptions instance.
 func (q *QueryOptions) WithMaxRetries(v int) *QueryOptions {
 	q.MaxRetries = v
-	return q
-}
-
-// WithPageCountTotal sets the PageCountTotal field and returns the modified QueryOptions instance.
-func (q *QueryOptions) WithPageCountTotal(v bool) *QueryOptions {
-	q.PageCountTotal = v
-	return q
-}
-
-// WithPageKey sets the PageKey field and returns the modified QueryOptions instance.
-func (q *QueryOptions) WithPageKey(v []byte) *QueryOptions {
-	q.PageKey = v
-	return q
-}
-
-// WithPageLimit sets the PageLimit field and returns the modified QueryOptions instance.
-func (q *QueryOptions) WithPageLimit(v uint64) *QueryOptions {
-	q.PageLimit = v
-	return q
-}
-
-// WithPageOffset sets the PageOffset field and returns the modified QueryOptions instance.
-func (q *QueryOptions) WithPageOffset(v uint64) *QueryOptions {
-	q.PageOffset = v
-	return q
-}
-
-// WithPageReverse sets the PageReverse field and returns the modified QueryOptions instance.
-func (q *QueryOptions) WithPageReverse(v bool) *QueryOptions {
-	q.PageReverse = v
 	return q
 }
 
@@ -116,104 +239,103 @@ func (q *QueryOptions) Client() (*http.HTTP, error) {
 	return http.NewWithTimeout(q.RPCAddr, "/websocket", utils.UIntSecondsFromDuration(q.Timeout))
 }
 
-// PageRequest creates a new PageRequest with the configured options.
-func (q *QueryOptions) PageRequest() *query.PageRequest {
-	return &query.PageRequest{
-		Key:        q.PageKey,
-		Offset:     q.PageOffset,
-		Limit:      q.PageLimit,
-		CountTotal: q.PageCountTotal,
-		Reverse:    q.PageReverse,
-	}
+// GetHeightFromCmd retrieves the "query.height" flag value from the command.
+func GetHeightFromCmd(cmd *cobra.Command) (int64, error) {
+	return cmd.Flags().GetInt64("query.height")
+}
+
+// GetMaxRetriesFromCmd retrieves the "query.max-retries" flag value from the command.
+func GetMaxRetriesFromCmd(cmd *cobra.Command) (int, error) {
+	return cmd.Flags().GetInt("query.max-retries")
+}
+
+// GetProveFromCmd retrieves the "query.prove" flag value from the command.
+func GetProveFromCmd(cmd *cobra.Command) (bool, error) {
+	return cmd.Flags().GetBool("query.prove")
+}
+
+// GetRPCAddrFromCmd retrieves the "query.rpc-addr" flag value from the command.
+func GetRPCAddrFromCmd(cmd *cobra.Command) (string, error) {
+	return cmd.Flags().GetString("query.rpc-addr")
+}
+
+// GetTimeoutFromCmd retrieves the "query.timeout" flag value from the command.
+func GetTimeoutFromCmd(cmd *cobra.Command) (time.Duration, error) {
+	return cmd.Flags().GetDuration("query.timeout")
+}
+
+// SetFlagHeight adds the "query.height" flag to the command.
+func SetFlagHeight(cmd *cobra.Command) {
+	cmd.Flags().Int64("query.height", 0, "Block height at which the query is to be performed.")
+}
+
+// SetFlagMaxRetries adds the "query.max-retries" flag to the command.
+func SetFlagMaxRetries(cmd *cobra.Command) {
+	cmd.Flags().Int("query.max-retries", DefaultQueryMaxRetries, "Maximum number of retries for the query.")
+}
+
+// SetFlagProve adds the "query.prove" flag to the command.
+func SetFlagProve(cmd *cobra.Command) {
+	cmd.Flags().Bool("query.prove", false, "Include proof in query results.")
+}
+
+// SetFlagRPCAddr adds the "query.rpc-addr" flag to the command.
+func SetFlagRPCAddr(cmd *cobra.Command) {
+	cmd.Flags().String("query.rpc-addr", DefaultQueryRPCAddr, "Address of the RPC server.")
+}
+
+// SetFlagTimeout adds the "query.timeout" flag to the command.
+func SetFlagTimeout(cmd *cobra.Command) {
+	cmd.Flags().Duration("query.timeout", DefaultQueryTimeout, "Maximum duration for the query to be executed.")
 }
 
 // AddQueryFlagsToCmd adds query-related flags to the given cobra command.
 func AddQueryFlagsToCmd(cmd *cobra.Command) {
-	cmd.Flags().Int64("query.height", 0, "Block height for the query.")
-	cmd.Flags().Int("query.max-retries", DefaultQueryMaxRetries, "Maximum number of retries for the query.")
-	cmd.Flags().Bool("query.page-count-total", false, "Include total count in paged queries.")
-	cmd.Flags().BytesBase64("query.page-key", nil, "Base64-encoded key for pagination.")
-	cmd.Flags().Uint64("query.page-limit", DefaultQueryPageLimit, "Maximum number of results per page.")
-	cmd.Flags().Uint64("query.page-offset", 0, "Offset for pagination.")
-	cmd.Flags().Bool("query.page-reverse", false, "Reverse the order of results in pagination.")
-	cmd.Flags().Bool("query.prove", false, "Include proof in query results.")
-	cmd.Flags().String("query.rpc-addr", DefaultQueryRPCAddr, "Address of the RPC server.")
-	cmd.Flags().Duration("query.timeout", DefaultQueryTimeout, "Maximum duration for the query execution.")
+	SetFlagHeight(cmd)
+	SetFlagMaxRetries(cmd)
+	SetFlagProve(cmd)
+	SetFlagRPCAddr(cmd)
+	SetFlagTimeout(cmd)
 }
 
 // NewQueryOptionsFromCmd creates and returns QueryOptions from the given cobra command's flags.
 func NewQueryOptionsFromCmd(cmd *cobra.Command) (*QueryOptions, error) {
 	// Retrieve the value of the "query.height" flag.
-	height, err := cmd.Flags().GetInt64("query.height")
+	height, err := GetHeightFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
 	// Retrieve the value of the "query.max-retries" flag.
-	maxRetries, err := cmd.Flags().GetInt("query.max-retries")
-	if err != nil {
-		return nil, err
-	}
-
-	// Retrieve the value of the "query.page-count-total" flag.
-	pageCountTotal, err := cmd.Flags().GetBool("query.page-count-total")
-	if err != nil {
-		return nil, err
-	}
-
-	// Retrieve the value of the "query.page-key" flag.
-	pageKey, err := cmd.Flags().GetBytesBase64("query.page-key")
-	if err != nil {
-		return nil, err
-	}
-
-	// Retrieve the value of the "query.page-limit" flag.
-	pageLimit, err := cmd.Flags().GetUint64("query.page-limit")
-	if err != nil {
-		return nil, err
-	}
-
-	// Retrieve the value of the "query.page-offset" flag.
-	pageOffset, err := cmd.Flags().GetUint64("query.page-offset")
-	if err != nil {
-		return nil, err
-	}
-
-	// Retrieve the value of the "query.page-reverse" flag.
-	pageReverse, err := cmd.Flags().GetBool("query.page-reverse")
+	maxRetries, err := GetMaxRetriesFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
 	// Retrieve the value of the "query.prove" flag.
-	prove, err := cmd.Flags().GetBool("query.prove")
+	prove, err := GetProveFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
 	// Retrieve the value of the "query.rpc-addr" flag.
-	rpcAddr, err := cmd.Flags().GetString("query.rpc-addr")
+	rpcAddr, err := GetRPCAddrFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
 	// Retrieve the value of the "query.timeout" flag.
-	timeout, err := cmd.Flags().GetDuration("query.timeout")
+	timeout, err := GetTimeoutFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
 	// Return a new QueryOptions instance populated with the retrieved flag values.
 	return &QueryOptions{
-		Height:         height,
-		MaxRetries:     maxRetries,
-		PageCountTotal: pageCountTotal,
-		PageKey:        pageKey,
-		PageLimit:      pageLimit,
-		PageOffset:     pageOffset,
-		PageReverse:    pageReverse,
-		Prove:          prove,
-		RPCAddr:        rpcAddr,
-		Timeout:        timeout,
+		Height:     height,
+		MaxRetries: maxRetries,
+		Prove:      prove,
+		RPCAddr:    rpcAddr,
+		Timeout:    timeout,
 	}, nil
 }
