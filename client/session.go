@@ -23,7 +23,7 @@ const (
 // Session queries and returns information about a specific session based on the provided session ID.
 // It uses gRPC to send a request to the "/sentinel.session.v3.QueryService/QuerySession" endpoint.
 // The result is a pointer to v3.Session and an error if the query fails.
-func (c *Client) Session(ctx context.Context, id uint64, opts *options.QueryOptions) (res *v3.Session, err error) {
+func (c *Client) Session(ctx context.Context, id uint64, opts *options.Options) (res *v3.Session, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v3.QuerySessionResponse
@@ -48,7 +48,7 @@ func (c *Client) Session(ctx context.Context, id uint64, opts *options.QueryOpti
 // Sessions queries and returns a list of sessions based on the provided options.
 // It uses gRPC to send a request to the "/sentinel.session.v3.QueryService/QuerySessions" endpoint.
 // The result is a slice of v3.Session and an error if the query fails.
-func (c *Client) Sessions(ctx context.Context, opts *options.QueryOptions) (res []v3.Session, err error) {
+func (c *Client) Sessions(ctx context.Context, opts *options.Options) (res []v3.Session, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v3.QuerySessionsResponse
@@ -77,7 +77,7 @@ func (c *Client) Sessions(ctx context.Context, opts *options.QueryOptions) (res 
 // based on the provided account address and options.
 // It uses gRPC to send a request to the "/sentinel.session.v3.QueryService/QuerySessionsForAccount" endpoint.
 // The result is a slice of v3.Session and an error if the query fails.
-func (c *Client) SessionsForAccount(ctx context.Context, accAddr cosmossdk.AccAddress, opts *options.QueryOptions) (res []v3.Session, err error) {
+func (c *Client) SessionsForAccount(ctx context.Context, accAddr cosmossdk.AccAddress, opts *options.Options) (res []v3.Session, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v3.QuerySessionsForAccountResponse
@@ -107,7 +107,7 @@ func (c *Client) SessionsForAccount(ctx context.Context, accAddr cosmossdk.AccAd
 // based on the provided node address and options.
 // It uses gRPC to send a request to the "/sentinel.session.v3.QueryService/QuerySessionsForNode" endpoint.
 // The result is a slice of v3.Session and an error if the query fails.
-func (c *Client) SessionsForNode(ctx context.Context, nodeAddr base.NodeAddress, opts *options.QueryOptions) (res []v3.Session, err error) {
+func (c *Client) SessionsForNode(ctx context.Context, nodeAddr base.NodeAddress, opts *options.Options) (res []v3.Session, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v3.QuerySessionsForNodeResponse
@@ -137,7 +137,7 @@ func (c *Client) SessionsForNode(ctx context.Context, nodeAddr base.NodeAddress,
 // based on the provided subscription ID and options.
 // It uses gRPC to send a request to the "/sentinel.session.v3.QueryService/QuerySessionsForSubscription" endpoint.
 // The result is a slice of v3.Session and an error if the query fails.
-func (c *Client) SessionsForSubscription(ctx context.Context, id uint64, opts *options.QueryOptions) (res []v3.Session, err error) {
+func (c *Client) SessionsForSubscription(ctx context.Context, id uint64, opts *options.Options) (res []v3.Session, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v3.QuerySessionsForSubscriptionResponse
@@ -167,7 +167,7 @@ func (c *Client) SessionsForSubscription(ctx context.Context, id uint64, opts *o
 // based on the provided subscription ID, account address, and options.
 // It uses gRPC to send a request to the "/sentinel.session.v3.QueryService/QuerySessionsForAllocation" endpoint.
 // The result is a slice of v3.Session and an error if the query fails.
-func (c *Client) SessionsForSubscriptionAllocation(ctx context.Context, id uint64, accAddr cosmossdk.AccAddress, opts *options.QueryOptions) (res []v3.Session, err error) {
+func (c *Client) SessionsForSubscriptionAllocation(ctx context.Context, id uint64, accAddr cosmossdk.AccAddress, opts *options.Options) (res []v3.Session, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v3.QuerySessionsForAllocationResponse

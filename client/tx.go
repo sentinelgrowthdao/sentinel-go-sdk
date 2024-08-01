@@ -19,7 +19,7 @@ import (
 // Simulate simulates the execution of a transaction before broadcasting it.
 // It takes a context, transaction bytes, and query options as input parameters,
 // and returns a SimulateResponse and an error, if any.
-func (c *Client) Simulate(ctx context.Context, buf []byte, opts *options.QueryOptions) (*txtypes.SimulateResponse, error) {
+func (c *Client) Simulate(ctx context.Context, buf []byte, opts *options.Options) (*txtypes.SimulateResponse, error) {
 	// Initialize variables for the query.
 	var (
 		resp   txtypes.SimulateResponse
@@ -41,7 +41,7 @@ func (c *Client) Simulate(ctx context.Context, buf []byte, opts *options.QueryOp
 // simulateTx simulates the gas usage of a transaction.
 // It takes a context, a transaction builder, and transaction options as input parameters,
 // and returns the gas usage and an error, if any.
-func (c *Client) simulateTx(ctx context.Context, txb client.TxBuilder, opts *options.TxOptions) (uint64, error) {
+func (c *Client) simulateTx(ctx context.Context, txb client.TxBuilder, opts *options.Options) (uint64, error) {
 	// Encode transaction into bytes
 	buf, err := c.TxEncoder()(txb.GetTx())
 	if err != nil {
@@ -49,7 +49,7 @@ func (c *Client) simulateTx(ctx context.Context, txb client.TxBuilder, opts *opt
 	}
 
 	// Simulate the transaction execution
-	res, err := c.Simulate(ctx, buf, opts.QueryOptions)
+	res, err := c.Simulate(ctx, buf, opts)
 	if err != nil {
 		return 0, err
 	}
@@ -61,7 +61,7 @@ func (c *Client) simulateTx(ctx context.Context, txb client.TxBuilder, opts *opt
 // broadcastTxSync broadcasts a transaction synchronously.
 // It takes a context, a transaction builder, and transaction options as input parameters,
 // and returns the broadcast result and an error, if any.
-func (c *Client) broadcastTxSync(ctx context.Context, txb client.TxBuilder, opts *options.TxOptions) (*coretypes.ResultBroadcastTx, error) {
+func (c *Client) broadcastTxSync(ctx context.Context, txb client.TxBuilder, opts *options.Options) (*coretypes.ResultBroadcastTx, error) {
 	// Encode transaction into bytes
 	buf, err := c.TxEncoder()(txb.GetTx())
 	if err != nil {
@@ -81,7 +81,7 @@ func (c *Client) broadcastTxSync(ctx context.Context, txb client.TxBuilder, opts
 // signTx signs a transaction with given key and account information.
 // It takes a transaction builder, key information, account information, and transaction options as input parameters,
 // and returns an error, if any.
-func (c *Client) signTx(txb client.TxBuilder, key *keyring.Record, account authtypes.AccountI, opts *options.TxOptions) error {
+func (c *Client) signTx(txb client.TxBuilder, key *keyring.Record, account authtypes.AccountI, opts *options.Options) error {
 	// Prepare single signature data
 	singleSignatureData := txsigning.SingleSignatureData{
 		SignMode:  txsigning.SignMode_SIGN_MODE_DIRECT,
@@ -120,7 +120,7 @@ func (c *Client) signTx(txb client.TxBuilder, key *keyring.Record, account autht
 	}
 
 	// Sign the transaction bytes
-	buf, _, err = c.Sign(opts.FromName, buf, opts.KeyringOptions)
+	buf, _, err = c.Sign(opts.FromName, buf, opts)
 	if err != nil {
 		return err
 	}
@@ -147,7 +147,7 @@ func (c *Client) signTx(txb client.TxBuilder, key *keyring.Record, account autht
 // prepareTx prepares a transaction for broadcasting.
 // It takes a context, key information, account information, message(s), and transaction options as input parameters,
 // and returns a transaction builder and an error, if any.
-func (c *Client) prepareTx(ctx context.Context, key *keyring.Record, account authtypes.AccountI, msgs []sdk.Msg, opts *options.TxOptions) (client.TxBuilder, error) {
+func (c *Client) prepareTx(ctx context.Context, key *keyring.Record, account authtypes.AccountI, msgs []sdk.Msg, opts *options.Options) (client.TxBuilder, error) {
 	// Create a new transaction builder instance
 	txb := c.NewTxBuilder()
 	if err := txb.SetMsgs(msgs...); err != nil {
@@ -197,9 +197,9 @@ func (c *Client) prepareTx(ctx context.Context, key *keyring.Record, account aut
 // BroadcastTx broadcasts a signed transaction.
 // It takes a context, message(s), and transaction options as input parameters,
 // and returns the broadcast result and an error, if any.
-func (c *Client) BroadcastTx(ctx context.Context, msgs []sdk.Msg, opts *options.TxOptions) (*coretypes.ResultBroadcastTx, error) {
+func (c *Client) BroadcastTx(ctx context.Context, msgs []sdk.Msg, opts *options.Options) (*coretypes.ResultBroadcastTx, error) {
 	// Get key for signing
-	key, err := c.Key(opts.FromName, opts.KeyringOptions)
+	key, err := c.Key(opts.FromName, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -211,7 +211,7 @@ func (c *Client) BroadcastTx(ctx context.Context, msgs []sdk.Msg, opts *options.
 	}
 
 	// Get account information for the address
-	account, err := c.Account(ctx, accAddr, opts.QueryOptions)
+	account, err := c.Account(ctx, accAddr, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -234,7 +234,7 @@ func (c *Client) BroadcastTx(ctx context.Context, msgs []sdk.Msg, opts *options.
 // Tx retrieves a transaction from the blockchain using its hash.
 // It takes a context, a transaction hash, and query options as input parameters,
 // and returns the transaction result and an error, if any.
-func (c *Client) Tx(ctx context.Context, hash []byte, opts *options.QueryOptions) (*coretypes.ResultTx, error) {
+func (c *Client) Tx(ctx context.Context, hash []byte, opts *options.Options) (*coretypes.ResultTx, error) {
 	// Get client for querying the blockchain
 	client, err := opts.Client()
 	if err != nil {

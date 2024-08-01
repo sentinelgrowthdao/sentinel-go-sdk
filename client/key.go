@@ -10,7 +10,7 @@ import (
 
 // Key retrieves key information from the keyring based on the provided name and options.
 // It initializes a keyring using the provided options and returns the key information.
-func (c *Client) Key(name string, opts *options.KeyringOptions) (*keyring.Record, error) {
+func (c *Client) Key(name string, opts *options.Options) (*keyring.Record, error) {
 	// Initialize a keyring based on the provided options.
 	kr, err := opts.Keyring(c)
 	if err != nil {
@@ -23,7 +23,7 @@ func (c *Client) Key(name string, opts *options.KeyringOptions) (*keyring.Record
 
 // Sign signs the provided data using the key from the keyring specified by the name and options.
 // It initializes a keyring, retrieves the key, and signs the data.
-func (c *Client) Sign(name string, buf []byte, opts *options.KeyringOptions) ([]byte, cryptotypes.PubKey, error) {
+func (c *Client) Sign(name string, buf []byte, opts *options.Options) ([]byte, cryptotypes.PubKey, error) {
 	// Initialize a keyring based on the provided options.
 	kr, err := opts.Keyring(c)
 	if err != nil {
@@ -36,7 +36,7 @@ func (c *Client) Sign(name string, buf []byte, opts *options.KeyringOptions) ([]
 
 // Keys retrieves a list of all keys from the keyring based on the provided options.
 // It initializes a keyring and returns a list of key records.
-func (c *Client) Keys(opts *options.KeyringOptions) ([]*keyring.Record, error) {
+func (c *Client) Keys(opts *options.Options) ([]*keyring.Record, error) {
 	// Initialize a keyring based on the provided options.
 	kr, err := opts.Keyring(c)
 	if err != nil {
@@ -49,7 +49,7 @@ func (c *Client) Keys(opts *options.KeyringOptions) ([]*keyring.Record, error) {
 
 // DeleteKey deletes the key from the keyring based on the provided name and options.
 // It initializes a keyring and removes the key specified by the name.
-func (c *Client) DeleteKey(name string, opts *options.KeyringOptions) error {
+func (c *Client) DeleteKey(name string, opts *options.Options) error {
 	// Initialize a keyring based on the provided options.
 	kr, err := opts.Keyring(c)
 	if err != nil {
@@ -80,7 +80,7 @@ func (c *Client) NewMnemonic() (string, error) {
 
 // CreateKey creates a new key in the keyring with the provided name, mnemonic, and bip39 passphrase.
 // If mnemonic is empty, a new mnemonic is generated. It returns the mnemonic, the created key record, or an error.
-func (c *Client) CreateKey(name, mnemonic, bip39Pass string, opts *options.KeyOptions) (string, *keyring.Record, error) {
+func (c *Client) CreateKey(name, mnemonic, bip39Pass string, opts *options.Options) (string, *keyring.Record, error) {
 	// Initialize a keyring based on the provided options.
 	kr, err := opts.Keyring(c)
 	if err != nil {
