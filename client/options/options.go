@@ -6,11 +6,11 @@ import (
 
 // Options aggregates all the individual option structs.
 type Options struct {
-	*KeyOptions     // Options related to key creation.
-	*KeyringOptions // Options related to keyring configuration.
-	*PageOptions    // Options related to pagination.
-	*QueryOptions   // Options related to querying.
-	*TxOptions      // Options related to transactions.
+	*KeyOptions     `json:"key" toml:"key"`         // Options related to key creation.
+	*KeyringOptions `json:"keyring" toml:"keyring"` // Options related to keyring configuration.
+	*PageOptions    `json:"page" toml:"page"`       // Options related to pagination.
+	*QueryOptions   `json:"query" toml:"query"`     // Options related to querying.
+	*TxOptions      `json:"tx" toml:"tx"`           // Options related to transactions.
 }
 
 // NewOptions creates and returns a new instance of Options with all fields initialized to nil.

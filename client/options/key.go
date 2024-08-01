@@ -18,9 +18,9 @@ const (
 
 // KeyOptions represents options for key creation.
 type KeyOptions struct {
-	Account  uint32 `json:"account,omitempty"`   // Account represents the account number.
-	CoinType uint32 `json:"coin_type,omitempty"` // CoinType represents the coin type.
-	Index    uint32 `json:"index,omitempty"`     // Index represents the key index.
+	Account  uint32 `json:"account" toml:"account"`     // Account represents the account number.
+	CoinType uint32 `json:"coin_type" toml:"coin_type"` // CoinType represents the coin type.
+	Index    uint32 `json:"index" toml:"index"`         // Index represents the key index.
 }
 
 // NewDefaultKeyOptions creates a new KeyOptions instance with default values.
@@ -126,10 +126,10 @@ func NewKeyOptionsFromCmd(cmd *cobra.Command) (*KeyOptions, error) {
 
 // KeyringOptions represents options for keyring creation.
 type KeyringOptions struct {
-	AppName string    `json:"app_name,omitempty"` // AppName is the name of the application.
-	Backend string    `json:"backend,omitempty"`  // Backend is the keyring backend to use.
-	HomeDir string    `json:"home_dir,omitempty"` // HomeDir is the directory to store keys.
-	Input   io.Reader `json:"input,omitempty"`    // Input is the input source for passphrase.
+	AppName string    `json:"app_name" toml:"app_name"` // AppName is the name of the application.
+	Backend string    `json:"backend" toml:"backend"`   // Backend is the keyring backend to use.
+	HomeDir string    `json:"home_dir" toml:"home_dir"` // HomeDir is the directory to store keys.
+	Input   io.Reader `json:"input" toml:"input"`       // Input is the input source for passphrase.
 }
 
 // NewDefaultKeyringOptions creates a new KeyringOptions instance with default values.

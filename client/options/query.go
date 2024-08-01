@@ -21,11 +21,11 @@ const (
 
 // PageOptions represents page-related options.
 type PageOptions struct {
-	CountTotal bool   `json:"count_total,omitempty"` // CountTotal indicates whether to include total count in paged queries.
-	Key        []byte `json:"key,omitempty"`         // Key is the key for page.
-	Limit      uint64 `json:"limit,omitempty"`       // Limit is the maximum number of results per page.
-	Offset     uint64 `json:"offset,omitempty"`      // Offset is the offset for page.
-	Reverse    bool   `json:"reverse,omitempty"`     // Reverse indicates whether to reverse the order of results in page.
+	CountTotal bool   `json:"count_total" toml:"count_total"` // CountTotal indicates whether to include total count in paged queries.
+	Key        []byte `json:"key" toml:"key"`                 // Key is the key for page.
+	Limit      uint64 `json:"limit" toml:"limit"`             // Limit is the maximum number of results per page.
+	Offset     uint64 `json:"offset" toml:"offset"`           // Offset is the offset for page.
+	Reverse    bool   `json:"reverse" toml:"reverse"`         // Reverse indicates whether to reverse the order of results in page.
 }
 
 // NewDefaultPageOptions creates a new PageOptions instance with default values.
@@ -179,11 +179,11 @@ func NewPageOptionsFromCmd(cmd *cobra.Command) (*PageOptions, error) {
 
 // QueryOptions represents options for making queries.
 type QueryOptions struct {
-	Height     int64         `json:"height,omitempty"`      // Height is the block height at which the query is to be performed.
-	MaxRetries int           `json:"max_retries,omitempty"` // MaxRetries is the maximum number of retries for the query.
-	Prove      bool          `json:"prove,omitempty"`       // Prove indicates whether to include proof in query results.
-	RPCAddr    string        `json:"rpc_addr,omitempty"`    // RPCAddr is the address of the RPC server.
-	Timeout    time.Duration `json:"timeout,omitempty"`     // Timeout is the maximum duration for the query to be executed.
+	Height     int64         `json:"height" toml:"height"`           // Height is the block height at which the query is to be performed.
+	MaxRetries int           `json:"max_retries" toml:"max_retries"` // MaxRetries is the maximum number of retries for the query.
+	Prove      bool          `json:"prove" toml:"prove"`             // Prove indicates whether to include proof in query results.
+	RPCAddr    string        `json:"rpc_addr" toml:"rpc_addr"`       // RPCAddr is the address of the RPC server.
+	Timeout    time.Duration `json:"timeout" toml:"timeout"`         // Timeout is the maximum duration for the query to be executed.
 }
 
 // NewDefaultQueryOptions creates a new QueryOptions instance with default values.

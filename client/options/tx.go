@@ -15,16 +15,16 @@ const (
 
 // TxOptions represents options for transactions.
 type TxOptions struct {
-	ChainID            string  `json:"chain_id,omitempty"`             // ChainID is the identifier of the blockchain network.
-	FeeGranterAddr     string  `json:"fee_granter_addr,omitempty"`     // FeeGranterAddr is the address of the entity granting fees.
-	Fees               string  `json:"fees,omitempty"`                 // Fees is the transaction fees.
-	FromName           string  `json:"from_name,omitempty"`            // FromName is the name of the sender.
-	Gas                uint64  `json:"gas,omitempty"`                  // Gas is the gas limit for the transaction.
-	GasAdjustment      float64 `json:"gas_adjustment,omitempty"`       // GasAdjustment is the adjustment factor for gas estimation.
-	GasPrices          string  `json:"gas_prices,omitempty"`           // GasPrices is the gas prices for transaction execution.
-	Memo               string  `json:"memo,omitempty"`                 // Memo is a memo attached to the transaction.
-	SimulateAndExecute bool    `json:"simulate_and_execute,omitempty"` // SimulateAndExecute indicates whether to simulate and execute the transaction.
-	TimeoutHeight      uint64  `json:"timeout_height,omitempty"`       // TimeoutHeight is the block height at which the transaction times out.
+	ChainID            string  `json:"chain_id" toml:"chain_id"`                         // ChainID is the identifier of the blockchain network.
+	FeeGranterAddr     string  `json:"fee_granter_addr" toml:"fee_granter_addr"`         // FeeGranterAddr is the address of the entity granting fees.
+	Fees               string  `json:"fees" toml:"fees"`                                 // Fees is the transaction fees.
+	FromName           string  `json:"from_name" toml:"from_name"`                       // FromName is the name of the sender.
+	Gas                uint64  `json:"gas" toml:"gas"`                                   // Gas is the gas limit for the transaction.
+	GasAdjustment      float64 `json:"gas_adjustment" toml:"gas_adjustment"`             // GasAdjustment is the adjustment factor for gas estimation.
+	GasPrices          string  `json:"gas_prices" toml:"gas_prices"`                     // GasPrices is the gas prices for transaction execution.
+	Memo               string  `json:"memo" toml:"memo"`                                 // Memo is a memo attached to the transaction.
+	SimulateAndExecute bool    `json:"simulate_and_execute" toml:"simulate_and_execute"` // SimulateAndExecute indicates whether to simulate and execute the transaction.
+	TimeoutHeight      uint64  `json:"timeout_height" toml:"timeout_height"`             // TimeoutHeight is the block height at which the transaction times out.
 }
 
 // NewDefaultTxOptions creates a new TxOptions instance with default values.
