@@ -11,8 +11,8 @@ const (
 	flagOutputFormat = "output-format"
 )
 
-// AddOutputFormatFlagToCmd adds a flag for specifying the output format to the given command.
-func AddOutputFormatFlagToCmd(cmd *cobra.Command) {
+// SetFlagOutputFormat adds a flag for specifying the output format to the given command.
+func SetFlagOutputFormat(cmd *cobra.Command) {
 	cmd.Flags().String(flagOutputFormat, keys.OutputFormatText, "Specify the output format (json or text)")
 }
 

@@ -38,8 +38,11 @@ func keysAdd() *cobra.Command {
 		Short: "Add a new key with the specified name and optional mnemonic",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			opts, err := options.NewKeyOptionsFromCmd(cmd)
-			if err != nil {
+			opts := options.NewOptions()
+			if _, err := opts.WithKeyOptionsFromCmd(cmd); err != nil {
+				return err
+			}
+			if _, err := opts.WithKeyringOptionsFromCmd(cmd); err != nil {
 				return err
 			}
 
@@ -82,7 +85,7 @@ func keysAdd() *cobra.Command {
 			c := client.NewDefault()
 
 			// Check if the key already exists
-			if _, err := c.Key(args[0], opts.KeyringOptions); err == nil {
+			if _, err := c.Key(args[0], opts); err == nil {
 				return fmt.Errorf("key with name '%s' already exists", args[0])
 			}
 
@@ -112,7 +115,8 @@ func keysAdd() *cobra.Command {
 	}
 
 	options.AddKeyFlagsToCmd(cmd)
-	AddOutputFormatFlagToCmd(cmd)
+	options.AddKeyringFlagsToCmd(cmd)
+	SetFlagOutputFormat(cmd)
 
 	return cmd
 }
@@ -124,8 +128,8 @@ func keysDelete() *cobra.Command {
 		Short: "Delete the key with the specified name",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			opts, err := options.NewKeyringOptionsFromCmd(cmd)
-			if err != nil {
+			opts := options.NewOptions()
+			if _, err := opts.WithKeyringOptionsFromCmd(cmd); err != nil {
 				return err
 			}
 
@@ -163,8 +167,8 @@ func keysList() *cobra.Command {
 		Use:   "list",
 		Short: "List all available keys",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			opts, err := options.NewKeyringOptionsFromCmd(cmd)
-			if err != nil {
+			opts := options.NewOptions()
+			if _, err := opts.WithKeyringOptionsFromCmd(cmd); err != nil {
 				return err
 			}
 
@@ -197,7 +201,7 @@ func keysList() *cobra.Command {
 	}
 
 	options.AddKeyringFlagsToCmd(cmd)
-	AddOutputFormatFlagToCmd(cmd)
+	SetFlagOutputFormat(cmd)
 
 	return cmd
 }
@@ -209,8 +213,8 @@ func keysShow() *cobra.Command {
 		Short: "Show details of the key with the specified name",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			opts, err := options.NewKeyringOptionsFromCmd(cmd)
-			if err != nil {
+			opts := options.NewOptions()
+			if _, err := opts.WithKeyringOptionsFromCmd(cmd); err != nil {
 				return err
 			}
 
@@ -243,7 +247,7 @@ func keysShow() *cobra.Command {
 	}
 
 	options.AddKeyringFlagsToCmd(cmd)
-	AddOutputFormatFlagToCmd(cmd)
+	SetFlagOutputFormat(cmd)
 
 	return cmd
 }
