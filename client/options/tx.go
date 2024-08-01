@@ -98,56 +98,6 @@ func (t *TxOptions) WithTimeoutHeight(v uint64) *TxOptions {
 	return t
 }
 
-// SetFlagTxChainID adds the tx.chain-id flag to the given command.
-func SetFlagTxChainID(cmd *cobra.Command) {
-	cmd.Flags().String("tx.chain-id", DefaultTxChainID, "Blockchain network identifier.")
-}
-
-// SetFlagTxFeeGranterAddr adds the tx.fee-granter-addr flag to the given command.
-func SetFlagTxFeeGranterAddr(cmd *cobra.Command) {
-	cmd.Flags().String("tx.fee-granter-addr", "", "Address of the entity granting fees for the transaction.")
-}
-
-// SetFlagTxFees adds the tx.fees flag to the given command.
-func SetFlagTxFees(cmd *cobra.Command) {
-	cmd.Flags().String("tx.fees", "", "Transaction fees to be paid.")
-}
-
-// SetFlagTxFromName adds the tx.from-name flag to the given command.
-func SetFlagTxFromName(cmd *cobra.Command) {
-	cmd.Flags().String("tx.from-name", "", "Name of the sender's account in the keyring.")
-}
-
-// SetFlagTxGas adds the tx.gas flag to the given command.
-func SetFlagTxGas(cmd *cobra.Command) {
-	cmd.Flags().Uint64("tx.gas", DefaultTxGas, "Gas limit set for the transaction.")
-}
-
-// SetFlagTxGasAdjustment adds the tx.gas-adjustment flag to the given command.
-func SetFlagTxGasAdjustment(cmd *cobra.Command) {
-	cmd.Flags().Float64("tx.gas-adjustment", DefaultTxGasAdjustment, "Factor to adjust gas estimation (used in simulation).")
-}
-
-// SetFlagTxGasPrices adds the tx.gas-prices flag to the given command.
-func SetFlagTxGasPrices(cmd *cobra.Command) {
-	cmd.Flags().String("tx.gas-prices", DefaultTxGasPrices, "Gas prices to be applied for transaction execution.")
-}
-
-// SetFlagTxMemo adds the tx.memo flag to the given command.
-func SetFlagTxMemo(cmd *cobra.Command) {
-	cmd.Flags().String("tx.memo", "", "Memo text attached to the transaction.")
-}
-
-// SetFlagTxSimulateAndExecute adds the tx.simulate-and-execute flag to the given command.
-func SetFlagTxSimulateAndExecute(cmd *cobra.Command) {
-	cmd.Flags().Bool("tx.simulate-and-execute", DefaultTxSimulateAndExecute, "Flag to simulate the transaction before execution.")
-}
-
-// SetFlagTxTimeoutHeight adds the tx.timeout-height flag to the given command.
-func SetFlagTxTimeoutHeight(cmd *cobra.Command) {
-	cmd.Flags().Uint64("tx.timeout-height", 0, "Block height after which the transaction will not be processed.")
-}
-
 // GetTxChainIDFromCmd retrieves the value of the tx.chain-id flag from the given command.
 func GetTxChainIDFromCmd(cmd *cobra.Command) (string, error) {
 	return cmd.Flags().GetString("tx.chain-id")
@@ -196,6 +146,56 @@ func GetTxSimulateAndExecuteFromCmd(cmd *cobra.Command) (bool, error) {
 // GetTxTimeoutHeightFromCmd retrieves the value of the tx.timeout-height flag from the given command.
 func GetTxTimeoutHeightFromCmd(cmd *cobra.Command) (uint64, error) {
 	return cmd.Flags().GetUint64("tx.timeout-height")
+}
+
+// SetFlagTxChainID adds the tx.chain-id flag to the given command.
+func SetFlagTxChainID(cmd *cobra.Command) {
+	cmd.Flags().String("tx.chain-id", DefaultTxChainID, "Blockchain network identifier.")
+}
+
+// SetFlagTxFeeGranterAddr adds the tx.fee-granter-addr flag to the given command.
+func SetFlagTxFeeGranterAddr(cmd *cobra.Command) {
+	cmd.Flags().String("tx.fee-granter-addr", "", "Address of the entity granting fees for the transaction.")
+}
+
+// SetFlagTxFees adds the tx.fees flag to the given command.
+func SetFlagTxFees(cmd *cobra.Command) {
+	cmd.Flags().String("tx.fees", "", "Transaction fees to be paid.")
+}
+
+// SetFlagTxFromName adds the tx.from-name flag to the given command.
+func SetFlagTxFromName(cmd *cobra.Command) {
+	cmd.Flags().String("tx.from-name", "", "Name of the sender's account in the keyring.")
+}
+
+// SetFlagTxGas adds the tx.gas flag to the given command.
+func SetFlagTxGas(cmd *cobra.Command) {
+	cmd.Flags().Uint64("tx.gas", DefaultTxGas, "Gas limit set for the transaction.")
+}
+
+// SetFlagTxGasAdjustment adds the tx.gas-adjustment flag to the given command.
+func SetFlagTxGasAdjustment(cmd *cobra.Command) {
+	cmd.Flags().Float64("tx.gas-adjustment", DefaultTxGasAdjustment, "Factor to adjust gas estimation (used in simulation).")
+}
+
+// SetFlagTxGasPrices adds the tx.gas-prices flag to the given command.
+func SetFlagTxGasPrices(cmd *cobra.Command) {
+	cmd.Flags().String("tx.gas-prices", DefaultTxGasPrices, "Gas prices to be applied for transaction execution.")
+}
+
+// SetFlagTxMemo adds the tx.memo flag to the given command.
+func SetFlagTxMemo(cmd *cobra.Command) {
+	cmd.Flags().String("tx.memo", "", "Memo text attached to the transaction.")
+}
+
+// SetFlagTxSimulateAndExecute adds the tx.simulate-and-execute flag to the given command.
+func SetFlagTxSimulateAndExecute(cmd *cobra.Command) {
+	cmd.Flags().Bool("tx.simulate-and-execute", DefaultTxSimulateAndExecute, "Flag to simulate the transaction before execution.")
+}
+
+// SetFlagTxTimeoutHeight adds the tx.timeout-height flag to the given command.
+func SetFlagTxTimeoutHeight(cmd *cobra.Command) {
+	cmd.Flags().Uint64("tx.timeout-height", 0, "Block height after which the transaction will not be processed.")
 }
 
 // AddTxFlagsToCmd configures all transaction-related flags for the given command.

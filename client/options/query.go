@@ -13,8 +13,7 @@ import (
 
 // Default values for page and query options.
 const (
-	DefaultPageLimit = 25
-
+	DefaultPageLimit       = 25
 	DefaultQueryMaxRetries = 15
 	DefaultQueryRPCAddr    = "https://rpc.sentinel.co:443"
 	DefaultQueryTimeout    = 15 * time.Second
@@ -77,8 +76,8 @@ func (p *PageOptions) PageRequest() *query.PageRequest {
 	}
 }
 
-// GetPageCountFromCmd retrieves the "page.count-total" flag value from the command.
-func GetPageCountFromCmd(cmd *cobra.Command) (bool, error) {
+// GetPageCountTotalFromCmd retrieves the "page.count-total" flag value from the command.
+func GetPageCountTotalFromCmd(cmd *cobra.Command) (bool, error) {
 	return cmd.Flags().GetBool("page.count-total")
 }
 
@@ -102,8 +101,8 @@ func GetPageReverseFromCmd(cmd *cobra.Command) (bool, error) {
 	return cmd.Flags().GetBool("page.reverse")
 }
 
-// SetFlagPageCount adds the "page.count-total" flag to the command.
-func SetFlagPageCount(cmd *cobra.Command) {
+// SetFlagPageCountTotal adds the "page.count-total" flag to the command.
+func SetFlagPageCountTotal(cmd *cobra.Command) {
 	cmd.Flags().Bool("page.count-total", false, "Include total count in paged queries.")
 }
 
@@ -129,7 +128,7 @@ func SetFlagPageReverse(cmd *cobra.Command) {
 
 // AddPageFlagsToCmd adds page-related flags to the given cobra command.
 func AddPageFlagsToCmd(cmd *cobra.Command) {
-	SetFlagPageCount(cmd)
+	SetFlagPageCountTotal(cmd)
 	SetFlagPageKey(cmd)
 	SetFlagPageLimit(cmd)
 	SetFlagPageOffset(cmd)
@@ -139,7 +138,7 @@ func AddPageFlagsToCmd(cmd *cobra.Command) {
 // NewPageOptionsFromCmd creates and returns PageOptions from the given cobra command's flags.
 func NewPageOptionsFromCmd(cmd *cobra.Command) (*PageOptions, error) {
 	// Retrieve the value of the "page.count-total" flag.
-	countTotal, err := GetPageCountFromCmd(cmd)
+	countTotal, err := GetPageCountTotalFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
@@ -239,93 +238,93 @@ func (q *QueryOptions) Client() (*http.HTTP, error) {
 	return http.NewWithTimeout(q.RPCAddr, "/websocket", utils.UIntSecondsFromDuration(q.Timeout))
 }
 
-// GetHeightFromCmd retrieves the "query.height" flag value from the command.
-func GetHeightFromCmd(cmd *cobra.Command) (int64, error) {
+// GetQueryHeightFromCmd retrieves the "query.height" flag value from the command.
+func GetQueryHeightFromCmd(cmd *cobra.Command) (int64, error) {
 	return cmd.Flags().GetInt64("query.height")
 }
 
-// GetMaxRetriesFromCmd retrieves the "query.max-retries" flag value from the command.
-func GetMaxRetriesFromCmd(cmd *cobra.Command) (int, error) {
+// GetQueryMaxRetriesFromCmd retrieves the "query.max-retries" flag value from the command.
+func GetQueryMaxRetriesFromCmd(cmd *cobra.Command) (int, error) {
 	return cmd.Flags().GetInt("query.max-retries")
 }
 
-// GetProveFromCmd retrieves the "query.prove" flag value from the command.
-func GetProveFromCmd(cmd *cobra.Command) (bool, error) {
+// GetQueryProveFromCmd retrieves the "query.prove" flag value from the command.
+func GetQueryProveFromCmd(cmd *cobra.Command) (bool, error) {
 	return cmd.Flags().GetBool("query.prove")
 }
 
-// GetRPCAddrFromCmd retrieves the "query.rpc-addr" flag value from the command.
-func GetRPCAddrFromCmd(cmd *cobra.Command) (string, error) {
+// GetQueryRPCAddrFromCmd retrieves the "query.rpc-addr" flag value from the command.
+func GetQueryRPCAddrFromCmd(cmd *cobra.Command) (string, error) {
 	return cmd.Flags().GetString("query.rpc-addr")
 }
 
-// GetTimeoutFromCmd retrieves the "query.timeout" flag value from the command.
-func GetTimeoutFromCmd(cmd *cobra.Command) (time.Duration, error) {
+// GetQueryTimeoutFromCmd retrieves the "query.timeout" flag value from the command.
+func GetQueryTimeoutFromCmd(cmd *cobra.Command) (time.Duration, error) {
 	return cmd.Flags().GetDuration("query.timeout")
 }
 
-// SetFlagHeight adds the "query.height" flag to the command.
-func SetFlagHeight(cmd *cobra.Command) {
+// SetFlagQueryHeight adds the "query.height" flag to the command.
+func SetFlagQueryHeight(cmd *cobra.Command) {
 	cmd.Flags().Int64("query.height", 0, "Block height at which the query is to be performed.")
 }
 
-// SetFlagMaxRetries adds the "query.max-retries" flag to the command.
-func SetFlagMaxRetries(cmd *cobra.Command) {
+// SetFlagQueryMaxRetries adds the "query.max-retries" flag to the command.
+func SetFlagQueryMaxRetries(cmd *cobra.Command) {
 	cmd.Flags().Int("query.max-retries", DefaultQueryMaxRetries, "Maximum number of retries for the query.")
 }
 
-// SetFlagProve adds the "query.prove" flag to the command.
-func SetFlagProve(cmd *cobra.Command) {
+// SetFlagQueryProve adds the "query.prove" flag to the command.
+func SetFlagQueryProve(cmd *cobra.Command) {
 	cmd.Flags().Bool("query.prove", false, "Include proof in query results.")
 }
 
-// SetFlagRPCAddr adds the "query.rpc-addr" flag to the command.
-func SetFlagRPCAddr(cmd *cobra.Command) {
+// SetFlagQueryRPCAddr adds the "query.rpc-addr" flag to the command.
+func SetFlagQueryRPCAddr(cmd *cobra.Command) {
 	cmd.Flags().String("query.rpc-addr", DefaultQueryRPCAddr, "Address of the RPC server.")
 }
 
-// SetFlagTimeout adds the "query.timeout" flag to the command.
-func SetFlagTimeout(cmd *cobra.Command) {
+// SetFlagQueryTimeout adds the "query.timeout" flag to the command.
+func SetFlagQueryTimeout(cmd *cobra.Command) {
 	cmd.Flags().Duration("query.timeout", DefaultQueryTimeout, "Maximum duration for the query to be executed.")
 }
 
 // AddQueryFlagsToCmd adds query-related flags to the given cobra command.
 func AddQueryFlagsToCmd(cmd *cobra.Command) {
-	SetFlagHeight(cmd)
-	SetFlagMaxRetries(cmd)
-	SetFlagProve(cmd)
-	SetFlagRPCAddr(cmd)
-	SetFlagTimeout(cmd)
+	SetFlagQueryHeight(cmd)
+	SetFlagQueryMaxRetries(cmd)
+	SetFlagQueryProve(cmd)
+	SetFlagQueryRPCAddr(cmd)
+	SetFlagQueryTimeout(cmd)
 }
 
 // NewQueryOptionsFromCmd creates and returns QueryOptions from the given cobra command's flags.
 func NewQueryOptionsFromCmd(cmd *cobra.Command) (*QueryOptions, error) {
 	// Retrieve the value of the "query.height" flag.
-	height, err := GetHeightFromCmd(cmd)
+	height, err := GetQueryHeightFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
 	// Retrieve the value of the "query.max-retries" flag.
-	maxRetries, err := GetMaxRetriesFromCmd(cmd)
+	maxRetries, err := GetQueryMaxRetriesFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
 	// Retrieve the value of the "query.prove" flag.
-	prove, err := GetProveFromCmd(cmd)
+	prove, err := GetQueryProveFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
 	// Retrieve the value of the "query.rpc-addr" flag.
-	rpcAddr, err := GetRPCAddrFromCmd(cmd)
+	rpcAddr, err := GetQueryRPCAddrFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
 	// Retrieve the value of the "query.timeout" flag.
-	timeout, err := GetTimeoutFromCmd(cmd)
+	timeout, err := GetQueryTimeoutFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
