@@ -42,13 +42,12 @@ func GetConfirmation(prompt string, buf *bufio.Reader) (bool, error) {
 		return false, err
 	}
 
-	line = strings.TrimSpace(line)
-	if len(line) == 0 {
-		return false, nil
+	line = strings.ToLower(line)
+	if len(line) > 0 && line[0] == 'y' {
+		return true, nil
 	}
 
-	line = strings.ToLower(line)
-	return line[0] == 'y', nil
+	return false, nil
 }
 
 // GetPassword prompts the user for a password. If the standard input is a terminal, use a secure prompt.

@@ -69,13 +69,13 @@ func (c *Client) broadcastTxSync(ctx context.Context, txb client.TxBuilder, opts
 	}
 
 	// Get client for broadcasting
-	client, err := opts.Client()
+	rpc, err := opts.Client()
 	if err != nil {
 		return nil, err
 	}
 
 	// Broadcast transaction synchronously
-	return client.BroadcastTxSync(ctx, buf)
+	return rpc.BroadcastTxSync(ctx, buf)
 }
 
 // signTx signs a transaction with given key and account information.
@@ -236,11 +236,11 @@ func (c *Client) BroadcastTx(ctx context.Context, msgs []sdk.Msg, opts *options.
 // and returns the transaction result and an error, if any.
 func (c *Client) Tx(ctx context.Context, hash []byte, opts *options.Options) (*coretypes.ResultTx, error) {
 	// Get client for querying the blockchain
-	client, err := opts.Client()
+	rpc, err := opts.Client()
 	if err != nil {
 		return nil, err
 	}
 
 	// Perform the blockchain query for the transaction
-	return client.Tx(ctx, hash, opts.Prove)
+	return rpc.Tx(ctx, hash, opts.Prove)
 }

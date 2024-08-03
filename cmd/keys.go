@@ -12,6 +12,7 @@ import (
 	"github.com/sentinel-official/sentinel-go-sdk/client"
 	"github.com/sentinel-official/sentinel-go-sdk/client/input"
 	"github.com/sentinel-official/sentinel-go-sdk/client/options"
+	"github.com/sentinel-official/sentinel-go-sdk/cmd/flags"
 )
 
 // KeysCmd returns a new Cobra command for key management sub-commands.
@@ -38,7 +39,7 @@ func keysAdd() *cobra.Command {
 		Short: "Add a new key with the specified name and optional mnemonic",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			opts := options.NewOptions()
+			opts := options.New()
 			if _, err := opts.WithKeyOptionsFromCmd(cmd); err != nil {
 				return err
 			}
@@ -46,7 +47,7 @@ func keysAdd() *cobra.Command {
 				return err
 			}
 
-			outputFormat, err := GetOutputFormatFromCmd(cmd)
+			outputFormat, err := flags.GetOutputFormatFromCmd(cmd)
 			if err != nil {
 				return err
 			}
@@ -116,7 +117,7 @@ func keysAdd() *cobra.Command {
 
 	options.AddKeyFlagsToCmd(cmd)
 	options.AddKeyringFlagsToCmd(cmd)
-	SetFlagOutputFormat(cmd)
+	flags.SetFlagOutputFormat(cmd)
 
 	return cmd
 }
@@ -128,7 +129,7 @@ func keysDelete() *cobra.Command {
 		Short: "Delete the key with the specified name",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			opts := options.NewOptions()
+			opts := options.New()
 			if _, err := opts.WithKeyringOptionsFromCmd(cmd); err != nil {
 				return err
 			}
@@ -167,12 +168,12 @@ func keysList() *cobra.Command {
 		Use:   "list",
 		Short: "List all available keys",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			opts := options.NewOptions()
+			opts := options.New()
 			if _, err := opts.WithKeyringOptionsFromCmd(cmd); err != nil {
 				return err
 			}
 
-			outputFormat, err := GetOutputFormatFromCmd(cmd)
+			outputFormat, err := flags.GetOutputFormatFromCmd(cmd)
 			if err != nil {
 				return err
 			}
@@ -201,7 +202,7 @@ func keysList() *cobra.Command {
 	}
 
 	options.AddKeyringFlagsToCmd(cmd)
-	SetFlagOutputFormat(cmd)
+	flags.SetFlagOutputFormat(cmd)
 
 	return cmd
 }
@@ -213,12 +214,12 @@ func keysShow() *cobra.Command {
 		Short: "Show details of the key with the specified name",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			opts := options.NewOptions()
+			opts := options.New()
 			if _, err := opts.WithKeyringOptionsFromCmd(cmd); err != nil {
 				return err
 			}
 
-			outputFormat, err := GetOutputFormatFromCmd(cmd)
+			outputFormat, err := flags.GetOutputFormatFromCmd(cmd)
 			if err != nil {
 				return err
 			}
@@ -247,7 +248,7 @@ func keysShow() *cobra.Command {
 	}
 
 	options.AddKeyringFlagsToCmd(cmd)
-	SetFlagOutputFormat(cmd)
+	flags.SetFlagOutputFormat(cmd)
 
 	return cmd
 }

@@ -1,16 +1,13 @@
-package cmd
+package flags
 
 import (
+	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/spf13/cobra"
-)
-
-const (
-	DefaultOutputFormat = "text"
 )
 
 // SetFlagOutputFormat adds a flag for specifying the output format to the given command.
 func SetFlagOutputFormat(cmd *cobra.Command) {
-	cmd.Flags().String("output-format", DefaultOutputFormat, "Specify the output format (json or text)")
+	cmd.Flags().String("output-format", keys.OutputFormatText, "Specify the output format (json or text)")
 }
 
 // GetOutputFormatFromCmd retrieves the output format flag value from the given command.

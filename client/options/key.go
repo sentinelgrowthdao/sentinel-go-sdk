@@ -7,13 +7,8 @@ import (
 	cryptohd "github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/spf13/cobra"
-)
 
-// Default values for key and keyring options.
-const (
-	DefaultKeyCoinType    = 118
-	DefaultKeyringAppName = "sentinel"
-	DefaultKeyringBackend = "test"
+	"github.com/sentinel-official/sentinel-go-sdk/cmd/flags"
 )
 
 // KeyOptions represents options for key creation.
@@ -23,10 +18,10 @@ type KeyOptions struct {
 	Index    uint32 `json:"index" toml:"index"`         // Index represents the key index.
 }
 
-// NewDefaultKeyOptions creates a new KeyOptions instance with default values.
-func NewDefaultKeyOptions() *KeyOptions {
+// NewDefaultKey creates a new KeyOptions instance with default values.
+func NewDefaultKey() *KeyOptions {
 	return &KeyOptions{
-		CoinType: DefaultKeyCoinType,
+		CoinType: flags.DefaultKeyCoinType,
 	}
 }
 
@@ -59,59 +54,29 @@ func (k *KeyOptions) SignatureAlgo() keyring.SignatureAlgo {
 	return cryptohd.Secp256k1
 }
 
-// GetKeyAccountFromCmd retrieves the "key.account" flag value from the command.
-func GetKeyAccountFromCmd(cmd *cobra.Command) (uint32, error) {
-	return cmd.Flags().GetUint32("key.account")
-}
-
-// GetKeyCoinTypeFromCmd retrieves the "key.coin-type" flag value from the command.
-func GetKeyCoinTypeFromCmd(cmd *cobra.Command) (uint32, error) {
-	return cmd.Flags().GetUint32("key.coin-type")
-}
-
-// GetKeyIndexFromCmd retrieves the "key.index" flag value from the command.
-func GetKeyIndexFromCmd(cmd *cobra.Command) (uint32, error) {
-	return cmd.Flags().GetUint32("key.index")
-}
-
-// SetFlagKeyAccount adds the "key.account" flag to the command.
-func SetFlagKeyAccount(cmd *cobra.Command) {
-	cmd.Flags().Uint32("key.account", 0, "Account number for key creation.")
-}
-
-// SetFlagKeyCoinType adds the "key.coin-type" flag to the command.
-func SetFlagKeyCoinType(cmd *cobra.Command) {
-	cmd.Flags().Uint32("key.coin-type", DefaultKeyCoinType, "Coin type for key creation.")
-}
-
-// SetFlagKeyIndex adds the "key.index" flag to the command.
-func SetFlagKeyIndex(cmd *cobra.Command) {
-	cmd.Flags().Uint32("key.index", 0, "Index for key creation.")
-}
-
 // AddKeyFlagsToCmd adds key-related flags to the given cobra command.
 func AddKeyFlagsToCmd(cmd *cobra.Command) {
-	SetFlagKeyAccount(cmd)
-	SetFlagKeyCoinType(cmd)
-	SetFlagKeyIndex(cmd)
+	flags.SetFlagKeyAccount(cmd)
+	flags.SetFlagKeyCoinType(cmd)
+	flags.SetFlagKeyIndex(cmd)
 }
 
 // NewKeyOptionsFromCmd creates and returns KeyOptions from the given cobra command's flags.
 func NewKeyOptionsFromCmd(cmd *cobra.Command) (*KeyOptions, error) {
-	// Retrieve the value of the "key.account" flag.
-	account, err := GetKeyAccountFromCmd(cmd)
+	// Retrieve the account flag value from the command.
+	account, err := flags.GetKeyAccountFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
-	// Retrieve the value of the "key.coin-type" flag.
-	coinType, err := GetKeyCoinTypeFromCmd(cmd)
+	// Retrieve the coin type flag value from the command.
+	coinType, err := flags.GetKeyCoinTypeFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
-	// Retrieve the value of the "key.index" flag.
-	index, err := GetKeyIndexFromCmd(cmd)
+	// Retrieve the index flag value from the command.
+	index, err := flags.GetKeyIndexFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
@@ -132,11 +97,11 @@ type KeyringOptions struct {
 	Input   io.Reader `json:"input" toml:"input"`       // Input is the input source for passphrase.
 }
 
-// NewDefaultKeyringOptions creates a new KeyringOptions instance with default values.
-func NewDefaultKeyringOptions() *KeyringOptions {
+// NewDefaultKeyring creates a new KeyringOptions instance with default values.
+func NewDefaultKeyring() *KeyringOptions {
 	return &KeyringOptions{
-		AppName: DefaultKeyringAppName,
-		Backend: DefaultKeyringBackend,
+		AppName: flags.DefaultKeyringAppName,
+		Backend: flags.DefaultKeyringBackend,
 	}
 }
 
@@ -169,59 +134,29 @@ func (k *KeyringOptions) Keyring(cdc codec.Codec) (keyring.Keyring, error) {
 	return keyring.New(k.AppName, k.Backend, k.HomeDir, k.Input, cdc)
 }
 
-// GetKeyringAppNameFromCmd retrieves the "keyring.app-name" flag value from the command.
-func GetKeyringAppNameFromCmd(cmd *cobra.Command) (string, error) {
-	return cmd.Flags().GetString("keyring.app-name")
-}
-
-// GetKeyringBackendFromCmd retrieves the "keyring.backend" flag value from the command.
-func GetKeyringBackendFromCmd(cmd *cobra.Command) (string, error) {
-	return cmd.Flags().GetString("keyring.backend")
-}
-
-// GetKeyringHomeDirFromCmd retrieves the "keyring.home-dir" flag value from the command.
-func GetKeyringHomeDirFromCmd(cmd *cobra.Command) (string, error) {
-	return cmd.Flags().GetString("keyring.home-dir")
-}
-
-// SetFlagKeyringAppName adds the "keyring.app-name" flag to the command.
-func SetFlagKeyringAppName(cmd *cobra.Command) {
-	cmd.Flags().String("keyring.app-name", DefaultKeyringAppName, "Name of the application.")
-}
-
-// SetFlagKeyringBackend adds the "keyring.backend" flag to the command.
-func SetFlagKeyringBackend(cmd *cobra.Command) {
-	cmd.Flags().String("keyring.backend", DefaultKeyringBackend, "Keyring backend to use.")
-}
-
-// SetFlagKeyringHomeDir adds the "keyring.home-dir" flag to the command.
-func SetFlagKeyringHomeDir(cmd *cobra.Command) {
-	cmd.Flags().String("keyring.home-dir", "", "Directory to store keys.")
-}
-
 // AddKeyringFlagsToCmd adds keyring-related flags to the given cobra command.
 func AddKeyringFlagsToCmd(cmd *cobra.Command) {
-	SetFlagKeyringAppName(cmd)
-	SetFlagKeyringBackend(cmd)
-	SetFlagKeyringHomeDir(cmd)
+	flags.SetFlagKeyringAppName(cmd)
+	flags.SetFlagKeyringBackend(cmd)
+	flags.SetFlagKeyringHomeDir(cmd)
 }
 
 // NewKeyringOptionsFromCmd creates and returns KeyringOptions from the given cobra command's flags.
 func NewKeyringOptionsFromCmd(cmd *cobra.Command) (*KeyringOptions, error) {
-	// Retrieve the value of the "keyring.app-name" flag.
-	appName, err := GetKeyringAppNameFromCmd(cmd)
+	// Retrieve the application name flag value from the command.
+	appName, err := flags.GetKeyringAppNameFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
-	// Retrieve the value of the "keyring.backend" flag.
-	backend, err := GetKeyringBackendFromCmd(cmd)
+	// Retrieve the backend flag value from the command.
+	backend, err := flags.GetKeyringBackendFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
-	// Retrieve the value of the "keyring.home-dir" flag.
-	homeDir, err := GetKeyringHomeDirFromCmd(cmd)
+	// Retrieve the home directory flag value from the command.
+	homeDir, err := flags.GetKeyringHomeDirFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}

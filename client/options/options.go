@@ -13,19 +13,19 @@ type Options struct {
 	*TxOptions      `json:"tx" toml:"tx"`           // Options related to transactions.
 }
 
-// NewOptions creates and returns a new instance of Options with all fields initialized to nil.
-func NewOptions() *Options {
+// New creates and returns a new instance of Options with all fields initialized to nil.
+func New() *Options {
 	return &Options{}
 }
 
-// NewDefaultOptions creates and returns a new instance of Options with default values.
-func NewDefaultOptions() *Options {
+// NewDefault creates and returns a new instance of Options with default values.
+func NewDefault() *Options {
 	return &Options{
-		KeyOptions:     NewDefaultKeyOptions(),     // Initializes with default KeyOptions.
-		KeyringOptions: NewDefaultKeyringOptions(), // Initializes with default KeyringOptions.
-		PageOptions:    NewDefaultPageOptions(),    // Initializes with default PageOptions.
-		QueryOptions:   NewDefaultQueryOptions(),   // Initializes with default QueryOptions.
-		TxOptions:      NewDefaultTxOptions(),      // Initializes with default TxOptions.
+		KeyOptions:     NewDefaultKey(),     // Initializes with default KeyOptions.
+		KeyringOptions: NewDefaultKeyring(), // Initializes with default KeyringOptions.
+		PageOptions:    NewDefaultPage(),    // Initializes with default PageOptions.
+		QueryOptions:   NewDefaultQuery(),   // Initializes with default QueryOptions.
+		TxOptions:      NewDefaultTx(),      // Initializes with default TxOptions.
 	}
 }
 
