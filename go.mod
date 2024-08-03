@@ -3,7 +3,7 @@ module github.com/sentinel-official/sentinel-go-sdk
 go 1.22.5
 
 require (
-	github.com/bgentry/speakeasy v0.1.1-0.20220910012023-760eaf8b6816
+	github.com/bgentry/speakeasy v0.2.0
 	github.com/cometbft/cometbft v0.37.7
 	github.com/cosmos/cosmos-sdk v0.47.12
 	github.com/cosmos/go-bip39 v1.0.0
