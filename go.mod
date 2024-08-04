@@ -3,6 +3,7 @@ module github.com/sentinel-official/sentinel-go-sdk
 go 1.22.5
 
 require (
+	cosmossdk.io/log v1.3.1
 	cosmossdk.io/math v1.3.0
 	github.com/bgentry/speakeasy v0.2.0
 	github.com/cometbft/cometbft v0.37.7
@@ -10,6 +11,7 @@ require (
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/mattn/go-isatty v0.0.20
 	github.com/pelletier/go-toml/v2 v2.2.2
+	github.com/rs/zerolog v1.32.0
 	github.com/sentinel-official/hub/v12 v12.0.0-rc5
 	github.com/shirou/gopsutil/v4 v4.24.7
 	github.com/showwin/speedtest-go v1.7.8
@@ -92,6 +94,7 @@ require (
 	github.com/linxGnu/grocksdb v1.8.14 // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/matttproud/golang_protobuf_extensions/v2 v2.0.0 // indirect
 	github.com/mimoo/StrobeGo v0.0.0-20210601165009-122bf33a46e0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
