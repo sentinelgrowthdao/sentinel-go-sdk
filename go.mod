@@ -3,6 +3,7 @@ module github.com/sentinel-official/sentinel-go-sdk
 go 1.22.5
 
 require (
+	cosmossdk.io/math v1.3.0
 	github.com/bgentry/speakeasy v0.2.0
 	github.com/cometbft/cometbft v0.37.7
 	github.com/cosmos/cosmos-sdk v0.47.12
@@ -11,6 +12,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.2.2
 	github.com/sentinel-official/hub/v12 v12.0.0-rc5
 	github.com/shirou/gopsutil/v4 v4.24.7
+	github.com/showwin/speedtest-go v1.7.8
 	github.com/spf13/cobra v1.8.1
 	github.com/v2fly/v2ray-core/v5 v5.16.1
 	golang.org/x/crypto v0.25.0
@@ -24,7 +26,6 @@ require (
 	cosmossdk.io/core v0.5.1 // indirect
 	cosmossdk.io/depinject v1.0.0-alpha.4 // indirect
 	cosmossdk.io/errors v1.0.1 // indirect
-	cosmossdk.io/math v1.3.0 // indirect
 	filippo.io/edwards25519 v1.0.0 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
 	github.com/99designs/keyring v1.2.1 // indirect
