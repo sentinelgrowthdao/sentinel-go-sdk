@@ -13,12 +13,12 @@ type Location struct {
 	Longitude float64 `json:"longitude,omitempty"` // Longitude of the location.
 }
 
-// Resolver is an interface for resolving IP addresses into location data.
-type Resolver interface {
-	Resolve(ip string) (*Location, error)
+// Client is an interface for resolving IP addresses into location data.
+type Client interface {
+	Get(ip string) (*Location, error)
 }
 
-// NewDefaultResolver creates a new default Resolver instance using the default IPAPIClient.
-func NewDefaultResolver() Resolver {
+// NewDefaultClient creates a new default Client instance using the default IPAPIClient.
+func NewDefaultClient() Client {
 	return NewIPAPIClient(15 * time.Second)
 }

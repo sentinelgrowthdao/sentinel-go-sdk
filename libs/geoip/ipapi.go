@@ -7,28 +7,28 @@ import (
 	"time"
 )
 
-// Ensure IPAPIClient implements the Resolver interface.
-var _ Resolver = (*IPAPIClient)(nil)
+// Ensure IPAPIClient implements the Client interface.
+var _ Client = (*IPAPIClient)(nil)
 
 // IPAPIClient is a client for retrieving location data using the ip-api.com service.
 type IPAPIClient struct {
-	client *http.Client
+	c *http.Client
 }
 
 // NewIPAPIClient creates and returns a new instance of IPAPIClient with the specified timeout.
 func NewIPAPIClient(timeout time.Duration) *IPAPIClient {
 	return &IPAPIClient{
-		client: &http.Client{Timeout: timeout},
+		c: &http.Client{Timeout: timeout},
 	}
 }
 
-// Resolve retrieves location data for the specified IP address using the ip-api.com service.
-func (c *IPAPIClient) Resolve(ip string) (*Location, error) {
+// Get retrieves location data for the specified IP address using the ip-api.com service.
+func (c *IPAPIClient) Get(ip string) (*Location, error) {
 	// Construct the URL for the API request using the provided IP address.
 	url := fmt.Sprintf("http://ip-api.com/json/%s", ip)
 
 	// Make the HTTP GET request to the ip-api.com service.
-	resp, err := c.client.Get(url)
+	resp, err := c.c.Get(url)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func (c *IPAPIClient) Resolve(ip string) (*Location, error) {
 
 	// Check if the response status code indicates success.
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("failed to retrieve data, status code: %s", resp.Status)
+		return nil, fmt.Errorf("failed to retrieve data, status: %s", resp.Status)
 	}
 
 	// Parse the JSON response into a temporary structure.

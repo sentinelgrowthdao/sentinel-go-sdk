@@ -16,8 +16,8 @@ type Scheduler struct {
 	wg         sync.WaitGroup
 }
 
-// New creates a new Scheduler instance.
-func New() *Scheduler {
+// NewScheduler creates a new Scheduler instance.
+func NewScheduler() *Scheduler {
 	return &Scheduler{
 		jobs:       make(map[string]Job),
 		stopSignal: make(chan struct{}),
@@ -53,26 +53,30 @@ func (s *Scheduler) Stop() {
 		return
 	}
 
+	// Stop all jobs
 	close(s.stopSignal)
 	s.wg.Wait()
 	s.isRunning = false
 }
 
-// RegisterJob adds a new job to the scheduler.
-func (s *Scheduler) RegisterJob(job Job) {
+// RegisterJobs adds multiple jobs to the scheduler.
+func (s *Scheduler) RegisterJobs(jobs ...Job) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	if s.isRunning {
-		panic(errors.New("cannot add new jobs while scheduler is running"))
+		return errors.New("cannot add new jobs while scheduler is running")
 	}
 
-	// Check if a job with the same name already exists
-	if _, exists := s.jobs[job.Name()]; exists {
-		panic(fmt.Errorf("job with name %q already exists", job.Name()))
+	for _, job := range jobs {
+		if _, exists := s.jobs[job.Name()]; exists {
+			return fmt.Errorf("job with name %q already exists", job.Name())
+		}
+
+		s.jobs[job.Name()] = job
 	}
 
-	s.jobs[job.Name()] = job
+	return nil
 }
 
 // runLoop executes a job's function in a loop and handles errors using the OnError method.
@@ -90,7 +94,11 @@ func (s *Scheduler) runLoop(j Job) {
 				}
 			}
 
-			time.Sleep(j.Interval())
+			// Prevent tight loop if job has a zero interval
+			interval := j.Interval()
+			if interval > 0 {
+				time.Sleep(interval)
+			}
 		}
 	}
 }

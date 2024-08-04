@@ -8,23 +8,23 @@ import (
 	"time"
 )
 
-// Ensure GeoJSClient implements the Resolver interface.
-var _ Resolver = (*GeoJSClient)(nil)
+// Ensure GeoJSClient implements the Client interface.
+var _ Client = (*GeoJSClient)(nil)
 
 // GeoJSClient is a client for retrieving location data using the GeoJS API.
 type GeoJSClient struct {
-	client *http.Client
+	c *http.Client
 }
 
 // NewGeoJSClient creates and returns a new instance of GeoJSClient with the specified timeout.
 func NewGeoJSClient(timeout time.Duration) *GeoJSClient {
 	return &GeoJSClient{
-		client: &http.Client{Timeout: timeout},
+		c: &http.Client{Timeout: timeout},
 	}
 }
 
-// Resolve retrieves location data for the specified IP address using the GeoJS API.
-func (c *GeoJSClient) Resolve(ip string) (*Location, error) {
+// Get retrieves location data for the specified IP address using the GeoJS API.
+func (c *GeoJSClient) Get(ip string) (*Location, error) {
 	// Construct the URL for the API request. Use the provided IP address if it is not empty.
 	url := "https://get.geojs.io/v1/ip/geo.json"
 	if ip != "" {
@@ -32,7 +32,7 @@ func (c *GeoJSClient) Resolve(ip string) (*Location, error) {
 	}
 
 	// Make the HTTP GET request to the GeoJS API.
-	resp, err := c.client.Get(url)
+	resp, err := c.c.Get(url)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (c *GeoJSClient) Resolve(ip string) (*Location, error) {
 
 	// Check if the response status code indicates success.
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("failed to retrieve data, status code: %s", resp.Status)
+		return nil, fmt.Errorf("failed to retrieve data, status: %s", resp.Status)
 	}
 
 	// Parse the JSON response into a temporary structure.
