@@ -2,6 +2,7 @@ package speedtest
 
 import (
 	"errors"
+	"fmt"
 
 	sdkmath "cosmossdk.io/math"
 	"github.com/showwin/speedtest-go/speedtest"
@@ -29,8 +30,8 @@ func performTests(target *speedtest.Server) error {
 	return nil
 }
 
-// RunTest performs a speed test and returns download and upload speeds.
-func RunTest() (dlSpeed, upSpeed sdkmath.Int, err error) {
+// Run performs a speed test and returns download and upload speeds.
+func Run() (dlSpeed, ulSpeed sdkmath.Int, err error) {
 	// Create a new Speedtest client
 	st := speedtest.New()
 
@@ -54,18 +55,31 @@ func RunTest() (dlSpeed, upSpeed sdkmath.Int, err error) {
 			continue
 		}
 
-		// Convert download and upload speeds to sdkmath.Int
-		dlSpeed, _ = sdkmath.NewIntFromString(target.DLSpeed.String())
-		upSpeed, _ = sdkmath.NewIntFromString(target.ULSpeed.String())
+		// Convert download and upload speeds to sdkmath.LegacyDec
+		dlSpeedDec, err := sdkmath.LegacyNewDecFromStr(fmt.Sprintf("%f", target.DLSpeed))
+		if err != nil {
+			target.Context.Reset()
+			continue
+		}
+
+		ulSpeedDec, err := sdkmath.LegacyNewDecFromStr(fmt.Sprintf("%f", target.ULSpeed))
+		if err != nil {
+			target.Context.Reset()
+			continue
+		}
+
+		// Convert LegacyDec to sdkmath.Int
+		dlSpeed := dlSpeedDec.RoundInt()
+		ulSpeed := ulSpeedDec.RoundInt()
 
 		// Check if the speeds are positive
-		if !dlSpeed.IsPositive() || !upSpeed.IsPositive() {
+		if !dlSpeed.IsPositive() || !ulSpeed.IsPositive() {
 			target.Context.Reset()
 			continue
 		}
 
 		// A valid result was found, exit the loop
-		return dlSpeed, upSpeed, nil
+		return dlSpeed, ulSpeed, nil
 	}
 
 	// Return an error if no valid result was found
