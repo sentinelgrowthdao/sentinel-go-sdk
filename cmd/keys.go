@@ -46,6 +46,9 @@ func keysAdd() *cobra.Command {
 			if _, err := opts.WithKeyringOptionsFromCmd(cmd); err != nil {
 				return err
 			}
+			if _, err := opts.WithLogOptionsFromCmd(cmd); err != nil {
+				return err
+			}
 
 			outputFormat, err := flags.GetOutputFormatFromCmd(cmd)
 			if err != nil {
@@ -117,6 +120,7 @@ func keysAdd() *cobra.Command {
 
 	options.AddKeyFlagsToCmd(cmd)
 	options.AddKeyringFlagsToCmd(cmd)
+	options.AddLogFlagsToCmd(cmd)
 	flags.SetFlagOutputFormat(cmd)
 
 	return cmd
@@ -131,6 +135,9 @@ func keysDelete() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			opts := options.New()
 			if _, err := opts.WithKeyringOptionsFromCmd(cmd); err != nil {
+				return err
+			}
+			if _, err := opts.WithLogOptionsFromCmd(cmd); err != nil {
 				return err
 			}
 
@@ -158,6 +165,7 @@ func keysDelete() *cobra.Command {
 	}
 
 	options.AddKeyringFlagsToCmd(cmd)
+	options.AddLogFlagsToCmd(cmd)
 
 	return cmd
 }
@@ -170,6 +178,9 @@ func keysList() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			opts := options.New()
 			if _, err := opts.WithKeyringOptionsFromCmd(cmd); err != nil {
+				return err
+			}
+			if _, err := opts.WithLogOptionsFromCmd(cmd); err != nil {
 				return err
 			}
 
@@ -202,6 +213,7 @@ func keysList() *cobra.Command {
 	}
 
 	options.AddKeyringFlagsToCmd(cmd)
+	options.AddLogFlagsToCmd(cmd)
 	flags.SetFlagOutputFormat(cmd)
 
 	return cmd
@@ -216,6 +228,9 @@ func keysShow() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			opts := options.New()
 			if _, err := opts.WithKeyringOptionsFromCmd(cmd); err != nil {
+				return err
+			}
+			if _, err := opts.WithLogOptionsFromCmd(cmd); err != nil {
 				return err
 			}
 
@@ -248,6 +263,7 @@ func keysShow() *cobra.Command {
 	}
 
 	options.AddKeyringFlagsToCmd(cmd)
+	options.AddLogFlagsToCmd(cmd)
 	flags.SetFlagOutputFormat(cmd)
 
 	return cmd
