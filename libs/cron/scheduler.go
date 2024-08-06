@@ -7,44 +7,44 @@ import (
 	"time"
 )
 
-// Scheduler manages the scheduling and execution of jobs.
+// Scheduler manages the scheduling and execution of workers.
 type Scheduler struct {
-	isRunning  bool
-	jobs       map[string]Job
-	stopSignal chan struct{}
-	mu         sync.Mutex
-	wg         sync.WaitGroup
+	isRunning  bool              // Indicates if the scheduler is currently running.
+	stopSignal chan struct{}     // Channel to signal workers to stop.
+	workers    map[string]Worker // Workers registered with the scheduler.
+	mu         sync.Mutex        // Mutex for synchronizing access to scheduler state.
+	wg         sync.WaitGroup    // WaitGroup to wait for all worker goroutines to complete.
 }
 
-// NewScheduler creates a new Scheduler instance.
+// NewScheduler creates and initializes a new Scheduler instance.
 func NewScheduler() *Scheduler {
 	return &Scheduler{
-		jobs:       make(map[string]Job),
 		stopSignal: make(chan struct{}),
+		workers:    make(map[string]Worker),
 	}
 }
 
-// Start begins executing all jobs in separate goroutines.
+// Start begins executing all registered workers in separate goroutines.
 func (s *Scheduler) Start() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	if s.isRunning {
-		return errors.New("scheduler is already started")
+		return errors.New("scheduler is already running")
 	}
 
 	s.isRunning = true
 
-	// Start existing jobs
-	for _, job := range s.jobs {
+	// Run each worker in its own goroutine.
+	for _, w := range s.workers {
 		s.wg.Add(1)
-		go s.runLoop(job)
+		go s.runWorker(w)
 	}
 
 	return nil
 }
 
-// Stop halts the execution of all jobs and stops the scheduler.
+// Stop halts the execution of all workers and stops the scheduler.
 func (s *Scheduler) Stop() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -53,49 +53,57 @@ func (s *Scheduler) Stop() {
 		return
 	}
 
-	// Stop all jobs
+	// Wait for all worker goroutines to finish.
 	close(s.stopSignal)
 	s.wg.Wait()
+
 	s.isRunning = false
 }
 
-// RegisterJobs adds multiple jobs to the scheduler.
-func (s *Scheduler) RegisterJobs(jobs ...Job) error {
+// RegisterWorkers adds multiple workers to the scheduler.
+func (s *Scheduler) RegisterWorkers(workers ...Worker) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	if s.isRunning {
-		return errors.New("cannot add new jobs while scheduler is running")
+		return errors.New("cannot add new workers while scheduler is running")
 	}
 
-	for _, job := range jobs {
-		if _, exists := s.jobs[job.Name()]; exists {
-			return fmt.Errorf("job with name %q already exists", job.Name())
+	for _, w := range workers {
+		if _, exists := s.workers[w.Name()]; exists {
+			return fmt.Errorf("worker with name %q already exists", w.Name())
 		}
 
-		s.jobs[job.Name()] = job
+		s.workers[w.Name()] = w
 	}
 
 	return nil
 }
 
-// runLoop executes a job's function in a loop and handles errors using the OnError method.
-func (s *Scheduler) runLoop(j Job) {
+// runWorker continuously executes a worker's function and handles errors.
+func (s *Scheduler) runWorker(w Worker) {
 	defer s.wg.Done()
 
+	retries := 0
 	for {
 		select {
 		case <-s.stopSignal:
 			return
 		default:
-			if err := j.Run(); err != nil {
-				if j.OnError(err) {
+			if err := w.Run(); err != nil {
+				if w.OnError(err) {
 					return
 				}
+				if retries < w.MaxRetries() {
+					retries++
+					continue
+				}
+			} else {
+				retries = 0
 			}
 
-			// Prevent tight loop if job has a zero interval
-			interval := j.Interval()
+			// Sleep before the next execution if the interval is positive.
+			interval := w.Interval()
 			if interval > 0 {
 				time.Sleep(interval)
 			}
