@@ -39,9 +39,9 @@ func ServiceTypeFromString(s string) ServiceType {
 
 // PeerStatistic represents the download and upload statistics for a peer.
 type PeerStatistic struct {
-	Key      string `json:"key"`      // Key is the identifier for the peer.
-	Download int64  `json:"download"` // Download is the total download in bytes.
-	Upload   int64  `json:"upload"`   // Upload is the total upload in bytes.
+	Key           string `json:"key"`            // Key is the identifier for the peer.
+	DownloadBytes int64  `json:"download_bytes"` // DownloadBytes is the total download in bytes.
+	UploadBytes   int64  `json:"upload_bytes"`   // UploadBytes is the total upload in bytes.
 }
 
 // ClientService defines the interface for client-side service operations.

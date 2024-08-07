@@ -461,9 +461,9 @@ func (s *Server) PeerStatistics(ctx context.Context) (items []*sentinelsdk.PeerS
 		items = append(
 			items,
 			&sentinelsdk.PeerStatistic{
-				Key:      key,
-				Download: downLink.GetValue(),
-				Upload:   upLink.GetValue(),
+				Key:           key,
+				DownloadBytes: downLink.GetValue(),
+				UploadBytes:   upLink.GetValue(),
 			},
 		)
 

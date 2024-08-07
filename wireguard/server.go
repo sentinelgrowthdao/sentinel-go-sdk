@@ -216,13 +216,13 @@ func (s *Server) PeerStatistics(ctx context.Context) (items []*sentinelsdk.PeerS
 		}
 
 		// Parse upload traffic stats.
-		upload, err := strconv.ParseInt(columns[1], 10, 64)
+		uploadBytes, err := strconv.ParseInt(columns[1], 10, 64)
 		if err != nil {
 			return nil, err
 		}
 
 		// Parse download traffic stats.
-		download, err := strconv.ParseInt(columns[2], 10, 64)
+		downloadBytes, err := strconv.ParseInt(columns[2], 10, 64)
 		if err != nil {
 			return nil, err
 		}
@@ -231,9 +231,9 @@ func (s *Server) PeerStatistics(ctx context.Context) (items []*sentinelsdk.PeerS
 		items = append(
 			items,
 			&sentinelsdk.PeerStatistic{
-				Key:      columns[0],
-				Download: download,
-				Upload:   upload,
+				Key:           columns[0],
+				DownloadBytes: downloadBytes,
+				UploadBytes:   uploadBytes,
 			},
 		)
 	}
