@@ -23,7 +23,7 @@ const (
 // Session queries and returns information about a specific session based on the provided session ID.
 // It uses gRPC to send a request to the "/sentinel.session.v3.QueryService/QuerySession" endpoint.
 // The result is a pointer to v3.Session and an error if the query fails.
-func (c *Client) Session(ctx context.Context, id uint64, opts *options.Options) (res *v3.Session, err error) {
+func (c *Client) Session(ctx context.Context, id uint64, opts *options.Options) (res v3.Session, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v3.QuerySessionResponse
