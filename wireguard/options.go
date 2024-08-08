@@ -143,7 +143,7 @@ func (so *ServerOptions) Validate() error {
 		return errors.New("out_interface cannot be empty")
 	}
 
-	_, err := NewPrivateKeyFromString(so.PrivateKey)
+	_, err := NewKeyFromString(so.PrivateKey)
 	if err != nil {
 		return fmt.Errorf("invalid private_key: %w", err)
 	}

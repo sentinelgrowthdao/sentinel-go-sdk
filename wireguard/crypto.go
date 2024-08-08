@@ -53,8 +53,8 @@ func NewPrivateKey() (*Key, error) {
 	return k, nil
 }
 
-// NewPrivateKeyFromString decodes a base64-encoded string to a Key.
-func NewPrivateKeyFromString(s string) (*Key, error) {
+// NewKeyFromString decodes a base64-encoded string to a Key.
+func NewKeyFromString(s string) (*Key, error) {
 	v, err := base64.StdEncoding.DecodeString(s)
 	if err != nil {
 		return nil, fmt.Errorf("invalid base64 encoding: %w", err)
