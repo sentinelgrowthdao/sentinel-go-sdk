@@ -1,6 +1,8 @@
 package client
 
 import (
+	"sync"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -12,6 +14,7 @@ import (
 
 // Client contains necessary components for transaction handling, encoding, and decoding.
 type Client struct {
+	sync.Mutex                                // Mutex to ensure thread-safe access
 	codec.ProtoCodecMarshaler                 // Marshaler for protobuf types
 	client.TxConfig                           // Configuration for transactions
 	kr                        keyring.Keyring // Keyring for managing keys
