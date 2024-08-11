@@ -6,172 +6,167 @@ import (
 
 // Options aggregates all the individual option structs for a comprehensive configuration.
 type Options struct {
-	*KeyOptions     `json:"key" toml:"key"`         // Options related to key creation.
-	*KeyringOptions `json:"keyring" toml:"keyring"` // Options related to keyring configuration.
-	*LogOptions     `json:"log" toml:"log"`         // Options related to logging.
-	*PageOptions    `json:"page" toml:"page"`       // Options related to pagination.
-	*QueryOptions   `json:"query" toml:"query"`     // Options related to querying.
-	*TxOptions      `json:"tx" toml:"tx"`           // Options related to transactions.
+	*Key     `json:"key" toml:"key"`         // Options related to key creation.
+	*Keyring `json:"keyring" toml:"keyring"` // Options related to keyring configuration.
+	*Log     `json:"log" toml:"log"`         // Options related to logging.
+	*Page    `json:"page" toml:"page"`       // Options related to pagination.
+	*Query   `json:"query" toml:"query"`     // Options related to querying.
+	*Tx      `json:"tx" toml:"tx"`           // Options related to transactions.
 }
 
-// New creates and returns a new instance of Options with all fields initialized to nil.
+// New creates and returns a new instance of Options with default values for all option structs.
 func New() *Options {
-	return &Options{}
-}
-
-// NewDefault creates and returns a new instance of Options with default values for all option structs.
-func NewDefault() *Options {
 	return &Options{
-		KeyOptions:     NewDefaultKey(),     // Initializes with default KeyOptions.
-		KeyringOptions: NewDefaultKeyring(), // Initializes with default KeyringOptions.
-		LogOptions:     NewDefaultLog(),     // Initializes with default LogOptions.
-		PageOptions:    NewDefaultPage(),    // Initializes with default PageOptions.
-		QueryOptions:   NewDefaultQuery(),   // Initializes with default QueryOptions.
-		TxOptions:      NewDefaultTx(),      // Initializes with default TxOptions.
+		Key:     NewKey(),     // Initializes with default Key.
+		Keyring: NewKeyring(), // Initializes with default Keyring.
+		Log:     NewLog(),     // Initializes with default Log.
+		Page:    NewPage(),    // Initializes with default Page.
+		Query:   NewQuery(),   // Initializes with default Query.
+		Tx:      NewTx(),      // Initializes with default Tx.
 	}
 }
 
-// WithKeyOptions sets the KeyOptions for the Options and returns the updated Options.
-func (o *Options) WithKeyOptions(v *KeyOptions) *Options {
-	o.KeyOptions = v
+// WithKey sets the Key for the Options and returns the updated Options.
+func (o *Options) WithKey(v *Key) *Options {
+	o.Key = v
 	return o
 }
 
-// WithKeyringOptions sets the KeyringOptions for the Options and returns the updated Options.
-func (o *Options) WithKeyringOptions(v *KeyringOptions) *Options {
-	o.KeyringOptions = v
+// WithKeyring sets the Keyring for the Options and returns the updated Options.
+func (o *Options) WithKeyring(v *Keyring) *Options {
+	o.Keyring = v
 	return o
 }
 
-// WithLogOptions sets the LogOptions for the Options and returns the updated Options.
-func (o *Options) WithLogOptions(v *LogOptions) *Options {
-	o.LogOptions = v
+// WithLog sets the Log for the Options and returns the updated Options.
+func (o *Options) WithLog(v *Log) *Options {
+	o.Log = v
 	return o
 }
 
-// WithPageOptions sets the PageOptions for the Options and returns the updated Options.
-func (o *Options) WithPageOptions(v *PageOptions) *Options {
-	o.PageOptions = v
+// WithPage sets the Page for the Options and returns the updated Options.
+func (o *Options) WithPage(v *Page) *Options {
+	o.Page = v
 	return o
 }
 
-// WithQueryOptions sets the QueryOptions for the Options and returns the updated Options.
-func (o *Options) WithQueryOptions(v *QueryOptions) *Options {
-	o.QueryOptions = v
+// WithQuery sets the Query for the Options and returns the updated Options.
+func (o *Options) WithQuery(v *Query) *Options {
+	o.Query = v
 	return o
 }
 
-// WithTxOptions sets the TxOptions for the Options and returns the updated Options.
-func (o *Options) WithTxOptions(v *TxOptions) *Options {
-	o.TxOptions = v
+// WithTx sets the Tx for the Options and returns the updated Options.
+func (o *Options) WithTx(v *Tx) *Options {
+	o.Tx = v
 	return o
 }
 
-// WithKeyOptionsFromCmd updates KeyOptions in the Options based on the command's flags.
-func (o *Options) WithKeyOptionsFromCmd(cmd *cobra.Command) (*Options, error) {
-	opts, err := NewKeyOptionsFromCmd(cmd)
+// WithKeyFromCmd updates Key in the Options based on the command's flags.
+func (o *Options) WithKeyFromCmd(cmd *cobra.Command) (*Options, error) {
+	opts, err := NewKeyFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
-	return o.WithKeyOptions(opts), nil
+	return o.WithKey(opts), nil
 }
 
-// WithKeyringOptionsFromCmd updates KeyringOptions in the Options based on the command's flags.
-func (o *Options) WithKeyringOptionsFromCmd(cmd *cobra.Command) (*Options, error) {
-	opts, err := NewKeyringOptionsFromCmd(cmd)
+// WithKeyringFromCmd updates Keyring in the Options based on the command's flags.
+func (o *Options) WithKeyringFromCmd(cmd *cobra.Command) (*Options, error) {
+	opts, err := NewKeyringFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
-	return o.WithKeyringOptions(opts), nil
+	return o.WithKeyring(opts), nil
 }
 
-// WithLogOptionsFromCmd updates LogOptions in the Options based on the command's flags.
-func (o *Options) WithLogOptionsFromCmd(cmd *cobra.Command) (*Options, error) {
-	opts, err := NewLogOptionsFromCmd(cmd)
+// WithLogFromCmd updates Log in the Options based on the command's flags.
+func (o *Options) WithLogFromCmd(cmd *cobra.Command) (*Options, error) {
+	opts, err := NewLogFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
-	return o.WithLogOptions(opts), nil
+	return o.WithLog(opts), nil
 }
 
-// WithPageOptionsFromCmd updates PageOptions in the Options based on the command's flags.
-func (o *Options) WithPageOptionsFromCmd(cmd *cobra.Command) (*Options, error) {
-	opts, err := NewPageOptionsFromCmd(cmd)
+// WithPageFromCmd updates Page in the Options based on the command's flags.
+func (o *Options) WithPageFromCmd(cmd *cobra.Command) (*Options, error) {
+	opts, err := NewPageFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
-	return o.WithPageOptions(opts), nil
+	return o.WithPage(opts), nil
 }
 
-// WithQueryOptionsFromCmd updates QueryOptions in the Options based on the command's flags.
-func (o *Options) WithQueryOptionsFromCmd(cmd *cobra.Command) (*Options, error) {
-	opts, err := NewQueryOptionsFromCmd(cmd)
+// WithQueryFromCmd updates Query in the Options based on the command's flags.
+func (o *Options) WithQueryFromCmd(cmd *cobra.Command) (*Options, error) {
+	opts, err := NewQueryFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
-	return o.WithQueryOptions(opts), nil
+	return o.WithQuery(opts), nil
 }
 
-// WithTxOptionsFromCmd updates TxOptions in the Options based on the command's flags.
-func (o *Options) WithTxOptionsFromCmd(cmd *cobra.Command) (*Options, error) {
-	opts, err := NewTxOptionsFromCmd(cmd)
+// WithTxFromCmd updates Tx in the Options based on the command's flags.
+func (o *Options) WithTxFromCmd(cmd *cobra.Command) (*Options, error) {
+	opts, err := NewTxFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
-	return o.WithTxOptions(opts), nil
+	return o.WithTx(opts), nil
 }
 
-// NewOptionsFromCmd creates and returns an Options instance populated with values from the command's flags.
-func NewOptionsFromCmd(cmd *cobra.Command) (*Options, error) {
-	// Retrieves KeyOptions from command flags.
-	keyOpts, err := NewKeyOptionsFromCmd(cmd)
+// NewFromCmd creates and returns an Options instance populated with values from the command's flags.
+func NewFromCmd(cmd *cobra.Command) (*Options, error) {
+	// Retrieves Key from command flags.
+	key, err := NewKeyFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
-	// Retrieves KeyringOptions from command flags.
-	keyringOpts, err := NewKeyringOptionsFromCmd(cmd)
+	// Retrieves Keyring from command flags.
+	keyring, err := NewKeyringFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
-	// Retrieves LogOptions from command flags.
-	logOpts, err := NewLogOptionsFromCmd(cmd)
+	// Retrieves Log from command flags.
+	log, err := NewLogFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
-	// Retrieves PageOptions from command flags.
-	pageOpts, err := NewPageOptionsFromCmd(cmd)
+	// Retrieves Page from command flags.
+	page, err := NewPageFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
-	// Retrieves QueryOptions from command flags.
-	queryOpts, err := NewQueryOptionsFromCmd(cmd)
+	// Retrieves Query from command flags.
+	query, err := NewQueryFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
-	// Retrieves TxOptions from command flags.
-	txOpts, err := NewTxOptionsFromCmd(cmd)
+	// Retrieves Tx from command flags.
+	tx, err := NewTxFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
 	// Return a new Options instance populated with the retrieved flag values.
 	return &Options{
-		KeyOptions:     keyOpts,
-		KeyringOptions: keyringOpts,
-		LogOptions:     logOpts,
-		PageOptions:    pageOpts,
-		QueryOptions:   queryOpts,
-		TxOptions:      txOpts,
+		Key:     key,
+		Keyring: keyring,
+		Log:     log,
+		Page:    page,
+		Query:   query,
+		Tx:      tx,
 	}, nil
 }

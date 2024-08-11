@@ -40,13 +40,13 @@ func keysAdd() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			opts := options.New()
-			if _, err := opts.WithKeyOptionsFromCmd(cmd); err != nil {
+			if _, err := opts.WithKeyFromCmd(cmd); err != nil {
 				return err
 			}
-			if _, err := opts.WithKeyringOptionsFromCmd(cmd); err != nil {
+			if _, err := opts.WithKeyringFromCmd(cmd); err != nil {
 				return err
 			}
-			if _, err := opts.WithLogOptionsFromCmd(cmd); err != nil {
+			if _, err := opts.WithLogFromCmd(cmd); err != nil {
 				return err
 			}
 
@@ -114,6 +114,7 @@ func keysAdd() *cobra.Command {
 				return err
 			}
 
+			cmd.Println("Key created successfully.")
 			return nil
 		},
 	}
@@ -134,10 +135,10 @@ func keysDelete() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			opts := options.New()
-			if _, err := opts.WithKeyringOptionsFromCmd(cmd); err != nil {
+			if _, err := opts.WithKeyringFromCmd(cmd); err != nil {
 				return err
 			}
-			if _, err := opts.WithLogOptionsFromCmd(cmd); err != nil {
+			if _, err := opts.WithLogFromCmd(cmd); err != nil {
 				return err
 			}
 
@@ -177,10 +178,10 @@ func keysList() *cobra.Command {
 		Short: "List all available keys",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			opts := options.New()
-			if _, err := opts.WithKeyringOptionsFromCmd(cmd); err != nil {
+			if _, err := opts.WithKeyringFromCmd(cmd); err != nil {
 				return err
 			}
-			if _, err := opts.WithLogOptionsFromCmd(cmd); err != nil {
+			if _, err := opts.WithLogFromCmd(cmd); err != nil {
 				return err
 			}
 
@@ -227,10 +228,10 @@ func keysShow() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			opts := options.New()
-			if _, err := opts.WithKeyringOptionsFromCmd(cmd); err != nil {
+			if _, err := opts.WithKeyringFromCmd(cmd); err != nil {
 				return err
 			}
-			if _, err := opts.WithLogOptionsFromCmd(cmd); err != nil {
+			if _, err := opts.WithLogFromCmd(cmd); err != nil {
 				return err
 			}
 

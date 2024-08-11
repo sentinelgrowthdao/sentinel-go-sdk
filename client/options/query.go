@@ -12,8 +12,8 @@ import (
 	"github.com/sentinel-official/sentinel-go-sdk/utils"
 )
 
-// PageOptions represents page-related options.
-type PageOptions struct {
+// Page represents page-related options.
+type Page struct {
 	CountTotal bool   `json:"count_total" toml:"count_total"` // CountTotal indicates whether to include total count in paged queries.
 	Key        []byte `json:"key" toml:"key"`                 // Key is the key for page.
 	Limit      uint64 `json:"limit" toml:"limit"`             // Limit is the maximum number of results per page.
@@ -21,45 +21,45 @@ type PageOptions struct {
 	Reverse    bool   `json:"reverse" toml:"reverse"`         // Reverse indicates whether to reverse the order of results in page.
 }
 
-// NewDefaultPage creates a new PageOptions instance with default values.
-func NewDefaultPage() *PageOptions {
-	return &PageOptions{
+// NewPage creates a new Page instance with default values.
+func NewPage() *Page {
+	return &Page{
 		Limit: flags.DefaultPageLimit,
 	}
 }
 
-// WithCountTotal sets the CountTotal field and returns the modified PageOptions instance.
-func (p *PageOptions) WithCountTotal(v bool) *PageOptions {
+// WithCountTotal sets the CountTotal field and returns the modified Page instance.
+func (p *Page) WithCountTotal(v bool) *Page {
 	p.CountTotal = v
 	return p
 }
 
-// WithKey sets the Key field and returns the modified PageOptions instance.
-func (p *PageOptions) WithKey(v []byte) *PageOptions {
+// WithKey sets the Key field and returns the modified Page instance.
+func (p *Page) WithKey(v []byte) *Page {
 	p.Key = v
 	return p
 }
 
-// WithLimit sets the Limit field and returns the modified PageOptions instance.
-func (p *PageOptions) WithLimit(v uint64) *PageOptions {
+// WithLimit sets the Limit field and returns the modified Page instance.
+func (p *Page) WithLimit(v uint64) *Page {
 	p.Limit = v
 	return p
 }
 
-// WithOffset sets the Offset field and returns the modified PageOptions instance.
-func (p *PageOptions) WithOffset(v uint64) *PageOptions {
+// WithOffset sets the Offset field and returns the modified Page instance.
+func (p *Page) WithOffset(v uint64) *Page {
 	p.Offset = v
 	return p
 }
 
-// WithReverse sets the Reverse field and returns the modified PageOptions instance.
-func (p *PageOptions) WithReverse(v bool) *PageOptions {
+// WithReverse sets the Reverse field and returns the modified Page instance.
+func (p *Page) WithReverse(v bool) *Page {
 	p.Reverse = v
 	return p
 }
 
 // PageRequest creates a new PageRequest with the configured options.
-func (p *PageOptions) PageRequest() *query.PageRequest {
+func (p *Page) PageRequest() *query.PageRequest {
 	return &query.PageRequest{
 		Key:        p.Key,
 		Offset:     p.Offset,
@@ -78,8 +78,8 @@ func AddPageFlagsToCmd(cmd *cobra.Command) {
 	flags.SetFlagPageReverse(cmd)
 }
 
-// NewPageOptionsFromCmd creates and returns PageOptions from the given cobra command's flags.
-func NewPageOptionsFromCmd(cmd *cobra.Command) (*PageOptions, error) {
+// NewPageFromCmd creates and returns Page from the given cobra command's flags.
+func NewPageFromCmd(cmd *cobra.Command) (*Page, error) {
 	// Retrieve the value of the "page.count-total" flag.
 	countTotal, err := flags.GetPageCountTotalFromCmd(cmd)
 	if err != nil {
@@ -110,8 +110,8 @@ func NewPageOptionsFromCmd(cmd *cobra.Command) (*PageOptions, error) {
 		return nil, err
 	}
 
-	// Return a new PageOptions instance populated with the retrieved flag values.
-	return &PageOptions{
+	// Return a new Page instance populated with the retrieved flag values.
+	return &Page{
 		CountTotal: countTotal,
 		Key:        key,
 		Limit:      limit,
@@ -120,8 +120,8 @@ func NewPageOptionsFromCmd(cmd *cobra.Command) (*PageOptions, error) {
 	}, nil
 }
 
-// QueryOptions represents options for making queries.
-type QueryOptions struct {
+// Query represents options for making queries.
+type Query struct {
 	Height     int64         `json:"height" toml:"height"`           // Height is the block height at which the query is to be performed.
 	MaxRetries int           `json:"max_retries" toml:"max_retries"` // MaxRetries is the maximum number of retries for the query.
 	Prove      bool          `json:"prove" toml:"prove"`             // Prove indicates whether to include proof in query results.
@@ -129,47 +129,47 @@ type QueryOptions struct {
 	Timeout    time.Duration `json:"timeout" toml:"timeout"`         // Timeout is the maximum duration for the query to be executed.
 }
 
-// NewDefaultQuery creates a new QueryOptions instance with default values.
-func NewDefaultQuery() *QueryOptions {
-	return &QueryOptions{
+// NewQuery creates a new Query instance with default values.
+func NewQuery() *Query {
+	return &Query{
 		MaxRetries: flags.DefaultQueryMaxRetries,
 		RPCAddr:    flags.DefaultQueryRPCAddr,
 		Timeout:    flags.DefaultQueryTimeout,
 	}
 }
 
-// WithHeight sets the Height field and returns the modified QueryOptions instance.
-func (q *QueryOptions) WithHeight(v int64) *QueryOptions {
+// WithHeight sets the Height field and returns the modified Query instance.
+func (q *Query) WithHeight(v int64) *Query {
 	q.Height = v
 	return q
 }
 
-// WithMaxRetries sets the MaxRetries field and returns the modified QueryOptions instance.
-func (q *QueryOptions) WithMaxRetries(v int) *QueryOptions {
+// WithMaxRetries sets the MaxRetries field and returns the modified Query instance.
+func (q *Query) WithMaxRetries(v int) *Query {
 	q.MaxRetries = v
 	return q
 }
 
-// WithProve sets the Prove field and returns the modified QueryOptions instance.
-func (q *QueryOptions) WithProve(v bool) *QueryOptions {
+// WithProve sets the Prove field and returns the modified Query instance.
+func (q *Query) WithProve(v bool) *Query {
 	q.Prove = v
 	return q
 }
 
-// WithRPCAddr sets the RPCAddr field and returns the modified QueryOptions instance.
-func (q *QueryOptions) WithRPCAddr(v string) *QueryOptions {
+// WithRPCAddr sets the RPCAddr field and returns the modified Query instance.
+func (q *Query) WithRPCAddr(v string) *Query {
 	q.RPCAddr = v
 	return q
 }
 
-// WithTimeout sets the Timeout field and returns the modified QueryOptions instance.
-func (q *QueryOptions) WithTimeout(v time.Duration) *QueryOptions {
+// WithTimeout sets the Timeout field and returns the modified Query instance.
+func (q *Query) WithTimeout(v time.Duration) *Query {
 	q.Timeout = v
 	return q
 }
 
-// ABCIQueryOptions converts QueryOptions to ABCIQueryOptions.
-func (q *QueryOptions) ABCIQueryOptions() client.ABCIQueryOptions {
+// ABCIQueryOptions converts Query to ABCIQueryOptions.
+func (q *Query) ABCIQueryOptions() client.ABCIQueryOptions {
 	return client.ABCIQueryOptions{
 		Height: q.Height,
 		Prove:  q.Prove,
@@ -177,7 +177,7 @@ func (q *QueryOptions) ABCIQueryOptions() client.ABCIQueryOptions {
 }
 
 // Client creates a new HTTP client with the configured options.
-func (q *QueryOptions) Client() (*http.HTTP, error) {
+func (q *Query) Client() (*http.HTTP, error) {
 	return http.NewWithTimeout(q.RPCAddr, "/websocket", utils.UIntSecondsFromDuration(q.Timeout))
 }
 
@@ -190,8 +190,8 @@ func AddQueryFlagsToCmd(cmd *cobra.Command) {
 	flags.SetFlagQueryTimeout(cmd)
 }
 
-// NewQueryOptionsFromCmd creates and returns QueryOptions from the given cobra command's flags.
-func NewQueryOptionsFromCmd(cmd *cobra.Command) (*QueryOptions, error) {
+// NewQueryFromCmd creates and returns Query from the given cobra command's flags.
+func NewQueryFromCmd(cmd *cobra.Command) (*Query, error) {
 	// Retrieve the height flag value from the command.
 	height, err := flags.GetQueryHeightFromCmd(cmd)
 	if err != nil {
@@ -222,8 +222,8 @@ func NewQueryOptionsFromCmd(cmd *cobra.Command) (*QueryOptions, error) {
 		return nil, err
 	}
 
-	// Return a new QueryOptions instance populated with the retrieved flag values.
-	return &QueryOptions{
+	// Return a new Query instance populated with the retrieved flag values.
+	return &Query{
 		Height:     height,
 		MaxRetries: maxRetries,
 		Prove:      prove,

@@ -7,28 +7,28 @@ import (
 	"github.com/sentinel-official/sentinel-go-sdk/cmd/flags"
 )
 
-// LogOptions holds the configuration options for logging.
-type LogOptions struct {
+// Log holds the configuration options for logging.
+type Log struct {
 	Format string `json:"format" toml:"format"` // Log format (e.g., plain or JSON)
 	Level  string `json:"level" toml:"level"`   // Log level (e.g., info, debug, error)
 }
 
-// NewDefaultLog initializes a LogOptions instance with default values.
-func NewDefaultLog() *LogOptions {
-	return &LogOptions{
+// NewLog initializes a Log instance with default values.
+func NewLog() *Log {
+	return &Log{
 		Format: config.LogFormatPlain,
 		Level:  config.DefaultLogLevel,
 	}
 }
 
-// WithFormat sets the log format and returns the updated LogOptions instance.
-func (k *LogOptions) WithFormat(v string) *LogOptions {
+// WithFormat sets the log format and returns the updated Log instance.
+func (k *Log) WithFormat(v string) *Log {
 	k.Format = v
 	return k
 }
 
-// WithLevel sets the log level and returns the updated LogOptions instance.
-func (k *LogOptions) WithLevel(v string) *LogOptions {
+// WithLevel sets the log level and returns the updated Log instance.
+func (k *Log) WithLevel(v string) *Log {
 	k.Level = v
 	return k
 }
@@ -39,8 +39,8 @@ func AddLogFlagsToCmd(cmd *cobra.Command) {
 	flags.SetFlagLogLevel(cmd)
 }
 
-// NewLogOptionsFromCmd extracts and returns LogOptions from the given cobra command's flags.
-func NewLogOptionsFromCmd(cmd *cobra.Command) (*LogOptions, error) {
+// NewLogFromCmd extracts and returns Log from the given cobra command's flags.
+func NewLogFromCmd(cmd *cobra.Command) (*Log, error) {
 	// Retrieve the log format value from the command's flags.
 	format, err := flags.GetLogFormatFromCmd(cmd)
 	if err != nil {
@@ -53,8 +53,8 @@ func NewLogOptionsFromCmd(cmd *cobra.Command) (*LogOptions, error) {
 		return nil, err
 	}
 
-	// Create and return a LogOptions instance with the retrieved values.
-	return &LogOptions{
+	// Create and return a Log instance with the retrieved values.
+	return &Log{
 		Format: format,
 		Level:  level,
 	}, nil

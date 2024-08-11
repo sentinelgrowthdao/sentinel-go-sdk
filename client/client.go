@@ -48,6 +48,6 @@ func (c *Client) Keyring(opts *options.Options) (keyring.Keyring, error) {
 		return c.kr, nil
 	}
 
-	// Create and return a new Keyring using options
-	return opts.Keyring(c)
+	// Create and return a new Keyring using options.
+	return opts.Keystore(c)
 }
