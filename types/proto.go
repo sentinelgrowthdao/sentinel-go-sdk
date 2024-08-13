@@ -1,6 +1,7 @@
 package types
 
 import (
+	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdkstd "github.com/cosmos/cosmos-sdk/std"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -11,15 +12,12 @@ import (
 	vpntypes "github.com/sentinel-official/hub/v12/x/vpn/types/v1"
 )
 
-// NewInterfaceRegistry initializes and returns a new InterfaceRegistry with registered interfaces
-// for Cosmos SDK and Sentinel Hub modules.
-// It covers interfaces for standard SDK types, authentication types, vesting types,
-// authorization, fee grants, and VPN types used across the Cosmos SDK and Sentinel Hub ecosystem.
+// NewInterfaceRegistry initializes and returns a new InterfaceRegistry with registered interfaces.
 func NewInterfaceRegistry() codectypes.InterfaceRegistry {
-	// Create a new InterfaceRegistry.
+	// Create a new InterfaceRegistry instance.
 	registry := codectypes.NewInterfaceRegistry()
 
-	// Register interfaces for Cosmos SDK modules.
+	// Register Cosmos SDK module interfaces.
 	sdkstd.RegisterInterfaces(registry)
 	authtypes.RegisterInterfaces(registry)
 	authvestingtypes.RegisterInterfaces(registry)
@@ -27,9 +25,18 @@ func NewInterfaceRegistry() codectypes.InterfaceRegistry {
 	banktypes.RegisterInterfaces(registry)
 	feegrant.RegisterInterfaces(registry)
 
-	// Register interfaces for Sentinel Hub modules.
+	// Register Sentinel Hub module interfaces.
 	vpntypes.RegisterInterfaces(registry)
 
 	// Return the populated InterfaceRegistry.
 	return registry
+}
+
+// NewProtoCodec creates and returns a new ProtoCodecMarshaler with a populated InterfaceRegistry.
+func NewProtoCodec() codec.ProtoCodecMarshaler {
+	// Initialize the InterfaceRegistry.
+	registry := NewInterfaceRegistry()
+
+	// Create and return a new ProtoCodecMarshaler.
+	return codec.NewProtoCodec(registry)
 }

@@ -28,7 +28,8 @@ type BasicWorker struct {
 // NewBasicWorker creates a new BasicWorker with default settings.
 func NewBasicWorker() *BasicWorker {
 	return &BasicWorker{
-		onError: func(error) bool { return false }, // Default behavior: do not stop on error.
+		maxRetries: 5,
+		onError:    func(error) bool { return false },
 	}
 }
 

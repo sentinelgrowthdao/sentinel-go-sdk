@@ -1,6 +1,7 @@
 package flags
 
 import (
+	cosmossdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 )
 
@@ -9,7 +10,6 @@ const (
 	DefaultTxChainID            = "sentinelhub-2"
 	DefaultTxGas                = 200_000
 	DefaultTxGasAdjustment      = 1.0 + (1.0 / 6)
-	DefaultTxGasPrices          = "0.1udvpn"
 	DefaultTxSimulateAndExecute = true
 )
 
@@ -19,13 +19,23 @@ func GetTxChainIDFromCmd(cmd *cobra.Command) (string, error) {
 }
 
 // GetTxFeeGranterAddrFromCmd retrieves the value of the tx.fee-granter-addr flag from the given command.
-func GetTxFeeGranterAddrFromCmd(cmd *cobra.Command) (string, error) {
-	return cmd.Flags().GetString("tx.fee-granter-addr")
+func GetTxFeeGranterAddrFromCmd(cmd *cobra.Command) (cosmossdk.AccAddress, error) {
+	s, err := cmd.Flags().GetString("tx.fee-granter-addr")
+	if err != nil {
+		return nil, err
+	}
+
+	return cosmossdk.AccAddressFromBech32(s)
 }
 
 // GetTxFeesFromCmd retrieves the value of the tx.fees flag from the given command.
-func GetTxFeesFromCmd(cmd *cobra.Command) (string, error) {
-	return cmd.Flags().GetString("tx.fees")
+func GetTxFeesFromCmd(cmd *cobra.Command) (cosmossdk.Coins, error) {
+	s, err := cmd.Flags().GetString("tx.fees")
+	if err != nil {
+		return nil, err
+	}
+
+	return cosmossdk.ParseCoinsNormalized(s)
 }
 
 // GetTxFromNameFromCmd retrieves the value of the tx.from-name flag from the given command.
@@ -44,8 +54,13 @@ func GetTxGasAdjustmentFromCmd(cmd *cobra.Command) (float64, error) {
 }
 
 // GetTxGasPricesFromCmd retrieves the value of the tx.gas-prices flag from the given command.
-func GetTxGasPricesFromCmd(cmd *cobra.Command) (string, error) {
-	return cmd.Flags().GetString("tx.gas-prices")
+func GetTxGasPricesFromCmd(cmd *cobra.Command) (cosmossdk.DecCoins, error) {
+	s, err := cmd.Flags().GetString("tx.gas-prices")
+	if err != nil {
+		return nil, err
+	}
+
+	return cosmossdk.ParseDecCoins(s)
 }
 
 // GetTxMemoFromCmd retrieves the value of the tx.memo flag from the given command.
@@ -95,7 +110,7 @@ func SetFlagTxGasAdjustment(cmd *cobra.Command) {
 
 // SetFlagTxGasPrices adds the tx.gas-prices flag to the given command.
 func SetFlagTxGasPrices(cmd *cobra.Command) {
-	cmd.Flags().String("tx.gas-prices", DefaultTxGasPrices, "Gas prices to be applied for transaction execution.")
+	cmd.Flags().String("tx.gas-prices", "", "Gas prices to be applied for transaction execution.")
 }
 
 // SetFlagTxMemo adds the tx.memo flag to the given command.

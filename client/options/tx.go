@@ -1,6 +1,7 @@
 package options
 
 import (
+	cosmossdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
 	"github.com/sentinel-official/sentinel-go-sdk/cmd/flags"
@@ -8,16 +9,16 @@ import (
 
 // Tx represents options for transactions.
 type Tx struct {
-	ChainID            string  `json:"chain_id" toml:"chain_id"`                         // ChainID is the identifier of the blockchain network.
-	FeeGranterAddr     string  `json:"fee_granter_addr" toml:"fee_granter_addr"`         // FeeGranterAddr is the address of the entity granting fees.
-	Fees               string  `json:"fees" toml:"fees"`                                 // Fees is the transaction fees.
-	FromName           string  `json:"from_name" toml:"from_name"`                       // FromName is the name of the sender.
-	Gas                uint64  `json:"gas" toml:"gas"`                                   // Gas is the gas limit for the transaction.
-	GasAdjustment      float64 `json:"gas_adjustment" toml:"gas_adjustment"`             // GasAdjustment is the adjustment factor for gas estimation.
-	GasPrices          string  `json:"gas_prices" toml:"gas_prices"`                     // GasPrices is the gas prices for transaction execution.
-	Memo               string  `json:"memo" toml:"memo"`                                 // Memo is a memo attached to the transaction.
-	SimulateAndExecute bool    `json:"simulate_and_execute" toml:"simulate_and_execute"` // SimulateAndExecute indicates whether to simulate and execute the transaction.
-	TimeoutHeight      uint64  `json:"timeout_height" toml:"timeout_height"`             // TimeoutHeight is the block height at which the transaction times out.
+	ChainID            string               `json:"chain_id" toml:"chain_id"`                         // ChainID is the identifier of the blockchain network.
+	FeeGranterAddr     cosmossdk.AccAddress `json:"fee_granter_addr" toml:"fee_granter_addr"`         // FeeGranterAddr is the address of the entity granting fees.
+	Fees               cosmossdk.Coins      `json:"fees" toml:"fees"`                                 // Fees is the transaction fees.
+	FromName           string               `json:"from_name" toml:"from_name"`                       // FromName is the name of the sender.
+	Gas                uint64               `json:"gas" toml:"gas"`                                   // Gas is the gas limit for the transaction.
+	GasAdjustment      float64              `json:"gas_adjustment" toml:"gas_adjustment"`             // GasAdjustment is the adjustment factor for gas estimation.
+	GasPrices          cosmossdk.DecCoins   `json:"gas_prices" toml:"gas_prices"`                     // GasPrices is the gas prices for transaction execution.
+	Memo               string               `json:"memo" toml:"memo"`                                 // Memo is a memo attached to the transaction.
+	SimulateAndExecute bool                 `json:"simulate_and_execute" toml:"simulate_and_execute"` // SimulateAndExecute indicates whether to simulate and execute the transaction.
+	TimeoutHeight      uint64               `json:"timeout_height" toml:"timeout_height"`             // TimeoutHeight is the block height at which the transaction times out.
 }
 
 // NewTx creates a new Tx instance with default values.
@@ -26,7 +27,6 @@ func NewTx() *Tx {
 		ChainID:            flags.DefaultTxChainID,
 		Gas:                flags.DefaultTxGas,
 		GasAdjustment:      flags.DefaultTxGasAdjustment,
-		GasPrices:          flags.DefaultTxGasPrices,
 		SimulateAndExecute: flags.DefaultTxSimulateAndExecute,
 	}
 }
@@ -38,13 +38,13 @@ func (t *Tx) WithChainID(v string) *Tx {
 }
 
 // WithFeeGranterAddr sets the FeeGranterAddr field and returns the modified Tx instance.
-func (t *Tx) WithFeeGranterAddr(v string) *Tx {
+func (t *Tx) WithFeeGranterAddr(v cosmossdk.AccAddress) *Tx {
 	t.FeeGranterAddr = v
 	return t
 }
 
 // WithFees sets the Fees field and returns the modified Tx instance.
-func (t *Tx) WithFees(v string) *Tx {
+func (t *Tx) WithFees(v cosmossdk.Coins) *Tx {
 	t.Fees = v
 	return t
 }
@@ -68,7 +68,7 @@ func (t *Tx) WithGasAdjustment(v float64) *Tx {
 }
 
 // WithGasPrices sets the GasPrices field and returns the modified Tx instance.
-func (t *Tx) WithGasPrices(v string) *Tx {
+func (t *Tx) WithGasPrices(v cosmossdk.DecCoins) *Tx {
 	t.GasPrices = v
 	return t
 }

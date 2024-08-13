@@ -13,7 +13,6 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	"github.com/sentinel-official/sentinel-go-sdk/client/options"
-	"github.com/sentinel-official/sentinel-go-sdk/utils"
 )
 
 // Simulate simulates the execution of a transaction before broadcasting it.
@@ -155,8 +154,8 @@ func (c *Client) prepareTx(ctx context.Context, key *keyring.Record, account aut
 	}
 
 	// Set transaction fee, fee granter, gas limit, memo, and timeout height
-	txb.SetFeeAmount(nil)
-	txb.SetFeeGranter(utils.MustAccAddrFromBech32(opts.FeeGranterAddr))
+	txb.SetFeeAmount(opts.Fees)
+	txb.SetFeeGranter(opts.FeeGranterAddr)
 	txb.SetGasLimit(opts.Gas)
 	txb.SetMemo(opts.Memo)
 	txb.SetTimeoutHeight(opts.TimeoutHeight)

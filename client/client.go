@@ -32,7 +32,7 @@ func New(protoCodec codec.ProtoCodecMarshaler) *Client {
 // NewDefault creates a new instance of Client with a default ProtoCodecMarshaler.
 // It returns a pointer to the newly created Client.
 func NewDefault() *Client {
-	return New(codec.NewProtoCodec(types.NewInterfaceRegistry()))
+	return New(types.NewProtoCodec())
 }
 
 // WithKeyring sets the Keyring for the Client and returns the updated Client instance.
