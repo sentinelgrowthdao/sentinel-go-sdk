@@ -24,6 +24,9 @@ func GetTxFeeGranterAddrFromCmd(cmd *cobra.Command) (cosmossdk.AccAddress, error
 	if err != nil {
 		return nil, err
 	}
+	if s == "" {
+		return nil, nil
+	}
 
 	return cosmossdk.AccAddressFromBech32(s)
 }
