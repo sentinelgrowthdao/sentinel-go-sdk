@@ -5,8 +5,6 @@ import (
 
 	cosmossdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-
-	"github.com/sentinel-official/sentinel-go-sdk/client/options"
 )
 
 const (
@@ -18,7 +16,7 @@ const (
 // Account queries and returns an account using the given address and options.
 // It uses gRPC to send a request to the "/cosmos.auth.v1beta1.Query/Account" endpoint.
 // The result is an authtypes.AccountI interface and an error if the query fails.
-func (c *Client) Account(ctx context.Context, accAddr cosmossdk.AccAddress, opts *options.Options) (res authtypes.AccountI, err error) {
+func (c *Client) Account(ctx context.Context, accAddr cosmossdk.AccAddress, opts *Options) (res authtypes.AccountI, err error) {
 	// Initialize variables for the query.
 	var (
 		resp authtypes.QueryAccountResponse
@@ -44,7 +42,7 @@ func (c *Client) Account(ctx context.Context, accAddr cosmossdk.AccAddress, opts
 // Accounts queries and returns a list of accounts using the given options.
 // It uses gRPC to send a request to the "/cosmos.auth.v1beta1.Query/Accounts" endpoint.
 // The result is a slice of authtypes.AccountI and an error if the query fails.
-func (c *Client) Accounts(ctx context.Context, opts *options.Options) (res []authtypes.AccountI, err error) {
+func (c *Client) Accounts(ctx context.Context, opts *Options) (res []authtypes.AccountI, err error) {
 	// Initialize variables for the query.
 	var (
 		resp authtypes.QueryAccountsResponse

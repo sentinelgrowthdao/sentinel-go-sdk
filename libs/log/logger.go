@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
 
-	"github.com/sentinel-official/sentinel-go-sdk/cmd/flags"
+	"github.com/sentinel-official/sentinel-go-sdk/options"
 )
 
 // NewLogger creates a new logger instance with the specified output writer, format, and log level.
@@ -20,32 +20,27 @@ func NewLogger(w io.Writer, format, level string) (log.Logger, error) {
 	}
 
 	// Prepare options for logger
-	options := []log.Option{
+	opts := []log.Option{
 		log.LevelOption(logLevel),
 	}
 
 	// Set log format based on the provided format string
 	if format == config.LogFormatJSON {
-		options = append(options, log.OutputJSONOption())
+		opts = append(opts, log.OutputJSONOption())
 	}
 
 	// Create and return the logger with the specified options
-	return log.NewLogger(w, options...), nil
+	return log.NewLogger(w, opts...), nil
 }
 
 // NewLoggerFromCmd creates a new logger instance based on command-line flags from the provided Cobra command.
 func NewLoggerFromCmd(cmd *cobra.Command) (log.Logger, error) {
 	// Retrieve log format and level from command-line flags
-	format, err := flags.GetLogFormatFromCmd(cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	level, err := flags.GetLogLevelFromCmd(cmd)
+	opts, err := options.NewLogFromCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
 
 	// Create and return the logger with the retrieved format and level
-	return NewLogger(cmd.OutOrStderr(), format, level)
+	return NewLogger(cmd.OutOrStderr(), opts.GetFormat(), opts.GetLevel())
 }

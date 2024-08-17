@@ -8,7 +8,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 
-	"github.com/sentinel-official/sentinel-go-sdk/client/options"
 	"github.com/sentinel-official/sentinel-go-sdk/types"
 )
 
@@ -43,7 +42,7 @@ func (c *Client) WithKeyring(kr keyring.Keyring) *Client {
 
 // Keyring returns the Keyring associated with the Client.
 // If no Keyring was set using WithKeyring, it uses the provided Options to create one.
-func (c *Client) Keyring(opts *options.Options) (keyring.Keyring, error) {
+func (c *Client) Keyring(opts *Options) (keyring.Keyring, error) {
 	if c.kr != nil {
 		return c.kr, nil
 	}

@@ -6,8 +6,6 @@ import (
 	base "github.com/sentinel-official/hub/v12/types"
 	v1base "github.com/sentinel-official/hub/v12/types/v1"
 	"github.com/sentinel-official/hub/v12/x/node/types/v2"
-
-	"github.com/sentinel-official/sentinel-go-sdk/client/options"
 )
 
 const (
@@ -20,7 +18,7 @@ const (
 // Node queries and returns information about a specific node based on the provided node address.
 // It uses gRPC to send a request to the "/sentinel.node.v2.QueryService/QueryNode" endpoint.
 // The result is a pointer to v2.Node and an error if the query fails.
-func (c *Client) Node(ctx context.Context, nodeAddr base.NodeAddress, opts *options.Options) (res *v2.Node, err error) {
+func (c *Client) Node(ctx context.Context, nodeAddr base.NodeAddress, opts *Options) (res *v2.Node, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v2.QueryNodeResponse
@@ -41,7 +39,7 @@ func (c *Client) Node(ctx context.Context, nodeAddr base.NodeAddress, opts *opti
 // Nodes queries and returns a list of nodes based on the provided status and options.
 // It uses gRPC to send a request to the "/sentinel.node.v2.QueryService/QueryNodes" endpoint.
 // The result is a slice of v2.Node and an error if the query fails.
-func (c *Client) Nodes(ctx context.Context, status v1base.Status, opts *options.Options) (res []v2.Node, err error) {
+func (c *Client) Nodes(ctx context.Context, status v1base.Status, opts *Options) (res []v2.Node, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v2.QueryNodesResponse
@@ -64,7 +62,7 @@ func (c *Client) Nodes(ctx context.Context, status v1base.Status, opts *options.
 // based on the provided plan ID, status, and options.
 // It uses gRPC to send a request to the "/sentinel.node.v2.QueryService/QueryNodesForPlan" endpoint.
 // The result is a slice of v2.Node and an error if the query fails.
-func (c *Client) NodesForPlan(ctx context.Context, id uint64, status v1base.Status, opts *options.Options) (res []v2.Node, err error) {
+func (c *Client) NodesForPlan(ctx context.Context, id uint64, status v1base.Status, opts *Options) (res []v2.Node, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v2.QueryNodesForPlanResponse

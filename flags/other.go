@@ -10,7 +10,7 @@ func SetFlagOutputFormat(cmd *cobra.Command) {
 	cmd.Flags().String("output-format", keys.OutputFormatText, "Specify the output format (json or text)")
 }
 
-// GetOutputFormatFromCmd retrieves the output format flag value from the given command.
-func GetOutputFormatFromCmd(cmd *cobra.Command) (string, error) {
+// GetOutputFormat retrieves the output format flag value from the given command.
+func GetOutputFormat(cmd *cobra.Command) (string, error) {
 	return cmd.Flags().GetString("output-format")
 }

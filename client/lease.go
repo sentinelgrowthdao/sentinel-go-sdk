@@ -5,8 +5,6 @@ import (
 
 	base "github.com/sentinel-official/hub/v12/types"
 	"github.com/sentinel-official/hub/v12/x/lease/types/v1"
-
-	"github.com/sentinel-official/sentinel-go-sdk/client/options"
 )
 
 const (
@@ -20,7 +18,7 @@ const (
 // Lease queries and returns information about a specific lease based on the provided lease ID.
 // It uses gRPC to send a request to the "/sentinel.lease.v1.QueryService/QueryLease" endpoint.
 // The result is a pointer to v1.Lease and an error if the query fails.
-func (c *Client) Lease(ctx context.Context, id uint64, opts *options.Options) (res *v1.Lease, err error) {
+func (c *Client) Lease(ctx context.Context, id uint64, opts *Options) (res *v1.Lease, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v1.QueryLeaseResponse
@@ -41,7 +39,7 @@ func (c *Client) Lease(ctx context.Context, id uint64, opts *options.Options) (r
 // Leases queries and returns a list of leases based on the provided options.
 // It uses gRPC to send a request to the "/sentinel.lease.v1.QueryService/QueryLeases" endpoint.
 // The result is a slice of v1.Lease and an error if the query fails.
-func (c *Client) Leases(ctx context.Context, opts *options.Options) (res []v1.Lease, err error) {
+func (c *Client) Leases(ctx context.Context, opts *Options) (res []v1.Lease, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v1.QueryLeasesResponse
@@ -63,7 +61,7 @@ func (c *Client) Leases(ctx context.Context, opts *options.Options) (res []v1.Le
 // It uses gRPC to send a request to the "/sentinel.lease.v1.QueryService/QueryLeasesForNode" endpoint.
 // The result is a slice of v1.Lease and an error if the query fails.
 // The node is identified by the provided base.NodeAddress.
-func (c *Client) LeasesForNode(ctx context.Context, nodeAddr base.NodeAddress, opts *options.Options) (res []v1.Lease, err error) {
+func (c *Client) LeasesForNode(ctx context.Context, nodeAddr base.NodeAddress, opts *Options) (res []v1.Lease, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v1.QueryLeasesForNodeResponse
@@ -86,7 +84,7 @@ func (c *Client) LeasesForNode(ctx context.Context, nodeAddr base.NodeAddress, o
 // It uses gRPC to send a request to the "/sentinel.lease.v1.QueryService/QueryLeasesForProvider" endpoint.
 // The result is a slice of v1.Lease and an error if the query fails.
 // The provider is identified by the provided base.ProvAddress.
-func (c *Client) LeasesForProvider(ctx context.Context, provAddr base.ProvAddress, opts *options.Options) (res []v1.Lease, err error) {
+func (c *Client) LeasesForProvider(ctx context.Context, provAddr base.ProvAddress, opts *Options) (res []v1.Lease, err error) {
 	// Initialize variables for the query.
 	var (
 		resp v1.QueryLeasesForProviderResponse

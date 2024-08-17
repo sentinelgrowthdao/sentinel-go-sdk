@@ -11,14 +11,12 @@ import (
 	txsigning "github.com/cosmos/cosmos-sdk/types/tx/signing"
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-
-	"github.com/sentinel-official/sentinel-go-sdk/client/options"
 )
 
 // Simulate simulates the execution of a transaction before broadcasting it.
 // It takes a context, transaction bytes, and query options as input parameters,
 // and returns a SimulateResponse and an error, if any.
-func (c *Client) Simulate(ctx context.Context, buf []byte, opts *options.Options) (*txtypes.SimulateResponse, error) {
+func (c *Client) Simulate(ctx context.Context, buf []byte, opts *Options) (*txtypes.SimulateResponse, error) {
 	// Initialize variables for the query.
 	var (
 		resp   txtypes.SimulateResponse
@@ -40,7 +38,7 @@ func (c *Client) Simulate(ctx context.Context, buf []byte, opts *options.Options
 // simulateTx simulates the gas usage of a transaction.
 // It takes a context, a transaction builder, and transaction options as input parameters,
 // and returns the gas usage and an error, if any.
-func (c *Client) simulateTx(ctx context.Context, txb client.TxBuilder, opts *options.Options) (uint64, error) {
+func (c *Client) simulateTx(ctx context.Context, txb client.TxBuilder, opts *Options) (uint64, error) {
 	// Encode transaction into bytes
 	buf, err := c.TxEncoder()(txb.GetTx())
 	if err != nil {
@@ -60,7 +58,7 @@ func (c *Client) simulateTx(ctx context.Context, txb client.TxBuilder, opts *opt
 // broadcastTxSync broadcasts a transaction synchronously.
 // It takes a context, a transaction builder, and transaction options as input parameters,
 // and returns the broadcast result and an error, if any.
-func (c *Client) broadcastTxSync(ctx context.Context, txb client.TxBuilder, opts *options.Options) (*coretypes.ResultBroadcastTx, error) {
+func (c *Client) broadcastTxSync(ctx context.Context, txb client.TxBuilder, opts *Options) (*coretypes.ResultBroadcastTx, error) {
 	// Encode transaction into bytes
 	buf, err := c.TxEncoder()(txb.GetTx())
 	if err != nil {
@@ -80,7 +78,7 @@ func (c *Client) broadcastTxSync(ctx context.Context, txb client.TxBuilder, opts
 // signTx signs a transaction with given key and account information.
 // It takes a transaction builder, key information, account information, and transaction options as input parameters,
 // and returns an error, if any.
-func (c *Client) signTx(txb client.TxBuilder, key *keyring.Record, account authtypes.AccountI, opts *options.Options) error {
+func (c *Client) signTx(txb client.TxBuilder, key *keyring.Record, account authtypes.AccountI, opts *Options) error {
 	// Prepare single signature data
 	singleSignatureData := txsigning.SingleSignatureData{
 		SignMode:  txsigning.SignMode_SIGN_MODE_DIRECT,
@@ -146,7 +144,7 @@ func (c *Client) signTx(txb client.TxBuilder, key *keyring.Record, account autht
 // prepareTx prepares a transaction for broadcasting.
 // It takes a context, key information, account information, message(s), and transaction options as input parameters,
 // and returns a transaction builder and an error, if any.
-func (c *Client) prepareTx(ctx context.Context, key *keyring.Record, account authtypes.AccountI, msgs []sdk.Msg, opts *options.Options) (client.TxBuilder, error) {
+func (c *Client) prepareTx(ctx context.Context, key *keyring.Record, account authtypes.AccountI, msgs []sdk.Msg, opts *Options) (client.TxBuilder, error) {
 	// Create a new transaction builder instance
 	txb := c.NewTxBuilder()
 	if err := txb.SetMsgs(msgs...); err != nil {
@@ -154,8 +152,8 @@ func (c *Client) prepareTx(ctx context.Context, key *keyring.Record, account aut
 	}
 
 	// Set transaction fee, fee granter, gas limit, memo, and timeout height
-	txb.SetFeeAmount(opts.Fees)
-	txb.SetFeeGranter(opts.FeeGranterAddr)
+	txb.SetFeeAmount(opts.GetFees())
+	txb.SetFeeGranter(opts.GetFeeGranterAddr())
 	txb.SetGasLimit(opts.Gas)
 	txb.SetMemo(opts.Memo)
 	txb.SetTimeoutHeight(opts.TimeoutHeight)
@@ -196,7 +194,7 @@ func (c *Client) prepareTx(ctx context.Context, key *keyring.Record, account aut
 // BroadcastTx broadcasts a signed transaction.
 // It takes a context, message(s), and transaction options as input parameters,
 // and returns the broadcast result and an error, if any.
-func (c *Client) BroadcastTx(ctx context.Context, msgs []sdk.Msg, opts *options.Options) (*coretypes.ResultBroadcastTx, error) {
+func (c *Client) BroadcastTx(ctx context.Context, msgs []sdk.Msg, opts *Options) (*coretypes.ResultBroadcastTx, error) {
 	// Get key for signing
 	key, err := c.Key(opts.FromName, opts)
 	if err != nil {
@@ -233,7 +231,7 @@ func (c *Client) BroadcastTx(ctx context.Context, msgs []sdk.Msg, opts *options.
 // Tx retrieves a transaction from the blockchain using its hash.
 // It takes a context, a transaction hash, and query options as input parameters,
 // and returns the transaction result and an error, if any.
-func (c *Client) Tx(ctx context.Context, hash []byte, opts *options.Options) (*coretypes.ResultTx, error) {
+func (c *Client) Tx(ctx context.Context, hash []byte, opts *Options) (*coretypes.ResultTx, error) {
 	// Get client for querying the blockchain
 	rpc, err := opts.Client()
 	if err != nil {
