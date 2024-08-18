@@ -1,6 +1,8 @@
 package client
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 
 	"github.com/sentinel-official/sentinel-go-sdk/options"
@@ -104,27 +106,27 @@ func (o *Options) WithTxFromCmd(cmd *cobra.Command) (*Options, error) {
 func (o *Options) Validate() error {
 	if o.Key != nil {
 		if err := o.Key.Validate(); err != nil {
-			return err
+			return fmt.Errorf("key validation failed: %w", err)
 		}
 	}
 	if o.Keyring != nil {
 		if err := o.Keyring.Validate(); err != nil {
-			return err
+			return fmt.Errorf("keyring validation failed: %w", err)
 		}
 	}
 	if o.Page != nil {
 		if err := o.Page.Validate(); err != nil {
-			return err
+			return fmt.Errorf("page validation failed: %w", err)
 		}
 	}
 	if o.Query != nil {
 		if err := o.Query.Validate(); err != nil {
-			return err
+			return fmt.Errorf("query validation failed: %w", err)
 		}
 	}
 	if o.Tx != nil {
 		if err := o.Tx.Validate(); err != nil {
-			return err
+			return fmt.Errorf("tx validation failed: %w", err)
 		}
 	}
 

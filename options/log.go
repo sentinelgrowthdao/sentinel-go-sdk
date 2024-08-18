@@ -46,23 +46,38 @@ func (l *Log) GetLevel() string {
 }
 
 // ValidateLogFormat checks if the Format field is valid.
-func ValidateLogFormat(format string) error {
-	if format != "plain" && format != "json" {
-		return errors.New("format must be 'plain' or 'json'")
+func ValidateLogFormat(v string) error {
+	allowedFormats := map[string]bool{
+		"json":  true,
+		"plain": true,
+	}
+
+	if v == "" {
+		return errors.New("format must be non-empty")
+	}
+	if _, ok := allowedFormats[v]; !ok {
+		return errors.New("format must be one of: json, plain")
 	}
 
 	return nil
 }
 
 // ValidateLogLevel checks if the Level field is valid.
-func ValidateLogLevel(level string) error {
+func ValidateLogLevel(v string) error {
 	validLevels := map[string]bool{
-		"info":  true,
 		"debug": true,
 		"error": true,
+		"fatal": true,
+		"info":  true,
+		"panic": true,
+		"warn":  true,
 	}
-	if !validLevels[level] {
-		return errors.New("level must be one of 'info', 'debug', or 'error'")
+
+	if v == "" {
+		return errors.New("level must be non-empty")
+	}
+	if _, ok := validLevels[v]; !ok {
+		return errors.New("level must be one of: debug, error, fatal, info, panic, warn")
 	}
 
 	return nil

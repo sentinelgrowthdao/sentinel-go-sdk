@@ -109,22 +109,23 @@ func (t *Tx) GetFeeGranterAddr() cosmossdk.AccAddress {
 	if t.FeeGranterAddr == "" {
 		return nil
 	}
-	addr, err := cosmossdk.AccAddressFromBech32(t.FeeGranterAddr)
+
+	v, err := cosmossdk.AccAddressFromBech32(t.FeeGranterAddr)
 	if err != nil {
 		panic(err)
 	}
 
-	return addr
+	return v
 }
 
 // GetFees returns the Fees field.
 func (t *Tx) GetFees() cosmossdk.Coins {
-	coins, err := cosmossdk.ParseCoinsNormalized(t.Fees)
+	v, err := cosmossdk.ParseCoinsNormalized(t.Fees)
 	if err != nil {
 		panic(err)
 	}
 
-	return coins
+	return v
 }
 
 // GetFromName returns the FromName field.
@@ -144,12 +145,12 @@ func (t *Tx) GetGasAdjustment() float64 {
 
 // GetGasPrices returns the GasPrices field.
 func (t *Tx) GetGasPrices() cosmossdk.DecCoins {
-	decCoins, err := cosmossdk.ParseDecCoins(t.GasPrices)
+	v, err := cosmossdk.ParseDecCoins(t.GasPrices)
 	if err != nil {
 		panic(err)
 	}
 
-	return decCoins
+	return v
 }
 
 // GetMemo returns the Memo field.
@@ -168,8 +169,8 @@ func (t *Tx) GetTimeoutHeight() uint64 {
 }
 
 // ValidateTxChainID validates the ChainID field.
-func ValidateTxChainID(chainID string) error {
-	if chainID == "" {
+func ValidateTxChainID(v string) error {
+	if v == "" {
 		return errors.New("chain_id must not be empty")
 	}
 
@@ -177,11 +178,11 @@ func ValidateTxChainID(chainID string) error {
 }
 
 // ValidateTxFeeGranterAddr validates the FeeGranterAddr field.
-func ValidateTxFeeGranterAddr(addr string) error {
-	if addr == "" {
+func ValidateTxFeeGranterAddr(v string) error {
+	if v == "" {
 		return nil
 	}
-	if _, err := cosmossdk.AccAddressFromBech32(addr); err != nil {
+	if _, err := cosmossdk.AccAddressFromBech32(v); err != nil {
 		return errors.New("fee_granter_addr must be a valid address")
 	}
 
@@ -189,8 +190,8 @@ func ValidateTxFeeGranterAddr(addr string) error {
 }
 
 // ValidateTxFees validates the Fees field.
-func ValidateTxFees(fees string) error {
-	if _, err := cosmossdk.ParseCoinsNormalized(fees); err != nil {
+func ValidateTxFees(v string) error {
+	if _, err := cosmossdk.ParseCoinsNormalized(v); err != nil {
 		return errors.New("fees must be a valid coins format")
 	}
 
@@ -198,8 +199,8 @@ func ValidateTxFees(fees string) error {
 }
 
 // ValidateTxFromName validates the FromName field.
-func ValidateTxFromName(fromName string) error {
-	if fromName == "" {
+func ValidateTxFromName(v string) error {
+	if v == "" {
 		return errors.New("from_name must not be empty")
 	}
 
@@ -207,8 +208,8 @@ func ValidateTxFromName(fromName string) error {
 }
 
 // ValidateTxGas validates the Gas field.
-func ValidateTxGas(gas uint64) error {
-	if gas == 0 {
+func ValidateTxGas(v uint64) error {
+	if v == 0 {
 		return errors.New("gas must be greater than zero")
 	}
 
@@ -216,8 +217,8 @@ func ValidateTxGas(gas uint64) error {
 }
 
 // ValidateTxGasAdjustment validates the GasAdjustment field.
-func ValidateTxGasAdjustment(adjustment float64) error {
-	if adjustment <= 0 {
+func ValidateTxGasAdjustment(v float64) error {
+	if v <= 0 {
 		return errors.New("gas_adjustment must be greater than zero")
 	}
 
@@ -225,8 +226,8 @@ func ValidateTxGasAdjustment(adjustment float64) error {
 }
 
 // ValidateTxGasPrices validates the GasPrices field.
-func ValidateTxGasPrices(gasPrices string) error {
-	if _, err := cosmossdk.ParseDecCoins(gasPrices); err != nil {
+func ValidateTxGasPrices(v string) error {
+	if _, err := cosmossdk.ParseDecCoins(v); err != nil {
 		return errors.New("gas_prices must be a valid decimal coins format")
 	}
 

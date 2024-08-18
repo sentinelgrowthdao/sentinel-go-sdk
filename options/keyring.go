@@ -74,8 +74,8 @@ func (k *Keyring) GetInput() io.Reader {
 }
 
 // ValidateKeyringAppName checks if the AppName field is valid.
-func ValidateKeyringAppName(appName string) error {
-	if appName == "" {
+func ValidateKeyringAppName(v string) error {
+	if v == "" {
 		return errors.New("app name must be non-empty")
 	}
 
@@ -83,17 +83,29 @@ func ValidateKeyringAppName(appName string) error {
 }
 
 // ValidateKeyringBackend checks if the Backend field is valid.
-func ValidateKeyringBackend(backend string) error {
-	if backend == "" {
+func ValidateKeyringBackend(v string) error {
+	allowedBackends := map[string]bool{
+		"file":    true,
+		"kwallet": true,
+		"memory":  true,
+		"os":      true,
+		"pass":    true,
+		"test":    true,
+	}
+
+	if v == "" {
 		return errors.New("backend must be non-empty")
+	}
+	if _, ok := allowedBackends[v]; !ok {
+		return errors.New("backend must be one of: file, kwallet, memory, os, pass, test")
 	}
 
 	return nil
 }
 
 // ValidateKeyringHomeDir checks if the HomeDir field is valid.
-func ValidateKeyringHomeDir(homeDir string) error {
-	if homeDir == "" {
+func ValidateKeyringHomeDir(v string) error {
+	if v == "" {
 		return errors.New("home directory must be non-empty")
 	}
 

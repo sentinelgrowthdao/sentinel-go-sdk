@@ -2,6 +2,8 @@ package options
 
 import (
 	"errors"
+	"net/url"
+	"strings"
 	"time"
 
 	"github.com/cometbft/cometbft/rpc/client"
@@ -84,17 +86,17 @@ func (q *Query) GetRPCAddr() string {
 
 // GetTimeout returns the maximum duration for the query.
 func (q *Query) GetTimeout() time.Duration {
-	duration, err := time.ParseDuration(q.Timeout)
+	v, err := time.ParseDuration(q.Timeout)
 	if err != nil {
 		panic(err)
 	}
 
-	return duration
+	return v
 }
 
 // ValidateQueryHeight validates the Height field.
-func ValidateQueryHeight(height int64) error {
-	if height < 0 {
+func ValidateQueryHeight(v int64) error {
+	if v < 0 {
 		return errors.New("height must be non-negative")
 	}
 
@@ -102,8 +104,8 @@ func ValidateQueryHeight(height int64) error {
 }
 
 // ValidateQueryMaxRetries validates the MaxRetries field.
-func ValidateQueryMaxRetries(maxRetries int) error {
-	if maxRetries < 0 {
+func ValidateQueryMaxRetries(v int) error {
+	if v < 0 {
 		return errors.New("max_retries must be non-negative")
 	}
 
@@ -111,9 +113,25 @@ func ValidateQueryMaxRetries(maxRetries int) error {
 }
 
 // ValidateQueryRPCAddr validates the RPCAddr field.
-func ValidateQueryRPCAddr(rpcAddr string) error {
-	if rpcAddr == "" {
+func ValidateQueryRPCAddr(v string) error {
+	if v == "" {
 		return errors.New("rpc_addr must not be empty")
+	}
+
+	// Parse the URL
+	addr, err := url.Parse(v)
+	if err != nil {
+		return errors.New("rpc_addr must be a valid URL")
+	}
+
+	// Check if the URL scheme is set
+	if addr.Scheme == "" {
+		return errors.New("rpc_addr must have a valid scheme (e.g., http, https)")
+	}
+
+	// Check if the URL host is set and contains a port
+	if addr.Host == "" || !strings.Contains(addr.Host, ":") {
+		return errors.New("rpc_addr must be a valid URL with a port")
 	}
 
 	return nil

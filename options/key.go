@@ -64,8 +64,8 @@ func (k *Key) Validate() error {
 
 // HDPath returns the hierarchical deterministic (HD) path string based on CoinType, Account, and Index.
 func (k *Key) HDPath() string {
-	path := cryptohd.CreateHDPath(k.GetCoinType(), k.GetAccount(), k.GetIndex())
-	return path.String()
+	v := cryptohd.CreateHDPath(k.GetCoinType(), k.GetAccount(), k.GetIndex())
+	return v.String()
 }
 
 // SignatureAlgo returns the default signature algorithm for keys.

@@ -67,12 +67,12 @@ func (p *Page) GetCountTotal() bool {
 
 // GetKey returns the decoded Key field.
 func (p *Page) GetKey() []byte {
-	key, err := base64.StdEncoding.DecodeString(p.Key)
+	v, err := base64.StdEncoding.DecodeString(p.Key)
 	if err != nil {
 		panic(err)
 	}
 
-	return key
+	return v
 }
 
 // GetLimit returns the Limit field.
@@ -91,11 +91,8 @@ func (p *Page) GetReverse() bool {
 }
 
 // ValidatePageKey checks if the provided key is a valid base64-encoded string.
-func ValidatePageKey(key string) error {
-	if key == "" {
-		return nil
-	}
-	if _, err := base64.StdEncoding.DecodeString(key); err != nil {
+func ValidatePageKey(v string) error {
+	if _, err := base64.StdEncoding.DecodeString(v); err != nil {
 		return errors.New("key must be a valid base64-encoded string")
 	}
 
@@ -103,8 +100,8 @@ func ValidatePageKey(key string) error {
 }
 
 // ValidatePageLimit validates the Limit field.
-func ValidatePageLimit(limit uint64) error {
-	if limit == 0 {
+func ValidatePageLimit(v uint64) error {
+	if v == 0 {
 		return errors.New("limit must be greater than zero")
 	}
 
@@ -112,8 +109,8 @@ func ValidatePageLimit(limit uint64) error {
 }
 
 // ValidatePageOffset validates the Offset field.
-func ValidatePageOffset(offset uint64) error {
-	if offset < 0 {
+func ValidatePageOffset(v uint64) error {
+	if v < 0 {
 		return errors.New("offset must be non-negative")
 	}
 
