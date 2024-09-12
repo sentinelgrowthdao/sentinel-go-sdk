@@ -150,4 +150,7 @@ require (
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
-replace golang.org/x/exp => golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb
+replace (
+	github.com/apernet/hysteria/core/v2 v2.4.5 => github.com/JimmyHuang454/hysteria/core/v2 v2.0.0-20240724161647-b3347cf6334d
+	golang.org/x/exp => golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb
+)
