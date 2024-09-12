@@ -108,24 +108,12 @@ func ValidatePageLimit(v uint64) error {
 	return nil
 }
 
-// ValidatePageOffset validates the Offset field.
-func ValidatePageOffset(v uint64) error {
-	if v < 0 {
-		return errors.New("offset must be non-negative")
-	}
-
-	return nil
-}
-
 // Validate validates all the fields of the Page struct.
 func (p *Page) Validate() error {
 	if err := ValidatePageKey(p.Key); err != nil {
 		return err
 	}
 	if err := ValidatePageLimit(p.Limit); err != nil {
-		return err
-	}
-	if err := ValidatePageOffset(p.Offset); err != nil {
 		return err
 	}
 

@@ -3,7 +3,7 @@ package options
 import (
 	"errors"
 	"net/url"
-	"strings"
+	"strconv"
 	"time"
 
 	"github.com/cometbft/cometbft/rpc/client"
@@ -129,9 +129,15 @@ func ValidateQueryRPCAddr(v string) error {
 		return errors.New("rpc_addr must have a valid scheme (e.g., http, https)")
 	}
 
-	// Check if the URL host is set and contains a port
-	if addr.Host == "" || !strings.Contains(addr.Host, ":") {
-		return errors.New("rpc_addr must be a valid URL with a port")
+	// Check if the port is a valid number
+	port, err := strconv.Atoi(addr.Port())
+	if err != nil {
+		return errors.New("rpc_addr must include a valid port number")
+	}
+
+	// Check if the port number is within the valid range
+	if port < 1 || port > 65535 {
+		return errors.New("rpc_addr must include a port number between 1 and 65535")
 	}
 
 	return nil
