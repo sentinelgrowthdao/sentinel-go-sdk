@@ -9,6 +9,7 @@ const (
 	DefaultQueryHeight     = 0
 	DefaultQueryMaxRetries = 15
 	DefaultQueryProve      = false
+	DefaultQueryRetryDelay = "1s"
 	DefaultQueryRPCAddr    = "https://rpc.sentinel.co:443"
 	DefaultQueryTimeout    = "15s"
 )
@@ -26,6 +27,11 @@ func GetQueryMaxRetries(cmd *cobra.Command) (int, error) {
 // GetQueryProve retrieves the "query.prove" flag value from the command.
 func GetQueryProve(cmd *cobra.Command) (bool, error) {
 	return cmd.Flags().GetBool("query.prove")
+}
+
+// GetQueryRetryDelay retrieves the "query.retry-delay" flag value from the command.
+func GetQueryRetryDelay(cmd *cobra.Command) (string, error) {
+	return cmd.Flags().GetString("query.retry-delay")
 }
 
 // GetQueryRPCAddr retrieves the "query.rpc-addr" flag value from the command.
@@ -53,6 +59,11 @@ func SetFlagQueryProve(cmd *cobra.Command) {
 	cmd.Flags().Bool("query.prove", DefaultQueryProve, "Include proof in query results.")
 }
 
+// SetFlagQueryRetryDelay adds the "query.retry-delay" flag to the command.
+func SetFlagQueryRetryDelay(cmd *cobra.Command) {
+	cmd.Flags().String("query.retry-delay", DefaultQueryRetryDelay, "Delay between retries for the query.")
+}
+
 // SetFlagQueryRPCAddr adds the "query.rpc-addr" flag to the command.
 func SetFlagQueryRPCAddr(cmd *cobra.Command) {
 	cmd.Flags().String("query.rpc-addr", DefaultQueryRPCAddr, "Address of the RPC server.")
@@ -68,6 +79,7 @@ func AddQueryFlags(cmd *cobra.Command) {
 	SetFlagQueryHeight(cmd)
 	SetFlagQueryMaxRetries(cmd)
 	SetFlagQueryProve(cmd)
+	SetFlagQueryRetryDelay(cmd)
 	SetFlagQueryRPCAddr(cmd)
 	SetFlagQueryTimeout(cmd)
 }
