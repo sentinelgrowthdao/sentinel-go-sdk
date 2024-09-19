@@ -4,47 +4,51 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strings"
+	"time"
 
 	abcitypes "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/bytes"
+	coretypes "github.com/cometbft/cometbft/rpc/core/types"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/v2fly/v2ray-core/v5/common/retry"
 )
 
 // ABCIQueryWithOptions performs an ABCI query with configurable options.
-// It retries the query according to the specified maximum number of retries.
 func (c *Client) ABCIQueryWithOptions(ctx context.Context, path string, data bytes.HexBytes, opts *Options) (*abcitypes.ResponseQuery, error) {
-	// Get the RPC client from the provided options.
-	rpcClient, err := opts.Client()
-	if err != nil {
+	var result *coretypes.ResultABCIQuery
+
+	fn := func() error {
+		// Get the RPC client from the provided options.
+		rpcClient, err := opts.Client()
+		if err != nil {
+			return err
+		}
+
+		// Perform the ABCI query with the given options.
+		result, err = rpcClient.ABCIQueryWithOptions(ctx, path, data, opts.ABCIQueryOptions())
+		if err != nil {
+			return err
+		}
+
+		// If query is successful, return nil to continue.
+		return nil
+	}
+
+	// Convert retry delay from time.Duration to milliseconds.
+	retryDelay := uint32(opts.GetRetryDelay() / time.Millisecond)
+
+	// Retry the query based on the maximum retry attempts and delay specified in options.
+	if err := retry.Timed(opts.GetMaxRetries(), retryDelay).On(fn); err != nil {
 		return nil, err
 	}
 
-	// Retry the query for the specified number of times.
-	for t := 0; t < opts.MaxRetries; t++ {
-		// Perform the ABCI query with options.
-		result, err := rpcClient.ABCIQueryWithOptions(ctx, path, data, opts.ABCIQueryOptions())
-		if err != nil {
-			// Retry on specific errors, such as EOF or invalid character.
-			if strings.Contains(err.Error(), "EOF") || strings.Contains(err.Error(), "invalid character '<' looking for beginning of value") {
-				continue
-			}
-
-			// Return other errors.
-			return nil, err
-		}
-
-		// If the result is nil, return nil.
-		if result == nil {
-			return nil, nil
-		}
-
-		// Return the response from the successful query.
-		return &result.Response, nil
+	// Return nil if no result was produced.
+	if result == nil {
+		return nil, nil
 	}
 
-	// Return an error if the maximum retry limit is reached.
-	return nil, errors.New("reached max retry limit")
+	// Return the final response from the query.
+	return &result.Response, nil
 }
 
 // QueryKey performs an ABCI query for a specific key in a store.

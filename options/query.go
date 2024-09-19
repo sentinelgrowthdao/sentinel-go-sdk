@@ -19,6 +19,7 @@ type Query struct {
 	Height     int64  `json:"height" toml:"height"`           // Height is the block height at which the query is to be performed.
 	MaxRetries int    `json:"max_retries" toml:"max_retries"` // MaxRetries is the maximum number of retries for the query.
 	Prove      bool   `json:"prove" toml:"prove"`             // Prove indicates whether to include proof in query results.
+	RetryDelay string `json:"retry_delay" toml:"retry_delay"` // RetryDelay is the delay between query retries.
 	RPCAddr    string `json:"rpc_addr" toml:"rpc_addr"`       // RPCAddr is the address of the RPC server.
 	Timeout    string `json:"timeout" toml:"timeout"`         // Timeout is the maximum duration for the query to be executed.
 }
@@ -29,6 +30,7 @@ func NewQuery() *Query {
 		Height:     flags.DefaultQueryHeight,
 		MaxRetries: flags.DefaultQueryMaxRetries,
 		Prove:      flags.DefaultQueryProve,
+		RetryDelay: flags.DefaultQueryRetryDelay,
 		RPCAddr:    flags.DefaultQueryRPCAddr,
 		Timeout:    flags.DefaultQueryTimeout,
 	}
@@ -49,6 +51,12 @@ func (q *Query) WithMaxRetries(v int) *Query {
 // WithProve sets the Prove field and returns the modified Query instance.
 func (q *Query) WithProve(v bool) *Query {
 	q.Prove = v
+	return q
+}
+
+// WithRetryDelay sets the RetryDelay field and returns the modified Query instance.
+func (q *Query) WithRetryDelay(v time.Duration) *Query {
+	q.RetryDelay = v.String()
 	return q
 }
 
@@ -79,6 +87,16 @@ func (q *Query) GetProve() bool {
 	return q.Prove
 }
 
+// GetRetryDelay returns the delay between retries for the query.
+func (q *Query) GetRetryDelay() time.Duration {
+	v, err := time.ParseDuration(q.RetryDelay)
+	if err != nil {
+		panic(err)
+	}
+
+	return v
+}
+
 // GetRPCAddr returns the address of the RPC server.
 func (q *Query) GetRPCAddr() string {
 	return q.RPCAddr
@@ -107,6 +125,19 @@ func ValidateQueryHeight(v int64) error {
 func ValidateQueryMaxRetries(v int) error {
 	if v < 0 {
 		return errors.New("max_retries must be non-negative")
+	}
+
+	return nil
+}
+
+// ValidateQueryRetryDelay validates the RetryDelay field.
+func ValidateQueryRetryDelay(v string) error {
+	duration, err := time.ParseDuration(v)
+	if err != nil {
+		return errors.New("retry_delay must be a valid duration")
+	}
+	if duration < 0 {
+		return errors.New("retry_delay must not be negative")
 	}
 
 	return nil
@@ -144,9 +175,13 @@ func ValidateQueryRPCAddr(v string) error {
 }
 
 // ValidateQueryTimeout validates the Timeout field.
-func ValidateQueryTimeout(timeout string) error {
-	if _, err := time.ParseDuration(timeout); err != nil {
+func ValidateQueryTimeout(v string) error {
+	duration, err := time.ParseDuration(v)
+	if err != nil {
 		return errors.New("timeout must be a valid duration")
+	}
+	if duration < 0 {
+		return errors.New("timeout must not be negative")
 	}
 
 	return nil
@@ -158,6 +193,9 @@ func (q *Query) Validate() error {
 		return err
 	}
 	if err := ValidateQueryMaxRetries(q.MaxRetries); err != nil {
+		return err
+	}
+	if err := ValidateQueryRetryDelay(q.RetryDelay); err != nil {
 		return err
 	}
 	if err := ValidateQueryRPCAddr(q.RPCAddr); err != nil {
@@ -204,6 +242,12 @@ func NewQueryFromCmd(cmd *cobra.Command) (*Query, error) {
 		return nil, err
 	}
 
+	// Retrieve the retry delay flag value from the command.
+	retryDelay, err := flags.GetQueryRetryDelay(cmd)
+	if err != nil {
+		return nil, err
+	}
+
 	// Retrieve the RPC address flag value from the command.
 	rpcAddr, err := flags.GetQueryRPCAddr(cmd)
 	if err != nil {
@@ -221,6 +265,7 @@ func NewQueryFromCmd(cmd *cobra.Command) (*Query, error) {
 		Height:     height,
 		MaxRetries: maxRetries,
 		Prove:      prove,
+		RetryDelay: retryDelay,
 		RPCAddr:    rpcAddr,
 		Timeout:    timeout,
 	}, nil
